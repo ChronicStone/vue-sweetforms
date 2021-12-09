@@ -70,27 +70,26 @@ import "vue-sweetforms/dist/style.css"
   import { useSweetform } from "vue-sweetforms"
   import axios from "axios"
   
-  const GetDogBreeds = async () => await axios.get('https://dog.ceo/api/breeds/list/all').then(response => Object.keys(response.data.message).map(item => ({ label: item, value: item }).catch(err => [])
+  const GetDogBreeds =  async () => await axios.get('https://dog.ceo/api/breeds/list/all').then(response => Object.keys(response.data.message).map(item => ({ label: item, value: item }))).catch(_ => [])
   
-  const GetSubbreedByBreed = async ({ dogSubBreed ) => !dogSubBreed ? [] : await axios.get(`https://dog.ceo/api/${dogSubBreed}/hound/list`).then(response => Object.keys(response.data.message).map(item => ({ label: item, value: item }).catch(err => [])
+  const GetSubbreedByBreed = async ({ dogBreed }) => !dogBreed ? [] : await axios.get(`https://dog.ceo/api/breed/${dogBreed}/list`).then(response => response.data.message.map(item => ({ label: item, value: item }))).catch(err => [])
   
   const { createForm } = useSweetform()
   
   
   const OpenForm = createForm({
-    title: "",
-    onSubmit: (formData) => alert(JSON.stringify(formData)),
-    onCancel: () => alert('CANCELLED'),
-    gridSize: 6,
-    fields: [
-      { key: "firstName", type: "text", label: "First name", placeholder: "John", size: 2 },
-      { key: "lastName", type: "text", label: "Last name", placeholder: "Doe", size: 2 },
-      { key: "email", type: "password", label: "Email address", placeholder: "john.doe@gmail.com", size: 2 },
-      { key: "email", label: "Email address", placeholder: "john.doe@gmail.com", size: 2 },
-      { key: "dogBreed", label: "Dog breed", placeholder: "Select a breed, options: GetDogBreeds, size: 3 },
-      { key: "dogSubBreed", label: "Dog sub-breed", placeholder: "Select a sub-breed", options: GetSubbreedByBreed, dependencies: ['dogBreed'], size: 3 }     
-    ]
-  })
+      title: "Demonstration",
+      onSubmit: (formData) => alert(JSON.stringify(formData)),
+      onCancel: () => alert('CANCELLED'),
+      gridSize: 6,
+      fields: [
+        { key: "firstName", type: "text", label: "First name", placeholder: "John", size: 2 },
+        { key: "lastName", type: "text", label: "Last name", placeholder: "Doe", size: 2 },
+        { key: "email", type: "text", label: "Email address", placeholder: "john.doe@gmail.com", size: 2 },
+        { key: "dogBreed", type: "select", label: "Dog breed", placeholder: "Select a breed", options: GetDogBreeds, size: 3 },
+        { key: "dogSubBreed", type: "select", label: "Dog sub-breed", placeholder: "Select a sub-breed", dependencies: ['dogBreed'], options: GetSubbreedByBreed, size: 3 }     
+      ]
+    })
 </script>
 ```
 
