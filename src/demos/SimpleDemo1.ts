@@ -1,3 +1,4 @@
+import axios from "axios"
 export default [
   {
     label: "VERY BASIC NO-STEPS DEMO",
@@ -114,6 +115,43 @@ export default [
             gridSize: 6
           }
         }
+      ]
+    }
+  },
+  {
+    label: "Dependency with select source async",
+    value: {
+      title: "Demonstration",
+      onSubmit: (formData) => alert(JSON.stringify(formData)),
+      onCancel: () => alert('CANCELLED'),
+      gridSize: 6,
+      fields: [
+        { key: "firstName", type: "text", label: "First name", placeholder: "John", size: 2 },
+        { key: "lastName", type: "text", label: "Last name", placeholder: "Doe", size: 2 },
+        { key: "email", type: "text", label: "Email address", placeholder: "john.doe@gmail.com", size: 2 },
+        { 
+          key: "dogBreed", 
+          type: "select", 
+          label: "Dog breed", 
+          placeholder: "Select a breed", 
+          options: async () => await axios.get('https://dog.ceo/api/breeds/list/all').then(response => Object.keys(response.data.message).map(item => ({ label: item, value: item }))).catch(_ => []), 
+          size: 3 
+        },
+        { 
+          key: "dogSubBreed", 
+          type: "select", 
+          label: "Dog sub-breed", 
+          placeholder: "Select a sub-breed", 
+          options: async (dependencies) => {
+            console.log({ dependencies})
+            if (!dependencies.dogBreed) return []
+            return await axios.get(`https://dog.ceo/api/breed/${dependencies.dogBreed}/list`).then(response => response.data.message.map(item => ({ label: item, value: item }))).catch(_ => [])
+          }, 
+          fieldParams: {
+            clearable: true
+          },
+          dependencies: ['dogBreed'], size: 3 
+        }     
       ]
     }
   }

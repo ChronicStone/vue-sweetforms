@@ -13,13 +13,13 @@
             <div class="text-center uppercase text-xl">{{ formOptions.title }}</div>
         </template>
         <!-- Form body -->
-        <div class="h-10/12 max-h-55vh grid gap-4 px-6 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-rounded-full" :style="`height:fit-content !important;grid-template-columns: repeat(${formOptions.gridSize ?? '2'},minmax(0,1fr));`">
+        <div class="h-10/12 max-h-55vh grid gap-4 px-6 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-rounded-full text-left" :style="`height:fit-content !important;grid-template-columns: repeat(${formOptions.gridSize ?? '2'},minmax(0,1fr));`">
             <FormInput 
                 v-for="(field, fieldIndex) of formContent.filter(field => field._enable)" :key="fieldIndex"
                 :gridSize="formOptions.gridSize"
                 :field="field"
                 :validator="$v[field.key]"
-                v-model:value="formState[field.key]"
+                v-model="formState[field.key]"
             />
         </div>
 
@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import FormInput from "./FormInput.vue";
 import { NCard, NButton, NSteps, NStep } from "naive-ui"
-import { ref, reactive, computed, onMounted } from "vue"
+import { ref, reactive, computed, watch } from "vue"
 import { onClickOutside, asyncComputed } from "@vueuse/core"
 import useVuelidate from '@vuelidate/core'
 import { required } from "@vuelidate/validators"
@@ -65,8 +65,8 @@ const MapArrayToObject = (array: any[]) => {
 }
 
 const formRef = ref(null)
-const formState = reactive(InitializeFormState())
-const formContent = reactive(
+const formState: any = reactive(InitializeFormState())
+const formContent: any = reactive(
     props.formOptions.fields
     .map((field: any) => ({
         ...field,
@@ -79,13 +79,27 @@ const formContent = reactive(
         ...field,
         ...(field.options && typeof field.options === 'function' && {  
             _options: asyncComputed(
-                async () => await field.options(MapArrayToObject([...field.dependencies.map(key => ({ key, value: formState[key]}))])), 
+                async () => await field.options(MapArrayToObject(
+                    field.dependencies ? field.dependencies.map(key => ({ key, value: formState[key]})) : []
+                )), 
                 [],  
                 field._evalOptions
             )
         })
     }))
 )
+
+formContent.forEach((field: any, index: number) => {
+    // COMPUTED OPTIONS WATCHER
+    if(field._options) {
+        watch(() => formContent[index]._options, (options) => {
+            if(!options.map((option: any) => option.value).includes(formState[field.key])) {
+                console.log('PURGE FIELD VALUE')
+                formState[field.key] = null
+            }
+        })
+    }
+})
 
 const formRules = computed(() => {
     let rules = {}

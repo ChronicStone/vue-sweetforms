@@ -60,13 +60,15 @@
                 </NRadio>
             </div>
         </NRadioGroup>
-        <NAlert v-if="validator.$errors.length" type="error"> {{ validator.$errors[0].$message }}</NAlert>
+        <div v-if="validator.$errors.length" class="flex gap-2 items-center rounded bg-red-200 p-3">
+            <i-mdi-information class="text-red-500"/>
+            <span class="text-red-500">{{ validator.$errors[0].$message }}</span>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-    import { defineEmits } from "vue"
-    import { useVModel } from "@vueuse/core"
+    import { computed } from "vue"
     import { NInput, NSelect, NInputNumber, NAlert, NDatePicker, NTimePicker, NSlider, NRadioGroup, NRadio } from "naive-ui"
 
     const props = defineProps({
@@ -82,10 +84,16 @@
             type: Object,
             required: true
         },
+        modelValue: {
+            type: [String, Number, Date, Array, Object],
+        }
     })
 
-    const emit = defineEmits(['update:value'])
-    const fieldValue = useVModel(props, 'value', emit)
+    const emit = defineEmits(['update:modelValue'])
+    const fieldValue = computed({
+        get() { return props.modelValue },
+        set(value: any) { emit('update:modelValue', value) }
+    })
 </script>
 
 <style>
