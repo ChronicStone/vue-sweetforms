@@ -84,10 +84,10 @@ import "vue-sweetforms/dist/style.css"
     gridSize: 6,
     fields: [
       { key: "firstName", type: "text", label: "First name", placeholder: "John", size: 2 },
-      { key: "lastName", type: "text", label: "Last name", placeholder: "Doe", size: 2 }
-      { key: "email", type: "password", label: "Email address", placeholder: "john.doe@gmail.com", size: 2 }
-      { key: "email", label: "Email address", placeholder: "john.doe@gmail.com", size: 2 }
-      { key: "dogBreed", label: "Dog breed", placeholder: "Select a breed, options: GetDogBreeds, size: 3 }
+      { key: "lastName", type: "text", label: "Last name", placeholder: "Doe", size: 2 },
+      { key: "email", type: "password", label: "Email address", placeholder: "john.doe@gmail.com", size: 2 },
+      { key: "email", label: "Email address", placeholder: "john.doe@gmail.com", size: 2 },
+      { key: "dogBreed", label: "Dog breed", placeholder: "Select a breed, options: GetDogBreeds, size: 3 },
       { key: "dogSubBreed", label: "Dog sub-breed", placeholder: "Select a sub-breed", options: GetSubbreedByBreed, dependencies: ['dogBreed'], size: 3 }     
     ]
   })
