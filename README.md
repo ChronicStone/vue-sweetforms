@@ -49,7 +49,7 @@ import "vue-sweetforms/dist/style.css"
 
 
 #### 3. Wrap your app with the FormProvider component
-```js
+```vue
 // App.vue
 
 <script setup>
