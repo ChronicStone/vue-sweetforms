@@ -65,7 +65,7 @@ import "vue-sweetforms/dist/style.css"
 ```
 
 #### 4. Use the form API anywhere in your app :
-```js
+```vue
 <script setup>
   import { useSweetform } from "vue-sweetforms"
   import axios from "axios"
@@ -91,6 +91,10 @@ import "vue-sweetforms/dist/style.css"
       ]
     })
 </script>
+
+<template>
+  <button @click="OpenForm">OPEN FORM</button>
+</template>
 ```
 
 ## Documentation and live examples
