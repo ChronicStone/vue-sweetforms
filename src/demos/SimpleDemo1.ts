@@ -1,4 +1,4 @@
-import axios from "axios"
+import { fetchGet, GenerateLoremIpsumText } from "@/utils"
 export default [
   {
     label: "VERY BASIC NO-STEPS DEMO",
@@ -13,12 +13,19 @@ export default [
           size: 3
         }, 
         {
+          key: "fieldSelect",
+          label: "First field",
+          type: "select",
+          size: 3,
+          options: ['Cypri', 'Test', 'Null'].map(x => ({label: 'Valeur' + x, value: x}))
+        }, 
+        {
           key: "field2",
           label: "Second field",
           type: "select",
-          dependencies: ['field1'],
+          dependencies: ['field1', 'fieldSelect'],
           options: async (dependencies) => {
-            console.log('OPTIONS RELOADED', dependencies)
+            console.log('OPTIONS RELOADED', dependencies.fieldSelect)
             await new Promise(resolve => setTimeout(resolve, 2500))
             return ['Cyprien THAO', 'Benoit THAO', 'Philippe MACY'].map(val => ({ label: val, value: val })).filter(({ value }) => !dependencies.field1 ? true : value.toLowerCase().includes(dependencies.field1.toLowerCase()))
           },
@@ -41,6 +48,7 @@ export default [
           key: "field3",
           label: "Field textarera",
           type: "textarea",
+          dependencies: ['field2'],
           condition: ({ field2 }: any) => !!field2,
           size: 6
         },
@@ -126,11 +134,11 @@ export default [
       onCancel: () => alert('CANCELLED'),
       gridSize: 6,
       fields: [
-        { key: "firstName", type: "text", label: "First name", placeholder: "John", size: 2 },
+        { key: "firstName", type: "text", label: "First name", placeholder: "John", size: 2, description: Array.from({ length: 10 }, () => GenerateLoremIpsumText()).join(' ') },
         { key: "lastName", type: "text", label: "Last name", placeholder: "Doe", size: 2 },
         { key: "email", type: "text", label: "Email address", placeholder: "john.doe@gmail.com", size: 2 },
-        { key: "dogBreed", type: "select", label: "Dog breed", placeholder: "Select a breed", options: async () => await axios.get('https://dog.ceo/api/breeds/list/all').then(response => Object.keys(response.data.message).map(item => ({ label: item, value: item }))).catch(_ => []), size: 3 },
-        { key: "dogSubBreed", type: "select", label: "Dog sub-breed", placeholder: "Select a sub-breed", dependencies: ['dogBreed'], options: async ({ dogBreed }) => !dogBreed ? [] : await axios.get(`https://dog.ceo/api/breed/${dogBreed}/list`).then(response => response.data.message.map(item => ({ label: item, value: item }))).catch(err => []), size: 3 }     
+        { key: "dogBreed", type: "select", label: "Dog breed", placeholder: "Select a breed", options: async () => await fetchGet('https://dog.ceo/api/breeds/list/all').then(response => Object.keys(response.message).map(item => ({ label: item, value: item }))).catch(_ => []), size: 3 },
+        { key: "dogSubBreed", type: "select", label: "Dog sub-breed", placeholder: "Select a sub-breed", dependencies: ['dogBreed'], options: async ({ dogBreed }) => !dogBreed ? [] : await fetchGet(`https://dog.ceo/api/breed/${dogBreed}/list`).then(response => response.message.map(item => ({ label: item, value: item }))).catch(err => []), size: 3 }     
       ]
     }
   }

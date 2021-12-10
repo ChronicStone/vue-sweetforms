@@ -2,7 +2,7 @@
     <n-card 
         ref="formRef" 
         class="transition-all opacity-100 fixed w-9/10 md:w-3/4 lg:w-1/2 h-max-[85vh] rounded-lg h-auto z-max" 
-        style="height: fit-content;max-height:85vh;"
+        style="height: fit-content;max-height:85vh;width:80vw !important;"
         id="sweetforms__form"
         content-style="height:fit-content;padding: 10px;"
     >
@@ -36,10 +36,9 @@
 <script setup lang="ts">
 import FormInput from "./FormInput.vue";
 import { NCard, NButton, NSteps, NStep } from "naive-ui"
-import { ref, reactive, computed, watch } from "vue"
-import { onClickOutside, asyncComputed } from "@vueuse/core"
-import useVuelidate from '@vuelidate/core'
-import { required } from "@vuelidate/validators"
+import { onClickOutside } from "@vueuse/core"
+import { ref } from "vue"
+import { useForm } from "./useForm"
 const emit = defineEmits(['closeForm', 'submitForm', 'cancelForm'])
 const props = defineProps({
     formOptions: {
@@ -52,69 +51,86 @@ const props = defineProps({
     }
 })
 
-const InitializeFormState = () => {
-    let state = {}
-    props.formOptions.fields.forEach(field => state[field.key] = props.formData[field.key] ?? null)
-    return state
-}
+const { isMultiStep, formState, formRules, formContent, SubmitForm, $v } = useForm(props.formOptions, props.formData, emit)
 
-const MapArrayToObject = (array: any[]) => {
-    let obj = {}
-    for(const { key, value } of array) obj[key] = value
-    return obj
-}
+// const InitializeFormState = () => {
+//     let state = {}
+//     props.formOptions.fields.forEach(field => state[field.key] = props.formData[field.key] ?? null)
+//     return state
+// }
+
+// const MapArrayToObject = (array: any[]) => {
+//     let obj = {}
+//     for(const { key, value } of array) obj[key] = value
+//     return obj
+// }
+
+// const mapDependencies = (arrayDependencies: any) => {
+//     let dependencies = {};
+//     for (const { key, value } of arrayDependencies) dependencies[key] = value;
+//     return dependencies;
+// };
+
+// const resolveFromString = (path, obj, separator = '.') => {
+//     var properties = Array.isArray(path) ? path : path.split(separator);
+//     return properties.reduce((prev, curr) => prev && prev[curr], obj);
+// }
 
 const formRef = ref(null)
-const formState: any = reactive(InitializeFormState())
-const formContent: any = reactive(
-    props.formOptions.fields
-    .map((field: any) => ({
-        ...field,
-        _enable: field.condition ? computed(() => field.condition(Object.assign({}, formState))) : true,
-        ...(field.options && typeof field.options === 'function' && { 
-            _evalOptions: ref(false),
-        })
-    }))
-    .map((field: any, index: number) => ({
-        ...field,
-        ...(field.options && typeof field.options === 'function' && {  
-            _options: asyncComputed(
-                async () => await field.options(MapArrayToObject(
-                    field.dependencies ? field.dependencies.map(key => ({ key, value: formState[key]})) : []
-                )), 
-                [],  
-                field._evalOptions
-            )
-        })
-    }))
-)
+// const formState: any = reactive(InitializeFormState())
+// const formContent: any = reactive(
+//     props.formOptions.fields
+//     // BASE FIELD + ASYNC COMPUTED EVALUATORS SETUP
+//     .map((field: any) => ({
+//         ...field,
+//         _dependencies: computed(() => mapDependencies(field.dependencies ? field.dependencies.map(key => ({ key, value: resolveFromString(key, formState) })) :  [])),
+//         _evalOptions: ref(false),
+//         _evalEnable: ref(false)
+//     }))
+//     // ASYNC COMPUTED SETUP
+//     .map((field: any, index: number) => ({
+//         ...field,
+//         _enable: field.condition ? asyncComputed(async () => await field.condition(field._dependencies.value), false, field._evalEnable) : true,
+//         ...(field.options && typeof field.options === 'function' && {  
+//             _options: asyncComputed(async () => await field.options(field._dependencies.value), [], field._evalOptions),
+//         })
+        
+//     }))
+//     // WATCHERS SETUP
+//     .map((field: any, index: number) => ({
+//         ...field,
+//         ...(field.options && typeof field.options === 'function' && {
+//             _watcherOptions: watch(() => field._options.value, (options: any[]) => { if(!options.map((option: any) => option.value).includes(formState[field.key])) formState[field.key] = null })
+//         })
+//     }))
+// )
 
-formContent.forEach((field: any, index: number) => {
-    // COMPUTED OPTIONS WATCHER
-    if(field._options) {
-        watch(() => formContent[index]._options, (options) => {
-            if(!options.map((option: any) => option.value).includes(formState[field.key])) {
-                console.log('PURGE FIELD VALUE')
-                formState[field.key] = null
-            }
-        })
-    }
-})
+// function updateDependencies(newState: any, fieldIndex: number) {
+//     const updatedDependencies = mapDependencies(formContent[fieldIndex].dependencies.map((key) => ({ key, value: resolveFromString(key, Object.assign({}, newState)) })));
+//     if (updatedDependencies != Object.assign({}, formContent[fieldIndex]._dependencies) ) formContent[fieldIndex]._dependencies = updatedDependencies;
+// }
 
-const formRules = computed(() => {
-    let rules = {}
-    for(const field of formContent) rules[field.key] = field.validators ? { ...field.validators } : { required }
-    return rules    
-})
+// // formContent.forEach((field: any, index: number) => {
+// //     // COMPUTED OPTIONS WATCHER
+// //     if(field._options) {
+// //         watch(() => formContent[index]._options, (options: any[]) => !options.map((option: any) => option.value).includes(formState[field.key]) ? formState[field.key] = null : '') 
+// //     }
+// // })
 
-const $v = useVuelidate(formRules, formState);
+// const formRules = computed(() => {
+//     let rules = {}
+//     for(const field of formContent) rules[field.key] = field.validators ? { ...field.validators } : { required }
+//     return rules    
+// })
+
+// const $v = useVuelidate(formRules, formState);
 
 const CancelForm = () => emit('closeForm')
-const SubmitForm = async () => {
-    const isValid = await $v.value.$validate()
-    if(!isValid) return
-    emit('submitForm', { formState: Object.assign({}, formState), onSubmit: props.formOptions.onSubmit })
-}
+// const SubmitForm = async () => {
+//     const isValid = await $v.value.$validate()
+//     if(!isValid) return
+//     emit('submitForm', { formState: Object.assign({}, formState), onSubmit: props.formOptions.onSubmit })
+// }
 
 onClickOutside(formRef, (event: PointerEvent) => {
     if(event?.target?.id === 'sweetforms__overlay') emit('closeForm')

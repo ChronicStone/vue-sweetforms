@@ -1,5 +1,5 @@
 <template>
-  <NConfigProvider :theme="darkMode && darkTheme" :theme-overrides="themeOverrides">
+  <NConfigProvider :theme="darkMode && darkTheme" :theme-overrides="darkMode ? DarkThemeOverrides : LightThemeOverrides">
     <slot />
     <div id="sweetforms__overlay" style="z-index: 60;" v-if="formInstances.length" class="fixed left-0 top-0 bg-black bg-opacity-50 grid place-items-center w-full h-screen">
       <transition-group
@@ -14,7 +14,7 @@
 <script setup lang="ts">
   import { ref, computed, provide, inject, defineProps } from "vue"
   import { NConfigProvider, darkTheme } from "naive-ui"
-  import { DefaultThemeOverrides, LightThemeOverrides, DarkThemeOverrides } from "@/config"
+  import { LightThemeOverrides, DarkThemeOverrides } from "@/config"
   import { FormInstance } from "@/types/form.types"
   import Form from "./Form.vue"
   const props = defineProps({
@@ -24,7 +24,6 @@
     },
   })
 
-  const themeOverrides = computed(() => Object.assign(DefaultThemeOverrides, props.darkMode ? DarkThemeOverrides : LightThemeOverrides))
   const formInstances = ref<FormInstance[]>([])
 
   provide('sweetform', {
