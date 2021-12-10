@@ -77,7 +77,7 @@ import "vue-sweetforms/dist/style.css"
   const { createForm } = useSweetform()
   
   
-  const OpenForm = createForm({
+  const OpenForm = () => createForm({
       title: "Demonstration",
       onSubmit: (formData) => alert(JSON.stringify(formData)),
       onCancel: () => alert('CANCELLED'),
