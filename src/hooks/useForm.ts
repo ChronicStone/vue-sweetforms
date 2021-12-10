@@ -1,13 +1,8 @@
-import { inject } from "vue"
+import { MapFormInitialState, MapFormRules, MapStepsAsFields, MapDependenciesAsObject, ResolveFromString } from "@/utils"
 import { ref, reactive, computed, watch } from "vue"
 import { asyncComputed } from "@vueuse/core"
 import useVuelidate from '@vuelidate/core'
-import { MapArrayToObject, MapFormInitialState, MapFormRules, MapStepsAsFields, MapDependenciesAsObject, ResolveFromString } from "@/utils"
 
-export function useSweetform() {
-    const formApi = inject('sweetform', null)
-    return formApi
-}
 
 export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     const inputFields = formOptions.fields ?? MapStepsAsFields(formOptions.steps)

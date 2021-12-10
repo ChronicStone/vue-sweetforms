@@ -3,7 +3,9 @@
         <div class="flex gap-2 items-center justify-between">
             <span class="m-0 capitalize">{{field.label}}</span>
             <NTooltip v-if="field.description" :style="{ maxWidth: '300px', maxHeight: '400px', backgroundOpacity: '1', overflowX: 'auto', ...(field?.fieldParams?.descriptionStyles) }">
-                <template #trigger><i-mdi-information class="h-3.5 w-3.5"/></template>
+                <template #trigger>
+                    <div class="h-5 w-5 cursor-pointer grid place-items-center"><i-mdi-information class="h-3.5 w-3.5"/></div>
+                </template>
                 <div v-html="field.description" />
             </NTooltip>
         </div>
