@@ -130,15 +130,34 @@ export default [
     label: "Dependency with select source async",
     value: {
       title: "Demonstration",
-      onSubmit: (formData) => alert(JSON.stringify(formData)),
+      onSubmit: (formData) => console.log(formData),
       onCancel: () => alert('CANCELLED'),
       gridSize: 6,
-      fields: [
-        { key: "firstName", type: "text", label: "First name", placeholder: "John", size: 2, description: Array.from({ length: 10 }, () => GenerateLoremIpsumText()).join(' ') },
-        { key: "lastName", type: "text", label: "Last name", placeholder: "Doe", size: 2 },
-        { key: "email", type: "text", label: "Email address", placeholder: "john.doe@gmail.com", size: 2 },
-        { key: "dogBreed", type: "select", label: "Dog breed", placeholder: "Select a breed", options: async () => await fetchGet('https://dog.ceo/api/breeds/list/all').then(response => Object.keys(response.message).map(item => ({ label: item, value: item }))).catch(_ => []), size: 3 },
-        { key: "dogSubBreed", type: "select", label: "Dog sub-breed", placeholder: "Select a sub-breed", dependencies: ['dogBreed'], options: async ({ dogBreed }) => !dogBreed ? [] : await fetchGet(`https://dog.ceo/api/breed/${dogBreed}/list`).then(response => response.message.map(item => ({ label: item, value: item }))).catch(err => []), size: 3 }     
+      steps: [
+        {
+          title: "Step 1",
+          fields: [
+            { key: "firstName", type: "text", label: "First name", placeholder: "John", size: 2, description: Array.from({ length: 10 }, () => GenerateLoremIpsumText()).join(' ') },
+            { key: "lastName", type: "text", label: "Last name", placeholder: "Doe", size: 2 },
+            { key: "email", type: "text", label: "Email address", placeholder: "john.doe@gmail.com", size: 2 },
+            { key: "dogBreed", type: "select", label: "Dog breed", placeholder: "Select a breed", options: async () => await fetchGet('https://dog.ceo/api/breeds/list/all').then(response => Object.keys(response.message).map(item => ({ label: item, value: item }))).catch(_ => []), size: 3 },
+            { key: "dogSubBreed", type: "select", label: "Dog sub-breed", placeholder: "Select a sub-breed", dependencies: ['dogBreed'], options: async ({ dogBreed }) => !dogBreed ? [] : await fetchGet(`https://dog.ceo/api/breed/${dogBreed}/list`).then(response => response.message.map(item => ({ label: item, value: item }))).catch(err => []), size: 3 }     
+          ]
+        },
+        {
+          title: "Step 2",
+          fields: [
+            { key: "testStep2", type: "text", label: "Dog name", placeholder: "John", size: 6 },
+            { key: "testObj", type: "object", label: "Test object", size: 6, gridSize: 3, fields: [
+                { key: "testObj1", type: "text",  label: "Test object 1", },
+                { key: "testObj2", type: "object", label: "Test object 2", gridSize: 6, fields: [
+                    { label: "Test object 2.1", key: "testObj2Child", type: "text", size: 3  }
+                  ]
+                },
+              ]
+            }
+          ]
+        }
       ]
     }
   }

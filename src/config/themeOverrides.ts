@@ -25,7 +25,9 @@ export const DefaultThemeOverrides = {
 }
 
 const _lightThemeOverrides = {
-
+    "common": {
+        "bodyColor": "#f7f7f7"
+    },
 }
 
 const _darkThemeOverrides = {

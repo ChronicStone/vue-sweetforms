@@ -9,11 +9,12 @@
 </template>
 
 <script setup lang="ts">
-import { NCard, NButton } from "naive-ui"
+import { NCard, NButton, useThemeVars } from "naive-ui"
 import { FormProvider, useSweetform, SweetformTypes } from './index';
 import * as AllDemos from "@/demos/"
 const { createForm , formInstances }: any = useSweetform()
 const OpenForm = (formContent: any) => createForm(formContent)
+const themeVars: any = useThemeVars()
 </script>
 
 <style>

@@ -11,9 +11,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     const currentStepIndex = ref(0)
     const isMultiStep = computed(() => formSteps.length > 1)
 
-    const formState = reactive(MapFormInitialState(inputFields, formInputData))
-    const formContent = reactive(
-        inputFields
+    const InitializeFormFields: (fields: any[]) => any[] = (fields: any[]) => fields
         // BASE FIELD + ASYNC-COMPUTED EVALUATORS + DEPENDENCIES SETUP
         .map((field: any) => ({
             ...field,
@@ -22,23 +20,32 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             _evalEnable: ref(false)
         }))
         // ASYNC COMPUTED SETUP
-        .map((field: any, index: number) => ({
+        .map((field: any) => ({
             ...field,
             _enable: field.condition ? asyncComputed(async () => await field.condition(field._dependencies.value), false, field._evalEnable) : true,
             ...(field.options && typeof field.options === 'function' && {  
                 _options: asyncComputed(async () => await field.options(field._dependencies.value), [], field._evalOptions),
             })
-            
         }))
         // WATCHERS SETUP
-        .map((field: any, index: number) => ({
+        .map((field: any) => ({
             ...field,
             ...(field.options && typeof field.options === 'function' && {
                 _watcherOptions: watch(() => field._options.value, (options: any[]) => { if(!options.map((option: any) => option.value).includes(formState[field.key])) formState[field.key] = null })
             })
         }))
-    )
+        // RECURSIVELY DO THIS PROCESS FOR CHILDREN
+        .map((field: any) => ({
+            ...field,
+            ...(field.fields &&  {
+                fields: InitializeFormFields(field.fields)
+            })
+        }))
 
+
+
+    const formState = reactive(MapFormInitialState(inputFields, formInputData))
+    const formContent = reactive(InitializeFormFields(inputFields))
     const formRules = computed(() => MapFormRules(formContent.filter((field: any) => {
         if(field.condition && !field._enable.value) return false
         if(isMultiStep.value && field._stepIndex !== currentStepIndex.value) return false
