@@ -15,7 +15,7 @@
         <!-- Form body -->
         <div class="h-10/12 max-h-55vh grid gap-4 px-6 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-rounded-full text-left" :style="`height:fit-content !important;grid-template-columns: repeat(${formOptions.gridSize ?? '2'},minmax(0,1fr));`">
             <FormInput 
-                v-for="(field, fieldIndex) of formContent.filter((field: any) => field._enable)" :key="fieldIndex"
+                v-for="(field, fieldIndex) of formContent.filter((field: any) => field._enable && (isMultiStep ? currentStepIndex === field._stepIndex : true))" :key="fieldIndex"
                 :gridSize="formOptions.gridSize"
                 :field="field"
                 :validator="$v[field.key]"
@@ -35,10 +35,11 @@
 
 <script setup lang="ts">
 import FormInput from "./FormInput.vue";
-import { NCard, NButton, NSteps, NStep } from "naive-ui"
+import { NCard, NButton } from "naive-ui"
 import { onClickOutside } from "@vueuse/core"
 import { ref } from "vue"
 import { useForm } from "../hooks"
+
 const emit = defineEmits(['closeForm', 'submitForm', 'cancelForm'])
 const props = defineProps({
     formOptions: {
@@ -52,7 +53,7 @@ const props = defineProps({
 })
 
 const formRef = ref(null)
-const { isMultiStep, formState, formContent, SubmitForm, $v } = useForm(props.formOptions, props.formData, emit)
+const { isMultiStep, currentStepIndex, formState, formContent, SubmitForm, $v } = useForm(props.formOptions, props.formData, emit)
 
 
 const CancelForm = () => emit('closeForm')
@@ -60,6 +61,7 @@ const CancelForm = () => emit('closeForm')
 onClickOutside(formRef, ({ target }: any) => {
     if(target?.id === 'sweetforms__overlay') emit('closeForm')
 })
+
 </script>
 
 <style scoped>

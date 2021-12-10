@@ -15,7 +15,7 @@ export const MapFormInitialState = (fields: any[], inputFormData: any) => {
     let state: any = {}
     fields.forEach((field: any) => {
         if(!['array', 'object'].includes(field.type)) state[field.key] = inputFormData[field.key] ?? null
-        if(field.type === 'object') state[field.key] = MapFormInitialState(field.children, inputFormData[field.key] ?? {})
+        if(field.type === 'object') state[field.key] = MapFormInitialState(field.fields ?? [], inputFormData[field.key] ?? {})
     })
     return state
 }
@@ -24,7 +24,7 @@ export const MapFormRules = (fields: any[]) => {
     let rules: any = {}    
     fields.forEach((field: any) => {
         if(!['array', 'object'].includes(field.type)) rules[field.key] = field.validators ? { ...field.validators } : { required }
-        if(field.type === 'object') rules[field.key] = MapFormRules(field.children)
+        if(field.type === 'object') rules[field.key] = MapFormRules(field.fields ?? [])
     })
     return rules   
 }
