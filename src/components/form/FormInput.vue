@@ -1,6 +1,12 @@
 <template>
     <div class="flex flex-col gap-2" :style="`grid-column: span ${field.size ?? '1'} / span ${ gridSize ?? '12'};`">
-        <span class="m-0 capitalize">{{field.label}}</span>
+        <div class="flex gap-2 items-center justify-between">
+            <span class="m-0 capitalize">{{field.label}}</span>
+            <NTooltip v-if="field.description" :style="{ maxWidth: '300px', maxHeight: '400px', backgroundOpacity: '1', overflowX: 'auto', ...(field?.fieldParams?.descriptionStyles) }">
+                <template #trigger><i-mdi-information class="h-3.5 w-3.5"/></template>
+                <div v-html="field.description" />
+            </NTooltip>
+        </div>
 
         <NInput 
             @on-update:value="validator.$touch" 
@@ -60,14 +66,18 @@
                 </NRadio>
             </div>
         </NRadioGroup>
-        <NAlert v-if="validator.$errors.length" type="error"> {{ validator.$errors[0].$message }}</NAlert>
+        <NAlert type="error" :show-icon="false" v-if="validator.$errors.length" class="w-full">
+            <div class="flex items-center gap-2">
+                <i-mdi-information class="text-red-500"/>
+                <span class="text-red-500">{{ validator.$errors[0].$message }}</span>
+            </div>
+        </NAlert>
     </div>
 </template>
 
 <script setup lang="ts">
-    import { defineEmits } from "vue"
-    import { useVModel } from "@vueuse/core"
-    import { NInput, NSelect, NInputNumber, NAlert, NDatePicker, NTimePicker, NSlider, NRadioGroup, NRadio } from "naive-ui"
+    import { computed } from "vue"
+    import { NInput, NSelect, NInputNumber, NAlert, NDatePicker, NTimePicker, NSlider, NRadioGroup, NRadio, NTooltip } from "naive-ui"
 
     const props = defineProps({
         gridSize: { 
@@ -82,24 +92,30 @@
             type: Object,
             required: true
         },
+        modelValue: {
+            type: [String, Number, Date, Array, Object],
+        }
     })
 
-    const emit = defineEmits(['update:value'])
-    const fieldValue = useVModel(props, 'value', emit)
+    const emit = defineEmits(['update:modelValue'])
+    const fieldValue = computed({
+        get() { return props.modelValue },
+        set(value: any) { emit('update:modelValue', value) }
+    })
 </script>
 
 <style>
-.n-input__textarea-el::-webkit-scrollbar {
+:is(.n-input__textarea-el, .n-tooltip)::-webkit-scrollbar {
   width: 5px;
   cursor:pointer !important;
 }
 
-.n-input__textarea-el::-webkit-scrollbar-thumb {
+:is(.n-input__textarea-el, .n-tooltip)::-webkit-scrollbar-thumb {
   @apply bg-gray-200 dark:bg-gray-600 rounded-full cursor-pointer hover:bg-gray-300;
     cursor: pointer !important;
 }
 
-.n-input__textarea-el::-webkit-scrollbar-track {
+:is(.n-input__textarea-el, .n-tooltip)::-webkit-scrollbar-track {
   background: transparent;
   padding: 5px;
 }

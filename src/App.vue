@@ -1,7 +1,7 @@
 <template>
   <div class="h-full dark:bg-[#101014] min-h-screen">
     <NConfigProvider :theme="isDark && darkTheme">
-      <FormProvider>
+      <FormProvider :darkMode="isDark">
         <div class="bg-gray-200 dark:(bg-[#18181C] text-white) flex items-center justify-between w-full h-16 p-4">
           <div class="text-lg font-medium">
             SweetForms Sandbox

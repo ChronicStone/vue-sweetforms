@@ -27,5 +27,24 @@ export default defineConfig({
       // Allow serving files from one level up to the project root
       allow: ['..']
     }
-  }
+  },
+  build: {
+    lib: {
+      entry: path.resolve(__dirname, 'src/index.ts'),
+      name: 'VueSweetforms',
+      fileName: (format) => `vue-sweetforms.${format}.js`
+    },
+    rollupOptions: {
+      // make sure to externalize deps that shouldn't be bundled
+      // into your library
+      external: ['vue'],
+      output: {
+        // Provide global variables to use in the UMD build
+        // for externalized deps
+        globals: {
+          vue: 'Vue',
+        },
+      },
+    },
+  },
 })
