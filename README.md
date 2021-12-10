@@ -24,15 +24,16 @@
   - High depth of forms layout customisation, based on css grid
 - A lot of field types supported
   - List of supported field types : text, textarea, password, number, email, select, radio, checkbox, date, time, datetime, datetimerange, daterange, month, year, file, array, object
+  - Support deeply nested form objects
   - Supports custom vue components as fields [COMING SOON]
 - Advanced cross-fields dependency
   - Cross-field field disabling / hiding (supports async)
-  - Cross-field validation (supports async)
+  - Cross-field validation (supports async) (In progress)
   - Cross-field computed option list for list-like inputs (Select, radio group, ...) (supports async)
 - Advanced validation based on [Vuelidate](https://vuelidate-next.netlify.app/)
 - Dark/Light mode
 - Highly customizable design
-- Supports multiple steps forms [COMING SOON]
+- Supports multiple steps forms [IN PROGRESS (90%)]
 - 100% Responsive [IN PROGRESS]
 
 ## How To Use
