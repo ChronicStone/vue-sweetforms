@@ -54,9 +54,9 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
 
     const $v = useVuelidate(formRules, formState);
 
-
-    const SubmitForm = async (callback: () => any) => {
-        const _emitForm = () => emit('submitForm', { formState: Object.assign({}, formState), onSubmit: formOptions.onSubmit })
+    const CloseForm = () => formOptions._resolve({ isCompleted: false, formData: {...formState}})
+    const SubmitForm = async () => {
+        const _emitForm = () => formOptions._resolve({ isCompleted: true, formData: {...formState}})
         const isValid = await $v.value.$validate()
         console.log({ isValid })
         if(!isValid) {
@@ -83,6 +83,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         formRules, 
         formContent, 
         SubmitForm,
+        CloseForm,
         $v,
         ...(formOptions.steps && { 
             currentStepIndex, 

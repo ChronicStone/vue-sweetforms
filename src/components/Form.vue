@@ -1,10 +1,7 @@
 <template>
     <n-card 
         ref="formRef" 
-        class="transition-all opacity-100 fixed w-9/10 md:w-3/4 lg:w-1/2 h-max-[85vh] rounded-lg h-auto z-max" 
-        style="height: fit-content;max-height:85vh;width:80vw !important;"
         id="sweetforms__form"
-        content-style="height:fit-content;padding: 10px;"
     >
     <!--         content-style="overflow-y: auto;"
  -->
@@ -26,7 +23,7 @@
         <!-- Form buttons -->
         <template #footer>
             <div class="h-1/12 flex w-full justify-center items-center gap-4 pt-6">
-                <NButton @click="CancelForm" type="error">CANCEL</NButton>
+                <NButton @click="CloseForm" type="error">CANCEL</NButton>
                 <NButton @click="SubmitForm" type="primary">SUBMIT</NButton>
             </div>
         </template>
@@ -36,8 +33,8 @@
 <script setup lang="ts">
 import FormInput from "./FormInput.vue";
 import { NCard, NButton } from "naive-ui"
-import { onClickOutside } from "@vueuse/core"
-import { ref } from "vue"
+import { onClickOutside, useBreakpoints, breakpointsTailwind } from "@vueuse/core"
+import { ref, computed, reactive } from "vue"
 import { useForm } from "../hooks"
 
 const emit = defineEmits(['closeForm', 'submitForm', 'cancelForm'])
@@ -53,13 +50,13 @@ const props = defineProps({
 })
 
 const formRef = ref(null)
-const { isMultiStep, currentStepIndex, formState, formContent, SubmitForm, $v } = useForm(props.formOptions, props.formData, emit)
+const { isMultiStep, currentStepIndex, formState, formRules, formContent, SubmitForm, CloseForm, $v } = useForm(props.formOptions, props.formData, emit)
 
 
 const CancelForm = () => emit('closeForm')
 
 onClickOutside(formRef, ({ target }: any) => {
-    if(target?.id === 'sweetforms__overlay') emit('closeForm')
+    if(target?.id === 'sweetforms__overlay') CloseForm()
 })
 
 </script>

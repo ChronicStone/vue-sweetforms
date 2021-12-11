@@ -1,5 +1,5 @@
 import { FormField } from "@/types/form.types";
-import { required } from "@vuelidate/validators"
+import { required, helpers } from "@vuelidate/validators"
 
 interface InternalFormField extends FormField {
     _stepIndex?: number
@@ -11,22 +11,27 @@ export const MapArrayToObject = (array: any[]) => {
     return obj
 }
 
-export const MapFormInitialState = (fields: any[], inputFormData: any) => {
+export const MapFormInitialState = (fields: any[], inputFormData: any = {}) => {
     let state: any = {}
     fields.forEach((field: any) => {
-        if(!['array', 'object'].includes(field.type)) state[field.key] = inputFormData[field.key] ?? null
-        if(field.type === 'object') state[field.key] = MapFormInitialState(field.fields ?? [], inputFormData[field.key] ?? {})
+        if(!['array', 'object'].includes(field.type)) state[field.key] = inputFormData[field.key] ?? field.type === 'array' ? [] : field.type === 'object' ? {} : field.type === 'boolean' ? false : null
+        else state[field.key] = MapFormInitialState(field.fields ?? [], inputFormData[field.key] ?? {})
     })
     return state
 }
 
 export const MapFormRules = (fields: any[]) => {
+    console.log({ fields })
     let rules: any = {}    
     fields.forEach((field: any) => {
         if(!['array', 'object'].includes(field.type)) rules[field.key] = field.validators ? { ...field.validators } : { required }
-        if(field.type === 'object') rules[field.key] = MapFormRules(field.fields ?? [])
+        else if(field.type === 'object') rules[field.key] = MapFormRules(field.fields ?? [])
+        else if(field.type === 'array') rules[field.key] = { $each: { ...MapFormRules(field.fields ?? []), $trackBy: '_id' } }
     })
+    console.log({ rules })
+
     return rules   
+
 }
 
 export const MapStepsAsFields = (steps: any[]) => steps.map((step, _stepIndex) =>  step.fields.map((field: any) => ({ ...field, _stepIndex}))).flat()
