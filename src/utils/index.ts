@@ -1,5 +1,5 @@
 export { MapArrayToObject, MapFormInitialState, MapFormRules, MapStepsAsFields, MapDependenciesAsObject, ResolveFromString } from "./formUtils"
-
+export { GenerateUUID } from "./uuid"
 
 export const fetchGet = async (url: string, method = 'GET', options = {}) => {
     try {

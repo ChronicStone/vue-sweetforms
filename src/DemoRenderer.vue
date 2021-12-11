@@ -12,8 +12,11 @@
 import { NCard, NButton, useThemeVars } from "naive-ui"
 import { FormProvider, useSweetform, SweetformTypes } from './index';
 import * as AllDemos from "@/demos/"
-const { createForm , formInstances }: any = useSweetform()
-const OpenForm = (formContent: any) => createForm(formContent)
+const { createForm, formInstances }: any = useSweetform()
+const OpenForm = async (formContent: any) => {
+  const data = await createForm(formContent)
+  console.log({ data })
+}
 const themeVars: any = useThemeVars()
 </script>
 

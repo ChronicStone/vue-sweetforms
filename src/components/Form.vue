@@ -25,7 +25,7 @@
         <!-- Form buttons -->
         <template #footer>
             <div class="h-1/12 flex w-full justify-center items-center gap-4 pt-6">
-                <NButton @click="CancelForm" type="error">CANCEL</NButton>
+                <NButton @click="CloseForm" type="error">CANCEL</NButton>
                 <NButton @click="SubmitForm" type="primary">SUBMIT</NButton>
             </div>
         </template>
@@ -35,8 +35,8 @@
 <script setup lang="ts">
 import FormInput from "./FormInput.vue";
 import { NCard, NButton } from "naive-ui"
-import { onClickOutside } from "@vueuse/core"
-import { ref } from "vue"
+import { onClickOutside, useBreakpoints, breakpointsTailwind } from "@vueuse/core"
+import { ref, computed, reactive } from "vue"
 import { useForm } from "../hooks"
 
 const emit = defineEmits(['closeForm', 'submitForm', 'cancelForm'])
@@ -52,7 +52,7 @@ const props = defineProps({
 })
 
 const formRef = ref(null)
-const { isMultiStep, currentStepIndex, formState, formContent, SubmitForm, $v } = useForm(props.formOptions, props.formData, emit)
+const { isMultiStep, currentStepIndex, formState, formRules, formContent, SubmitForm, CloseForm, $v } = useForm(props.formOptions, props.formData, emit)
 
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
@@ -102,7 +102,7 @@ const formStyle = reactive({
 })
 
 onClickOutside(formRef, ({ target }: any) => {
-    if(target?.id === 'sweetforms__overlay') emit('closeForm')
+    if(target?.id === 'sweetforms__overlay') CloseForm()
 })
 
 </script>

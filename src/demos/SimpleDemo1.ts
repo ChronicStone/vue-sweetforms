@@ -130,8 +130,6 @@ export default [
     label: "Dependency with select source async",
     value: {
       title: "Demonstration",
-      onSubmit: (formData) => console.log(formData),
-      onCancel: () => alert('CANCELLED'),
       gridSize: 6,
       steps: [
         {
@@ -156,6 +154,33 @@ export default [
                 },
               ]
             }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    label: "Array fields demo",
+    gridSize: 12,
+    value: {
+      title: "Array field demo",
+      fields: [
+        {
+          key: "arrayField",
+          label: "Array field",
+          type: "array",
+          size: 12,
+          gridSize: 6,
+          headerTemplate: (item: any, index: number) => `<div class="font-bold">${index} - ${item.arrayField2}</div>`,
+          fields: [
+            { key: "arrayField1", type: "number", label: "Array field 1", size: 3 },
+            { key: "arrayField2", type: "text", label: "Array field 2", size: 3 },
+            { key: "arrayField3", type: "slider", label: "Array field 3", size: 6 },
+            { key: "testObj2", type: "object", label: "Test object 2", size: 6, gridSize: 6, fields: [
+                { label: "Test object 2.1", key: "testObj2Child", type: "text", size: 3  },
+                { label: "Test object 2.1", key: "testObj2Child2", type: "text", size: 3  }
+              ]
+            },
           ]
         }
       ]
