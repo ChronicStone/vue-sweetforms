@@ -1,10 +1,9 @@
 <template>
     <n-card 
         ref="formRef" 
-        class="transition-all opacity-100 fixed w-9/10 md:w-3/4 lg:w-1/2 h-max-[85vh] rounded-lg h-auto z-max" 
-        style="height: fit-content;max-height:85vh;width:80vw !important;"
+        class="transition-all opacity-100 fixed w-9/10 md:w-3/4 lg:w-1/2 rounded-lg h-auto z-max" 
         id="sweetforms__form"
-        content-style="height:fit-content;padding: 10px;"
+        :content-style="{ height: 'fit-content', maxHeight: formStyle.maxHeight, width: '100%', maxWidth: formStyle.maxWidth, padding: '10px' }"
     >
     <!--         content-style="overflow-y: auto;"
  -->
@@ -56,7 +55,51 @@ const formRef = ref(null)
 const { isMultiStep, currentStepIndex, formState, formContent, SubmitForm, $v } = useForm(props.formOptions, props.formData, emit)
 
 
-const CancelForm = () => emit('closeForm')
+const breakpoints = useBreakpoints(breakpointsTailwind)
+
+const defaultFormStyles = {
+    maxHeight: {
+        sm: '100vh',
+        md: '90vh',
+        lg: '90vh',
+        xl: '90vh'
+    },
+    maxWidth: {
+        sm: '95vw',
+        md: '85vw',
+        lg: '75vw',
+        xl: '65vw'
+    }
+}
+
+interface breakpointsObject {
+    sm?: string
+    md?: string
+    lg?: string
+    xl?: string
+}
+
+const computeViewportSize = (params: breakpointsObject, defaultParams: breakpointsObject) => {
+    if(breakpoints.xl.value) return params['xl'] ?? defaultParams['xl']
+    else if(breakpoints.lg.value) return params['lg'] ?? defaultParams['lg']
+    else if(breakpoints.md.value) return params['md'] ?? defaultParams['md']
+    else return params['sm'] ?? defaultParams['sm']
+}
+
+const formStyle = reactive({
+    maxHeight: computed(() => {
+        if(!props?.formOptions?.maxHeight) return computeViewportSize({}, defaultFormStyles.maxHeight, breakpoints)
+        else if (typeof props.formOptions.maxHeight === 'string') return props.formOptions.maxHeight
+        else if (typeof props.formOptions.maxHeight === 'number') return `${props.formOptions.maxHeight}vh`
+        else if (typeof props.formOptions.maxHeight === 'object') return computeViewportSize(props.formOptions.maxHeight, defaultFormStyles.maxHeight, breakpoints)
+    }),
+    maxWidth: computed(() => {
+        if(!props?.formOptions?.maxWidth) return computeViewportSize({}, defaultFormStyles.maxWidth)
+        else if (typeof props.formOptions.maxWidth === 'string') return props.formOptions.maxWidth
+        else if (typeof props.formOptions.maxWidth === 'number') return `${props.formOptions.maxWidth}vh`
+        else if (typeof props.formOptions.maxWidth === 'object') return computeViewportSize(props.formOptions.maxWidth, defaultFormStyles.maxWidth)
+    })
+})
 
 onClickOutside(formRef, ({ target }: any) => {
     if(target?.id === 'sweetforms__overlay') emit('closeForm')
