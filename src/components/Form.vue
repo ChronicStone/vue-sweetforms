@@ -1,22 +1,22 @@
 <template>
     <n-card 
         ref="formRef" 
-        class="transition-all opacity-100 fixed w-9/10 md:w-3/4 lg:w-1/2 h-max-[85vh] rounded-lg h-auto z-max" 
-        style="height: fit-content;max-height:85vh;width:80vw !important;"
+        class="transition-all opacity-100 fixed w-9/10 md:w-3/4 lg:w-1/2 rounded-lg h-auto z-max" 
         id="sweetforms__form"
-        content-style="height:fit-content;padding: 10px;"
+        :content-style="{ height: 'fit-content', maxHeight: formStyle.maxHeight, width: '100%', maxWidth: formStyle.maxWidth, padding: '10px' }"
     >
     <!--         content-style="overflow-y: auto;"
  -->
     <!-- FORM TITLE -->
         <template #header>
             <div class="text-center uppercase text-xl">{{ formOptions.title }}</div>
+            {{ formStyle }}
         </template>
         <!-- Form body -->
-        <div class="h-10/12 max-h-55vh grid gap-4 px-6 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-rounded-full text-left" :style="`height:fit-content !important;grid-template-columns: repeat(${formOptions.gridSize ?? '2'},minmax(0,1fr));`">
+        <div class="h-10/12 max-h-55vh grid gap-4 px-6 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-rounded-full text-left" :class="formStyle.gridSize" :style="`height:fit-content !important;`">
             <FormInput 
                 v-for="(field, fieldIndex) of formContent.filter((field: any) => field._enable && (isMultiStep ? currentStepIndex === field._stepIndex : true))" :key="fieldIndex"
-                :gridSize="formOptions.gridSize"
+                :gridSize="formStyle.gridSize"
                 :field="field"
                 :validator="$v[field.key]"
                 v-model="formState[field.key]"
@@ -26,7 +26,7 @@
         <!-- Form buttons -->
         <template #footer>
             <div class="h-1/12 flex w-full justify-center items-center gap-4 pt-6">
-                <NButton @click="CancelForm" type="error">CANCEL</NButton>
+                <NButton @click="CloseForm" type="error">CANCEL</NButton>
                 <NButton @click="SubmitForm" type="primary">SUBMIT</NButton>
             </div>
         </template>
@@ -36,9 +36,10 @@
 <script setup lang="ts">
 import FormInput from "./FormInput.vue";
 import { NCard, NButton } from "naive-ui"
-import { onClickOutside } from "@vueuse/core"
-import { ref } from "vue"
+import { onClickOutside, useBreakpoints, breakpointsTailwind } from "@vueuse/core"
+import { ref, computed, reactive, provide } from "vue"
 import { useForm } from "../hooks"
+import { ComputePropSize } from "@/utils"
 
 const emit = defineEmits(['closeForm', 'submitForm', 'cancelForm'])
 const props = defineProps({
@@ -53,13 +54,12 @@ const props = defineProps({
 })
 
 const formRef = ref(null)
-const { isMultiStep, currentStepIndex, formState, formContent, SubmitForm, $v } = useForm(props.formOptions, props.formData, emit)
+const { isMultiStep, currentStepIndex, formState, formRules, formContent, SubmitForm, CloseForm, formStyle, $v } = useForm(props.formOptions, props.formData, emit)
 
-
-const CancelForm = () => emit('closeForm')
+provide('__sweetformsFormStyles', formStyle)
 
 onClickOutside(formRef, ({ target }: any) => {
-    if(target?.id === 'sweetforms__overlay') emit('closeForm')
+    if(target?.id === 'sweetforms__overlay') CloseForm()
 })
 
 </script>

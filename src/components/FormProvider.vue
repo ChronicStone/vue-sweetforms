@@ -16,6 +16,7 @@
   import { NConfigProvider, darkTheme } from "naive-ui"
   import { LightThemeOverrides, DarkThemeOverrides } from "@/config"
   import { FormInstance } from "@/types/form.types"
+  import { GenerateUUID } from "@/utils/"
   import Form from "./Form.vue"
   const props = defineProps({
     darkMode: {
@@ -26,16 +27,25 @@
 
   const formInstances = ref<FormInstance[]>([])
 
-  provide('sweetform', {
-    createForm: (formInstance: FormInstance) => formInstances.value.push(formInstance),
-    formInstances: computed(() => formInstances.value)
-  })
-
   const CloseForm = (index: number) => formInstances.value.splice(index, 1)
   const SubmitForm = ({ formState, onSubmit }, key) => {
       CloseForm(key)
       onSubmit(Object.assign({}, formState))
   }
+
+  provide('sweetform', {
+    createForm: (formInstance: FormInstance) => {
+      const _id = GenerateUUID()
+      return new Promise(resolve => {
+        const _resolver = ({ isCompleted, formData }: { isCompleted: boolean, formData: any}) => {
+          CloseForm(formInstances.value.findIndex(({ _id }) => _id === _id))
+          resolve({ isCompleted, formData })
+        }
+        formInstances.value.push({ _id, ...formInstance, _resolve: _resolver })
+      })
+    },
+    formInstances: computed(() => formInstances.value)
+  })
 </script>
 
 <style>

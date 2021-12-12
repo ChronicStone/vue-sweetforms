@@ -4,19 +4,19 @@ export default [
     label: "VERY BASIC NO-STEPS DEMO",
     value: {
       title: "Simple demonstration sweetforms",
-      gridSize:  6,
+      gridSize: "1 md:8",
+      fieldSize: "1",
       fields: [
         {
           key: "field1",
           label: "First field",
           type: "text",
-          size: 3
+          size: "1 md:4",
         }, 
         {
           key: "fieldSelect",
           label: "First field",
           type: "select",
-          size: 3,
           options: ['Cypri', 'Test', 'Null'].map(x => ({label: 'Valeur' + x, value: x}))
         }, 
         {
@@ -29,20 +29,17 @@ export default [
             await new Promise(resolve => setTimeout(resolve, 2500))
             return ['Cyprien THAO', 'Benoit THAO', 'Philippe MACY'].map(val => ({ label: val, value: val })).filter(({ value }) => !dependencies.field1 ? true : value.toLowerCase().includes(dependencies.field1.toLowerCase()))
           },
-          size: 3
           // condition: (formData: any) => !!formData.field1
         },
         {
           key: "testField1",
           label: "Test field",
           type: "number",
-          size: 2
         },
         {
           key: "testField",
           label: "Test field",
           type: "text",
-          size: 4
         },
         {
           key: "field3",
@@ -50,21 +47,18 @@ export default [
           type: "textarea",
           dependencies: ['field2'],
           condition: ({ field2 }: any) => !!field2,
-          size: 6
         },
         {
           key: "field3",
           label: "Field textarera",
           type: "textarea",
           condition: ({ field2 }: any) => !!field2,
-          size: 6
         },
         {
           key: "bottomSelect",
           label: "Bottom select",
           type: "select",
           options: Array.from({ length: 128 }, (_, i) => ({ label: `Option ${i}`, value: i })),
-          size: 6
         }
       ],
       onCancel: () => console.log('FORM CANCELLED'),
@@ -130,8 +124,6 @@ export default [
     label: "Dependency with select source async",
     value: {
       title: "Demonstration",
-      onSubmit: (formData) => console.log(formData),
-      onCancel: () => alert('CANCELLED'),
       gridSize: 6,
       steps: [
         {
@@ -156,6 +148,33 @@ export default [
                 },
               ]
             }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    label: "Array fields demo",
+    gridSize: 12,
+    value: {
+      title: "Array field demo",
+      fields: [
+        {
+          key: "arrayField",
+          label: "Array field",
+          type: "array",
+          size: 12,
+          gridSize: 6,
+          headerTemplate: (item: any, index: number) => `<div class="font-bold">${index} - ${item.arrayField2}</div>`,
+          fields: [
+            { key: "arrayField1", type: "number", label: "Array field 1", size: 3 },
+            { key: "arrayField2", type: "text", label: "Array field 2", size: 3 },
+            { key: "arrayField3", type: "slider", label: "Array field 3", size: 6 },
+            { key: "testObj2", type: "object", label: "Test object 2", size: 6, gridSize: 6, fields: [
+                { label: "Test object 2.1", key: "testObj2Child", type: "text", size: 3  },
+                { label: "Test object 2.1", key: "testObj2Child2", type: "text", size: 3  }
+              ]
+            },
           ]
         }
       ]
