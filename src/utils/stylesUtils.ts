@@ -1,4 +1,4 @@
-import { gridMap } from "./twClasses"
+import { gridMap } from "../constants/twClasses"
 type TailwindBreakpoint = '' | 'sm:' | 'md:' | 'lg:' | 'xl:'
 type TailwindSizeCtrl = 'grid-cols' | 'col-span'
 type TailwindSizeList = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | '11' | '12'
