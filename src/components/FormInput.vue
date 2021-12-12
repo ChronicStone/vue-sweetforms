@@ -7,12 +7,8 @@
                     {{field.label}}<span class="text-red-500">{{field.required ? '*' : ''}}</span>
                 </span>
             </span>
-            <NTooltip v-if="field.description" :style="{ maxWidth: '300px', maxHeight: '400px', backgroundOpacity: '1', overflowX: 'auto', ...(field?.fieldParams?.descriptionStyles) }">
-                <template #trigger>
-                    <div class="h-5 w-5 cursor-pointer grid place-items-center"><i-mdi-information class="h-3.5 w-3.5"/></div>
-                </template>
-                <div v-html="field.description" />
-            </NTooltip>
+
+            <DescriptionPopup v-if="field.description" :description="field.description" :fieldLabel="field.label" />
         </div>
 
         <NInput 
@@ -20,7 +16,7 @@
             v-if="['text', 'textarea', 'password'].includes(field.type)" 
             :type="field.type" 
             v-model:value="fieldValue"
-            v-bind="field.fieldParams"
+            v-bind="MapFieldProps(field.type, field.fieldParams)"
         />
         <NSelect 
             @blur="validator.$touch" 
@@ -28,7 +24,7 @@
             v-model:value="fieldValue" 
             :placeholder="field.placeholder"
             :options="field._options ?? field.options"
-            v-bind="field.fieldParams" 
+            v-bind="MapFieldProps(field.type, field.fieldParams)" 
             :loading="field._evalOptions"
             filterable
         />
@@ -36,7 +32,7 @@
             @blur="validator.$touch" 
             v-if="field.type === 'number'" 
             v-model:value="fieldValue" 
-            v-bind="field.fieldParams"
+            v-bind="MapFieldProps(field.type, field.fieldParams)"
             :placeholder="field.placeholder"
         />
         <NDatePicker
@@ -45,7 +41,7 @@
             v-model:value="fieldValue" 
             :placeholder="field.placeholder"
             :type="field.type"
-            v-bind="field.fieldParams"
+            v-bind="MapFieldProps(field.type, field.fieldParams)"
             update-value-on-close
         />
         <NTimePicker
@@ -53,14 +49,14 @@
             v-if="field.type === 'time'"
             v-model:value="fieldValue" 
             :placeholder="field.placeholder"
-            v-bind="field.fieldParams"
+            v-bind="MapFieldProps(field.type, field.fieldParams)"
 
         />
         <NSlider 
             @blur="validator.$touch" 
             v-if="['slider'].includes(field.type)"
             v-model:value="fieldValue"
-            v-bind="field.fieldParams"
+            v-bind="MapFieldProps(field.type, field.fieldParams)"
         />
         <NRadioGroup
             @blur="validator.$touch" 
@@ -75,6 +71,7 @@
                     :style="`grid-column: span 1 / span ${ field?.fieldParams?.gridSize ?? '2'};`"
                     :key="optionId"
                     :value="value"
+                    v-bind="MapFieldProps(field.type, field.fieldParams)"
                 >
                     {{ label }}
                 </NRadio>
@@ -149,11 +146,12 @@
 <script setup lang="ts">
     import { computed, ref, inject } from "vue"
     import { NCard, NCollapseTransition, NInput, NSelect, NInputNumber, NAlert, NDatePicker, NTimePicker, NSlider, NRadioGroup, NRadio, NTooltip, NDynamicInput, useThemeVars } from "naive-ui"
+    import DescriptionPopup from "./DescriptionPopup.vue"
     import CollapseButton from "./CollapseButton.vue"
-    import { MapFormInitialState } from "../utils"
+    import { MapFormInitialState, MapFieldProps } from "../utils"
     const props = defineProps({
         gridSize: { 
-            type: Number, 
+            type: String, 
             default: 2 
         },
         field: {
@@ -180,11 +178,6 @@
         set(value: any) { emit('update:modelValue', value) }
     })
     const InitArrayFieldItem = () => ({ _id: fieldValue?.value?.length ?? 0, _collapsed: false, ...MapFormInitialState(props.field.fields) })
-
-    const formStyle = inject('SweetformsFormStyles')
-
-
-
 </script>
 
 <style>
