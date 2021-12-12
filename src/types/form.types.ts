@@ -2,7 +2,7 @@ import { FieldOption } from "./fieldOption.types"
 import { Ref, ComputedRef } from "vue"
 
 export type UnknownObject = { [key: string]: any };
-export type FieldTypes = 'text' | 'textarea' | 'password' | 'number' | 'slider' | 'switch' | 'select' | 'radio' | 'checkbox' | 'checkboxGroup' | 'date' | 'time' | 'datetime' | 'datetimerange' | 'daterange' | 'month' | 'year' | 'file' | 'array' | 'object',
+export type FieldTypes = 'text' | 'textarea' | 'password' | 'number' | 'slider' | 'switch' | 'select' | 'radio' | 'checkbox' | 'checkboxGroup' | 'date' | 'time' | 'datetime' | 'datetimerange' | 'daterange' | 'month' | 'year' | 'file' | 'array' | 'object'
 
 export interface SelectOption {
     label: string

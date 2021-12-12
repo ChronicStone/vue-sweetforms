@@ -8,11 +8,12 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     const inputFields = formOptions.fields ?? MapStepsAsFields(formOptions.steps)
 
     const __breakpoints = useBreakpoints(breakpointsTailwind)
-    const sm = __breakpoints.smaller('sm')
-    const md = __breakpoints.between('sm', 'md')
-    const lg = __breakpoints.between('md', 'lg')
-    const xl = __breakpoints.greater('lg')
-    const breakpoints = reactive({ sm, md, lg, xl })
+    const breakpoints = reactive({ 
+        sm: __breakpoints.smaller('sm'),
+        md: __breakpoints.between('sm', 'md'), 
+        lg: __breakpoints.between('md', 'lg'), 
+        xl: __breakpoints.greater('lg')
+    })
     const formStyle = reactive({
         _breakpoints: breakpoints,
         maxHeight: computed(() => ComputePropSize(formOptions?.maxHeight ?? {}, 'maxHeight', breakpoints)),
@@ -97,7 +98,9 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         isMultiStep,
         formState, 
         formRules, 
-        formContent, 
+        formSteps,
+        formContent,
+        PreviousStep: () => currentStepIndex.value > 0 && (formSteps[currentStepIndex.value]._status = 'Pending', currentStepIndex.value--), 
         SubmitForm,
         CloseForm,
         breakpoints,

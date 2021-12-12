@@ -1,6 +1,6 @@
 import { FieldOption, FieldTypes } from "../types"
 
-export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any) => {
+export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any = {}) => {
     switch(fieldType) {
         case 'text':
         case 'textarea':
@@ -13,6 +13,7 @@ export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any) => {
                 ...(fieldProps.maxLength && { maxLength: fieldProps.maxLength }),
                 ...(fieldProps.prefix && { prefix: fieldProps.prefix }),
                 ...(fieldProps.suffix && { suffix: fieldProps.suffix }),
+                ...(fieldType === 'password' && { 'show-password-on': 'click' }),
             }
         case 'select':
             return {
@@ -26,7 +27,7 @@ export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any) => {
             }
         case 'number':
             return {
-                'show-button': fieldProps.showIncrementButtons ?? false,
+                'show-button': fieldProps.showIncrementButtons ?? true,
                 ...(fieldProps.min && { min: fieldProps.min }),
                 ...(fieldProps.max && { max: fieldProps.max }),
                 ...(fieldProps.step && { step: fieldProps.step }),

@@ -20,7 +20,7 @@
             v-if="['text', 'textarea', 'password'].includes(field.type)" 
             :type="field.type" 
             v-model:value="fieldValue"
-            v-bind="field.fieldParams"
+            v-bind="MapFieldProps(field.type, field.fieldParams)"
         />
         <NSelect 
             @blur="validator.$touch" 
@@ -28,7 +28,7 @@
             v-model:value="fieldValue" 
             :placeholder="field.placeholder"
             :options="field._options ?? field.options"
-            v-bind="field.fieldParams" 
+            v-bind="MapFieldProps(field.type, field.fieldParams)" 
             :loading="field._evalOptions"
             filterable
         />
@@ -36,7 +36,7 @@
             @blur="validator.$touch" 
             v-if="field.type === 'number'" 
             v-model:value="fieldValue" 
-            v-bind="field.fieldParams"
+            v-bind="MapFieldProps(field.type, field.fieldParams)"
             :placeholder="field.placeholder"
         />
         <NDatePicker
@@ -45,7 +45,7 @@
             v-model:value="fieldValue" 
             :placeholder="field.placeholder"
             :type="field.type"
-            v-bind="field.fieldParams"
+            v-bind="MapFieldProps(field.type, field.fieldParams)"
             update-value-on-close
         />
         <NTimePicker
@@ -53,14 +53,14 @@
             v-if="field.type === 'time'"
             v-model:value="fieldValue" 
             :placeholder="field.placeholder"
-            v-bind="field.fieldParams"
+            v-bind="MapFieldProps(field.type, field.fieldParams)"
 
         />
         <NSlider 
             @blur="validator.$touch" 
             v-if="['slider'].includes(field.type)"
             v-model:value="fieldValue"
-            v-bind="field.fieldParams"
+            v-bind="MapFieldProps(field.type, field.fieldParams)"
         />
         <NRadioGroup
             @blur="validator.$touch" 
@@ -75,6 +75,7 @@
                     :style="`grid-column: span 1 / span ${ field?.fieldParams?.gridSize ?? '2'};`"
                     :key="optionId"
                     :value="value"
+                    v-bind="MapFieldProps(field.type, field.fieldParams)"
                 >
                     {{ label }}
                 </NRadio>
@@ -150,7 +151,7 @@
     import { computed, ref, inject } from "vue"
     import { NCard, NCollapseTransition, NInput, NSelect, NInputNumber, NAlert, NDatePicker, NTimePicker, NSlider, NRadioGroup, NRadio, NTooltip, NDynamicInput, useThemeVars } from "naive-ui"
     import CollapseButton from "./CollapseButton.vue"
-    import { MapFormInitialState } from "../utils"
+    import { MapFormInitialState, MapFieldProps } from "../utils"
     const props = defineProps({
         gridSize: { 
             type: Number, 

@@ -4,14 +4,24 @@ export default [
     label: "VERY BASIC NO-STEPS DEMO",
     value: {
       title: "Simple demonstration sweetforms",
-      gridSize: "1 md:8",
-      fieldSize: "1",
+      allowClickOutside: false,
+      gridSize: "1 md:8 lg:12",
+      fieldSize: "1 md:4",
       fields: [
         {
           key: "field1",
           label: "First field",
           type: "text",
-          size: "1 md:4",
+        }, 
+        {
+          key: "field1",
+          label: "First field",
+          type: "text",
+        }, 
+        {
+          key: "field1",
+          label: "First field",
+          type: "password",
         }, 
         {
           key: "fieldSelect",
@@ -124,7 +134,8 @@ export default [
     label: "Dependency with select source async",
     value: {
       title: "Demonstration",
-      gridSize: 6,
+      gridSize: "1 md:4 lg:9",
+      fieldSize: "1 md:2 lg:3",
       steps: [
         {
           title: "Step 1",
@@ -148,6 +159,30 @@ export default [
                 },
               ]
             }
+          ]
+        },
+        {
+          title: "Step 3",
+          fields: [
+            { key: "testStep3", type: "text", label: "Dog name", placeholder: "John", size: 6 },
+          ]
+        },
+        {
+          title: "Step 3",
+          fields: [
+            { key: "testStep3", type: "text", label: "Dog name", placeholder: "John", size: 6 },
+          ]
+        },
+        {
+          title: "Step 3",
+          fields: [
+            { key: "testStep3", type: "text", label: "Dog name", placeholder: "John", size: 6 },
+          ]
+        },
+        {
+          title: "Step 3",
+          fields: [
+            { key: "testStep3", type: "text", label: "Dog name", placeholder: "John", size: 6 },
           ]
         }
       ]

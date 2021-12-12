@@ -65,7 +65,6 @@ export interface DatePickerOption extends BaseOption {
     dateDisabled?: (current: number) => boolean;
     timeDisabled?: (current: number) => { isHourDisabled?: () => boolean, isMinuteDisabled?: () => boolean, isSecondDisabled?: () => boolean };
     separator?: string;
-
 }
 
 export interface CheckboxOption {
