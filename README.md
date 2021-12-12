@@ -21,7 +21,7 @@
 ## Key Features
 
 - Grid-based templating
-  - Highly layout customisation, based on css grid
+  - Highly customizable layout, based on css grid
   - Responsiveness control through breakpoints (Tailwindcss-like API)
 - A lot of field types supported
   - List of supported field types : 'text' | 'textarea' | 'password' | 'number' | 'slider' | 'switch' | 'select' | 'radio' | 'checkbox' | 'checkboxGroup' | 'date' | 'time' | 'datetime' | 'datetimerange' | 'daterange' | 'month' | 'year' | 'file' | 'array' | 'object'
