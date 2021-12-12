@@ -80,7 +80,7 @@ import "vue-sweetforms/dist/style.css"
   
   
   const OpenForm = async () => {
-    const { isCompleted, formData } = createForm({
+    const { isCompleted, formData } = await createForm({
       title: "Demonstration",
       onSubmit: (formData) => alert(JSON.stringify(formData)),
       onCancel: () => alert('CANCELLED'),
