@@ -1,12 +1,26 @@
-import { MapFormInitialState, MapFormRules, MapStepsAsFields, MapDependenciesAsObject, ResolveFromString } from "@/utils"
+import { MapFormInitialState, MapFormRules, MapStepsAsFields, MapDependenciesAsObject, ResolveFromString, ComputePropSize, ComputeTwGridBreakpoint } from "@/utils"
 import { ref, reactive, computed, watch } from "vue"
-import { asyncComputed } from "@vueuse/core"
+import { asyncComputed, useBreakpoints, breakpointsTailwind } from "@vueuse/core"
 import useVuelidate from '@vuelidate/core'
 
 
 export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     const inputFields = formOptions.fields ?? MapStepsAsFields(formOptions.steps)
-    
+
+    const __breakpoints = useBreakpoints(breakpointsTailwind)
+    const sm = __breakpoints.smaller('sm')
+    const md = __breakpoints.between('sm', 'md')
+    const lg = __breakpoints.between('md', 'lg')
+    const xl = __breakpoints.greater('lg')
+    const breakpoints = reactive({ sm, md, lg, xl })
+    const formStyle = reactive({
+        _breakpoints: breakpoints,
+        maxHeight: computed(() => ComputePropSize(formOptions?.maxHeight ?? {}, 'maxHeight', breakpoints)),
+        maxWidth: computed(() => ComputePropSize(formOptions?.maxWidth ?? {}, 'maxWidth', breakpoints)),
+        gridSize: computed(() => ComputeTwGridBreakpoint(formOptions?.gridSize, 'grid')),
+        fieldSize: computed(() => ComputeTwGridBreakpoint(formOptions?.fieldSize, 'col'))
+    })
+
     const formSteps = reactive(!formOptions.steps ? [] : formOptions.steps.map(({ fields, ...step }: any, stepIndex: number) => ({ ...step, _status: stepIndex === 0 ? "InProgress" : "Pending", _index: stepIndex })))
     const currentStepIndex = ref(0)
     const isMultiStep = computed(() => formSteps.length > 1)
@@ -17,7 +31,9 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             ...field,
             _dependencies: computed(() => MapDependenciesAsObject(field.dependencies ? field.dependencies.map((key: string) => ({ key, value: ResolveFromString(key, formState) })) :  [])),
             _evalOptions: ref(false),
-            _evalEnable: ref(false)
+            _evalEnable: ref(false),
+            size: computed(() => ComputeTwGridBreakpoint(field.size ?? formOptions.fieldSize, 'col')),
+            ...(['array', 'object'.includes(field.type)] && { gridSize: computed(() => ComputeTwGridBreakpoint(field?.gridSize ?? formOptions.gridSize, 'grid')) })
         }))
         // ASYNC COMPUTED SETUP
         .map((field: any) => ({
@@ -84,6 +100,8 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         formContent, 
         SubmitForm,
         CloseForm,
+        breakpoints,
+        formStyle,
         $v,
         ...(formOptions.steps && { 
             currentStepIndex, 

@@ -4,19 +4,19 @@ export default [
     label: "VERY BASIC NO-STEPS DEMO",
     value: {
       title: "Simple demonstration sweetforms",
-      gridSize:  6,
+      gridSize: "1 md:8",
+      fieldSize: "1",
       fields: [
         {
           key: "field1",
           label: "First field",
           type: "text",
-          size: 3
+          size: "1 md:4",
         }, 
         {
           key: "fieldSelect",
           label: "First field",
           type: "select",
-          size: 3,
           options: ['Cypri', 'Test', 'Null'].map(x => ({label: 'Valeur' + x, value: x}))
         }, 
         {
@@ -29,20 +29,17 @@ export default [
             await new Promise(resolve => setTimeout(resolve, 2500))
             return ['Cyprien THAO', 'Benoit THAO', 'Philippe MACY'].map(val => ({ label: val, value: val })).filter(({ value }) => !dependencies.field1 ? true : value.toLowerCase().includes(dependencies.field1.toLowerCase()))
           },
-          size: 3
           // condition: (formData: any) => !!formData.field1
         },
         {
           key: "testField1",
           label: "Test field",
           type: "number",
-          size: 2
         },
         {
           key: "testField",
           label: "Test field",
           type: "text",
-          size: 4
         },
         {
           key: "field3",
@@ -50,21 +47,18 @@ export default [
           type: "textarea",
           dependencies: ['field2'],
           condition: ({ field2 }: any) => !!field2,
-          size: 6
         },
         {
           key: "field3",
           label: "Field textarera",
           type: "textarea",
           condition: ({ field2 }: any) => !!field2,
-          size: 6
         },
         {
           key: "bottomSelect",
           label: "Bottom select",
           type: "select",
           options: Array.from({ length: 128 }, (_, i) => ({ label: `Option ${i}`, value: i })),
-          size: 6
         }
       ],
       onCancel: () => console.log('FORM CANCELLED'),

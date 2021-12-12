@@ -1,4 +1,5 @@
 export { MapArrayToObject, MapFormInitialState, MapFormRules, MapStepsAsFields, MapDependenciesAsObject, ResolveFromString } from "./formUtils"
+export { ComputePropSize, TransformHexToHexOpacity, ComputeTwGridBreakpoint } from "./stylesUtils"
 export { GenerateUUID } from "./uuid"
 
 export const fetchGet = async (url: string, method = 'GET', options = {}) => {
@@ -16,11 +17,3 @@ export const GenerateLoremIpsumText = (length: number) => {
     return loremIpsum.slice(0, length)
 }
 
-export const TransformHexToHexOpacity = (hex: string, opacity: number) => {
-    hex = hex.replace('#', '');
-    let r = parseInt(hex.substring(0, 2), 16);
-    let g = parseInt(hex.substring(2, 4), 16);
-    let b = parseInt(hex.substring(4, 6), 16);
-    
-    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-}
