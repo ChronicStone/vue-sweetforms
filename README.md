@@ -20,10 +20,11 @@
 
 ## Key Features
 
-- Grid-based templating - Create your layouts
-  - High depth of forms layout customisation, based on css grid
+- Grid-based templating
+  - Highly layout customisation, based on css grid
+  - Responsiveness control through breakpoints (Tailwindcss-like API)
 - A lot of field types supported
-  - List of supported field types : text, textarea, password, number, email, select, radio, checkbox, date, time, datetime, datetimerange, daterange, month, year, file, array, object
+  - List of supported field types : 'text' | 'textarea' | 'password' | 'number' | 'slider' | 'switch' | 'select' | 'radio' | 'checkbox' | 'checkboxGroup' | 'date' | 'time' | 'datetime' | 'datetimerange' | 'daterange' | 'month' | 'year' | 'file' | 'array' | 'object'
   - Support deeply nested form objects
   - Supports custom vue components as fields [COMING SOON]
 - Advanced cross-fields dependency
@@ -33,8 +34,8 @@
 - Advanced validation based on [Vuelidate](https://vuelidate-next.netlify.app/)
 - Dark/Light mode
 - Highly customizable design
-- Supports multiple steps forms [IN PROGRESS (90%)]
-- 100% Responsive [IN PROGRESS]
+- Supports multiple steps forms
+- And many more !
 
 ## How To Use
 
@@ -78,7 +79,8 @@ import "vue-sweetforms/dist/style.css"
   const { createForm } = useSweetform()
   
   
-  const OpenForm = () => createForm({
+  const OpenForm = async () => {
+    const { isCompleted, formData } = createForm({
       title: "Demonstration",
       onSubmit: (formData) => alert(JSON.stringify(formData)),
       onCancel: () => alert('CANCELLED'),
@@ -91,6 +93,7 @@ import "vue-sweetforms/dist/style.css"
         { key: "dogSubBreed", type: "select", label: "Dog sub-breed", placeholder: "Select a sub-breed", dependencies: ['dogBreed'], options: GetSubbreedByBreed, size: 3 }     
       ]
     })
+  }
 </script>
 
 <template>
