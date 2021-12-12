@@ -55,7 +55,6 @@ export const ComputeSizeFromBreakpoint = (params: BreakpointsObject, defaultPara
 }
 
 export const ComputePropSize = (property: any, propKey: StylesProps, breakpoints: any) => {
-    console.log({ property, propKey, val: ComputeSizeFromBreakpoint({}, defaultFormStyles[propKey], breakpoints) })
     if(!property) return ComputeSizeFromBreakpoint({}, defaultFormStyles[propKey], breakpoints)
     else if (typeof property === 'string') return property
     else if (typeof property === 'number') return ['maxWidth', 'maxHeight'].includes(propKey) ? `${property}vh` : property

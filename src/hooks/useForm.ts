@@ -75,7 +75,6 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     const SubmitForm = async () => {
         const _emitForm = () => formOptions._resolve({ isCompleted: true, formData: {...formState}})
         const isValid = await $v.value.$validate()
-        console.log({ isValid })
         if(!isValid) {
             if(!isMultiStep.value) return
             else formSteps[currentStepIndex.value]._status = "Invalid"
@@ -111,8 +110,4 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             formSteps 
         }) 
     }
-}
-
-export const useSteppedForm = (formOptions) => {
-
 }

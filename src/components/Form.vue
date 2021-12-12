@@ -61,7 +61,6 @@ const props = defineProps({
 const formRef = ref(null)
 const { isMultiStep, currentStepIndex, formState, formSteps, formContent, SubmitForm, CloseForm, formStyle, PreviousStep, $v } = useForm(props.formOptions, props.formData, emit)
 
-provide('__sweetformsFormStyles', formStyle)
 
 onClickOutside(formRef, ({ target }: any) => {
     if(target?.id === 'sweetforms__overlay' && (props?.formOptions?.allowClickOutside ?? true)) CloseForm()
