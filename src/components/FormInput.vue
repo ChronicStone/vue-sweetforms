@@ -85,7 +85,7 @@
             <NCard>
                 <div class="grid gap-4" :style="`grid-template-columns: repeat(${field.gridSize ?? '2'},minmax(0,1fr));`">
                     <FormInput 
-                        v-for="(childField, childFieldKey) in field.fields ?? []"
+                        v-for="(childField, childFieldKey) in field.fields.filter((field: any) => field._enable) ?? []"
                         :key="childFieldKey"
                         :gridSize="field.gridSize"
                         :field="childField"
@@ -115,7 +115,7 @@
                             <NCard style="width: 100%;">
                                 <div class="grid gap-4" :style="`grid-template-columns: repeat(${field.gridSize ?? '2'},minmax(0,1fr));`">
                                     <FormInput 
-                                        v-for="(childField, childFieldKey) in field.fields ?? []"
+                                        v-for="(childField, childFieldKey) in field.fields.filter((field: any) => field._enable) ?? []"
                                         :key="childFieldKey"
                                         :gridSize="field.gridSize"
                                         :field="childField"
