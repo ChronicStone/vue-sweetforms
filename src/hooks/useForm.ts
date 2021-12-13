@@ -1,4 +1,4 @@
-import { MapFormInitialState, MapFormRules, MapStepsAsFields, MapDependenciesAsObject, ResolveFromString, ComputePropSize, ComputeTwGridBreakpoint } from "@/utils"
+import { MapFormInitialState, MapOutputState, MapFormRules, MapStepsAsFields, MapDependenciesAsObject, ResolveFromString, ComputePropSize, ComputeTwGridBreakpoint } from "@/utils"
 import { ref, reactive, computed, watch } from "vue"
 import { asyncComputed, useBreakpoints, breakpointsTailwind } from "@vueuse/core"
 import useVuelidate from '@vuelidate/core'
@@ -71,9 +71,9 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
 
     const $v = useVuelidate(formRules, formState);
 
-    const CloseForm = () => formOptions._resolve({ isCompleted: false, formData: {...formState}})
+    const CloseForm = () => formOptions._resolve({ isCompleted: false, formData: MapOutputState(formState, formContent) })
     const SubmitForm = async () => {
-        const _emitForm = () => formOptions._resolve({ isCompleted: true, formData: {...formState}})
+        const _emitForm = () => formOptions._resolve({ isCompleted: true, formData: MapOutputState(formState, formContent)})
         const isValid = await $v.value.$validate()
         if(!isValid) {
             if(!isMultiStep.value) return

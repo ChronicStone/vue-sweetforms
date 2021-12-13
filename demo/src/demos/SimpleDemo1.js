@@ -286,6 +286,19 @@ export default [
           label: "Text",
           dependencies: ['object.objectField'],
           condition: ({ 'object.objectField': objectField }) => objectField === 'dog'
+        },
+        {
+          type: "array",
+          key: "arrayOfObj",
+          label: "Array of obj",
+          fields: [
+            {
+              key: "objField",
+              label: "test",
+              type: "select",
+              options: () => [{ label: 'dog', value: 'dog' }, { label: 'cat', value: 'cat' }],
+            }
+          ]
         }
       ]
     }

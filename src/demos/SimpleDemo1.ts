@@ -255,22 +255,82 @@ export default [
         {
           label: "Dependencies works also with objects",
           type: "object",
-          key: "object",
+          key: "objectDemo",
           fields: [
             {
-              key: "objectField",
-              label: "Set me to 'dog'",
+              label: "Test repro err",
+              type: "select",
+              options: [{ label: 'dog', value: 'dog' }, { label: 'cat', value: 'cat' }],
+              key: "testReproErr",
+              condition: ({ dogBreed }) => dogBreed === 'african',
+              dependencies: ['dogBreed'],
+            },
+            {
+              key: "objectFieldd",
+              label: "Set me to a value",
               type: "select",
               options: () => [{ label: 'dog', value: 'dog' }, { label: 'cat', value: 'cat' }],
             }
           ]
         },
         {
-          type: "text",
-          key: "text",
-          label: "Text",
-          dependencies: ['object.objectField'],
-          condition: ({ 'object.objectField': objectField }) => objectField === 'dog'
+          label: "Test object",
+          key: "objectTest",
+          type: "object",
+          fields: [
+            { label: "Field 1", key: "field1", type: "text" },
+            { label: "Field 2", key: "field2", type: "text" },
+            {
+              type: "array",
+              key: "arrayOfObj",
+              label: "Array of obj",
+              fields: [
+                {
+                  dependencies: ['objectDemo.testReproErr'],
+                  key: "objField",
+                  label: "Set me to 'dog'",
+                  type: "select",
+                  options: () => [{ label: 'dog', value: 'dog' }, { label: 'cat', value: 'cat' }],
+                  condition: (dependencies: any) => {
+                    console.log({ dependencies })
+                    return dependencies['objectDemo.testReproErr'] === 'dog'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+        // {
+        //   type: "text",
+        //   key: "text",
+        //   label: "Text",
+        //   // dependencies: ['object.objectField'],
+        //   condition: ({ 'object.objectField': objectField }) => objectField === 'dog'
+        // }
+      ]
+    }
+  },
+  {
+    label: "Simple array",
+    value: {
+      title: "Simple array",
+      gridSize: 8,
+      fieldSize: 8,
+      fields: [
+        {
+          type: "array",
+          key: "array",
+          label: "Array",
+          required: true,
+          minLength: 4,
+          fields: [
+            {
+              type: "text",
+              key: "innerField",
+              label: "Inner field",
+              required: true
+            }
+          ]
         }
       ]
     }
