@@ -95,3 +95,12 @@ export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any = {}) => {
             return {}
     }
 }
+
+export const ParseErrMsg = ($v: any, field: any) => {
+    if(field.type != 'array') return $v.$errors.filter((err: any) => err.$validator != '$each')[0]?.$message
+    else {
+        console.log({ errType: $v.$errors[0]?.$validator})
+        if($v.$errors[0]?.$validator === '$each') return `The field ${field.label} has items with invalid properties`
+        else return $v.$errors[0]?.$message
+    }
+}

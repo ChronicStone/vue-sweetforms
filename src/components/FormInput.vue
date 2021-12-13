@@ -133,7 +133,7 @@
         <NAlert type="error" :show-icon="false" v-if="validator?.$errors?.length" class="w-full">
             <div class="flex items-center gap-2">
                 <i-mdi-information class="text-red-500"/>
-                <span class="text-red-500">{{ validator.$errors.filter((err: any) => err.$validator != '$each')[0]?.$message }}</span>
+                <span class="text-red-500">{{ ParseErrMsg(validator, field) }}</span>
             </div>
         </NAlert>
     </div>
@@ -150,7 +150,7 @@
     import { NCard, NCollapseTransition, NInput, NSelect, NInputNumber, NAlert, NDatePicker, NTimePicker, NSlider, NRadioGroup, NRadio, NTooltip, NDynamicInput, useThemeVars } from "naive-ui"
     import DescriptionPopup from "./DescriptionPopup.vue"
     import CollapseButton from "./CollapseButton.vue"
-    import { MapFormInitialState, MapFieldProps } from "../utils"
+    import { MapFormInitialState, MapFieldProps, ParseErrMsg } from "../utils"
     const props = defineProps({
         gridSize: { 
             type: String, 

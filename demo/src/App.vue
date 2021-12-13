@@ -1,8 +1,9 @@
 <template>
   <div class="h-full dark:bg-[#101014] min-h-screen">
-    <NConfigProvider :theme-overrides="isDark ? DarkThemeOverrides : LightThemeOverrides"  :theme="isDark ? darkTheme : null">
-      <NNotificationProvider>
-        <FormProvider :darkMode="isDark">
+    <FormProvider :darkMode="isDark">
+      <NConfigProvider :hljs="hljs" :theme-overrides="isDark ? DarkThemeOverrides : LightThemeOverrides"  :theme="isDark ? darkTheme : null">
+        <NNotificationProvider>
+
           <div class="bg-gray-200 dark:(bg-[#18181C] text-white) flex items-center justify-between w-full h-16 p-4">
             <div class="text-lg font-medium">
               SweetForms Sandbox
@@ -25,10 +26,9 @@
           <div class="p-6">
             <DemoRenderer />
           </div>
-          
-        </FormProvider>
-      </NNotificationProvider>
-    </NConfigProvider>
+        </NNotificationProvider>
+      </NConfigProvider>
+    </FormProvider>
   </div>
 </template>
 
@@ -36,9 +36,13 @@
 import { useTheme } from "./useTheme"
 import { NConfigProvider, NNotificationProvider, darkTheme, NSwitch } from "naive-ui"
 import { FormProvider } from '@chronicstone/vue-sweetforms';
-import DemoRenderer from "./DemoRenderer.vue"
+import DemoRenderer from "./components/DemoRenderer.vue"
 import { DarkThemeOverrides, LightThemeOverrides } from "./config"
 const { isDark, toggle, themeName } = useTheme()
+import hljs from 'highlight.js/lib/core'
+import javascript from 'highlight.js/lib/languages/javascript'
+
+hljs.registerLanguage('javascript', javascript)
 
 const OpenGit = () => window.open('https://github.com/ChronicStone/VueSweetforms', '_blank')
 </script>
