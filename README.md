@@ -41,7 +41,7 @@
 
 #### 1. Install the package
 ```bash
-NPM PACKAGE COMING SOON
+npm i -s @chronicstone/vue-sweetforms
 ```
 
 #### 2. Import styles in main.js
