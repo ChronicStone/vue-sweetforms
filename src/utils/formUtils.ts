@@ -45,3 +45,19 @@ export const ResolveFromString = (path: string, obj: any, separator = '.') => {
 }
 
 export const FilterFieldActiveRules = (fields: InternalFormField[], activeStep: number) => fields.filter(field => field._stepIndex === activeStep)
+
+export const MapOutputState = (inputState: any, fields: any = [], parentKey = "") => {
+    let state: any = {}
+    try {
+        fields.forEach((field: any) => {
+            if(!field?._enable) return
+            if(!['array', 'object'].includes(field.type)) state[field.key] = inputState[field.key] ?? null
+            else if(field.type === 'array') state[field.key] = (inputState[field.key] ?? []).map((item: any) => MapOutputState(item, field.fields ?? [], field.key))
+            else state[field.key] = MapOutputState(inputState[field.key] ?? {}, field.fields ?? [], field.key)
+        })
+        return JSON.parse(JSON.stringify(state))
+    } catch(err) {
+        console.error(err)
+        return JSON.parse(JSON.stringify(state))
+    }
+}
