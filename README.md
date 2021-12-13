@@ -29,7 +29,7 @@
   - Supports custom vue components as fields [COMING SOON]
 - Advanced cross-fields dependency
   - Cross-field field disabling / hiding (supports async)
-  - Cross-field validation (supports async) (In progress)
+  - Cross-field validation (supports async validation, & validation of deeply nested data structures)
   - Cross-field computed option list for list-like inputs (Select, radio group, ...) (supports async)
 - Advanced validation based on [Vuelidate](https://vuelidate-next.netlify.app/)
 - Dark/Light mode

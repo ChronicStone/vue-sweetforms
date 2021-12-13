@@ -7,6 +7,7 @@
     "explore": "gridsome explore"
   },
   "dependencies": {
+    "@chronicstone/vue-sweetforms": "^0.1.4",
     "@gridsome/vue-remark": "^0.2.6",
     "gridsome": "^0.7.0"
   },

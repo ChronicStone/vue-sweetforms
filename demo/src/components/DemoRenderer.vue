@@ -13,24 +13,11 @@
         <NDivider />
         <h4>How to use ?</h4>
 
-        <span>
-          <h5>1. Install the package :</h5>
-           <highlightjs language="js" :code="usageInstructions.one" class="overflow-x-auto rounded overflow-y-hidden" />
-        </span>
-
-        <span>
-          <h5>2. Import the styles :</h5>
-           <highlightjs language="js" :code="usageInstructions.two" class="overflow-x-auto rounded overflow-y-hidden" />
-        </span>
-
-        <span>
-          <h5>3. Wrap your app with the FormProvider component :</h5>
-           <highlightjs language="js" :code="usageInstructions.three" class="overflow-x-auto rounded overflow-y-hidden" />
-        </span>
-
-        <span>
-          <h5>4. Use the form API anywhere in your app :</h5>
-           <highlightjs language="js" :code="usageInstructions.four" class="overflow-x-auto rounded overflow-y-hidden" />
+        <span v-for="({ label, value }, index) in usageInstructions" :key="index">
+          <h5>{{label}}</h5>
+          <NCard class="p-0 m-0">
+            <NCode language="javascript" :code="value" />
+          </NCard>
         </span>
       </div>
     </NCard>
@@ -45,7 +32,10 @@
             </n-switch>
           </div>         
           <NCollapseTransition :show="expanded">
-            <highlightjs language="js" :code="'const form = ' + JSONstringifyWithFuncs(value)" class="overflow-x-auto rounded overflow-y-hidden" />
+            <NCard>
+              <NCode language="javascript" :code="BundleCodeExample(value)" />
+            </NCard>
+            <!-- <highlightjs language="javascript" :code="'const form = ' + JSONstringifyWithFuncs(value)" class="overflow-x-auto rounded overflow-y-hidden" /> -->
           </NCollapseTransition>
         </div>
         <div v-else class="w-full justify-center uppercase">EXAMPLES COMING SOON ...</div>
@@ -57,10 +47,10 @@
 
 <script setup lang="ts">
 import { reactive } from "vue"
-import { NCard, NButton, useThemeVars, NDivider, NCollapseTransition, NSwitch, useNotification } from "naive-ui"
-import { FormProvider, useSweetform, SweetformTypes } from '@chronicstone/vue-sweetforms';
-import * as AllDemos from "./demos/"
-import { usageInstructions } from "./usageInstructions.js"
+import { NCard, NButton, useThemeVars, NDivider, NCollapseTransition, NSwitch, useNotification, NCode } from "naive-ui"
+import { useSweetform } from '@chronicstone/vue-sweetforms';
+import * as AllDemos from "../demos/"
+import { usageInstructions, BundleCodeExample } from "../demos/usageInstructions.js"
 const demonstrations = reactive(Object.values(AllDemos).map((DemoGroup: any) => DemoGroup.map((demo: any) => ({ ...demo, expanded: false}))))
 
 
@@ -72,33 +62,6 @@ const OpenForm = async (formContent: any) => {
     title: isCompleted ? 'Form completed' : 'Form incomplete',
     content: JSON.stringify(formData, null, 4)
   })
-}
-
-
-function JSONstringifyWithFuncs(obj) {
-  Object.prototype.toJSON = function() {
-    var sobj = {}, i;
-    for (i in this) 
-      if (this.hasOwnProperty(i))
-        sobj[i] = typeof this[i] == 'function' ?
-          unescape(this[i].toString()) : this[i];
-
-    return sobj;
-  };
-  Array.prototype.toJSON = function() {
-      var sarr = [], i;
-      for (i = 0 ; i < this.length; i++) 
-          sarr.push(typeof this[i] == 'function' ? unescape(this[i].toString()) : this[i]);
-
-      return sarr;
-  };
-
-  var str = JSON.stringify(obj, null, 4);
-
-  delete Object.prototype.toJSON;
-  delete Array.prototype.toJSON;
-
-  return str;
 }
 const themeVars: any = useThemeVars()
 

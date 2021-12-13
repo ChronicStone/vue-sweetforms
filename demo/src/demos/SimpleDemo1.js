@@ -1,3 +1,5 @@
+import { helpers, sameAs, email} from "@vuelidate/validators"
+
 export const fetchGet = async (url, method = 'GET', options = {}) => {
   try {
       const response = await fetch(url, { ...options, method }).then(response => response.json())
@@ -125,6 +127,7 @@ export default [
           label: "Array",
           type: "array",
           size: "8",
+          required: true,
           fields: [
             {
               key: "string",
@@ -166,7 +169,7 @@ export default [
               key: "text",
               label: "Text",
               type: "textarea",
-              required: true
+              required: true,
             }
           ]
         },
@@ -304,6 +307,39 @@ export default [
     }
   },
   {
-    label: 'Validation, cross-field dependency & async'
+    vuelidate: ['helpers', 'sameAs'],
+    label: "Simple cross-field validation (Password & Password Confirm)",
+    description: "This example shows how to validate a field based on another field. 'password' is set as a depencency of 'passwordConfirm'. Then, the field passwordConfirm have a 'validators' function that returns an object of Vuelidate validators. The parameter of this 'validators' function is the object containing the dependencies of the field",
+    value: {
+      title: "Password & password confirmation",
+      gridSize: 8,
+      fieldSize: "8 md:4",
+      fields: [
+        // {
+        //   key: "email",
+        //   label: "Email address",
+        //   type: "password",
+        //   required: true,
+        //   validators: { email },
+        //   size: 8
+        // },
+        {
+          key: "password",
+          label: "Password",
+          type: "password",
+          required: true
+        },
+        {
+          key: "passwordConfirmation",
+          label: "Password confirmation",
+          type: "password",
+          dependencies: ['password'],
+          required: true,
+          validators: (dependencies) => ({
+            sameAsPassword: helpers.withMessage('The password and the confirmation does not match', sameAs(dependencies.password)) 
+          })
+        }
+      ]
+    }
   }
 ]
