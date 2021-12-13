@@ -4,7 +4,7 @@
             <span class="m-0 capitalize flex gap-2 justify-start items-center">
                 <CollapseButton v-model="collapsed" v-if="['object', 'array'].includes(field.type)"/>
                 <span>
-                    {{field.label}}<span class="text-red-500">{{field.required ? '*' : ''}}</span>
+                    {{field.label}}<span class="text-red-500 ml-1.5">{{field.required ? '*' : ''}}</span>
                 </span>
             </span>
 
@@ -17,6 +17,7 @@
             :type="field.type" 
             v-model:value="fieldValue"
             v-bind="MapFieldProps(field.type, field.fieldParams)"
+            :placeholder="field.placeholder"
         />
         <NSelect 
             @blur="validator.$touch" 
@@ -52,23 +53,24 @@
             v-bind="MapFieldProps(field.type, field.fieldParams)"
 
         />
-        <NSlider 
-            @blur="validator.$touch" 
-            v-if="['slider'].includes(field.type)"
-            v-model:value="fieldValue"
-            v-bind="MapFieldProps(field.type, field.fieldParams)"
-        />
+        <div class="flex flex-col gap-1 justify-center items-center h-full" v-if="['slider'].includes(field.type)">
+            <NSlider 
+                @blur="validator.$touch" 
+                v-model:value="fieldValue"
+                v-bind="MapFieldProps(field.type, field.fieldParams)"
+            />
+        </div>
         <NRadioGroup
             @blur="validator.$touch" 
             v-if="field.type === 'radio'" 
             v-model:value="fieldValue"
             :name="field.key"
         >
-            <div class="gap-4 flex flex-wrap justify-between">
+            <div class="gap-4 flex flex-wrap justify-start justify-between">
                 <NRadio 
                     @blur="validator.$touch" 
                     v-for="({ label, value}, optionId) in field._options ?? field.options" 
-                    :style="`grid-column: span 1 / span ${ field?.fieldParams?.gridSize ?? '2'};`"
+                    :style="optionId === (field?._options?.length ?? field?.options?.length) - 1 ? 'margin-right: auto;' : ''"
                     :key="optionId"
                     :value="value"
                     v-bind="MapFieldProps(field.type, field.fieldParams)"

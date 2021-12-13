@@ -1,14 +1,13 @@
 <template>
-  <NConfigProvider :theme="darkMode && darkTheme" :theme-overrides="darkMode ? DarkThemeOverrides : LightThemeOverrides">
+  <NConfigProvider :hljs="hljs" :theme="darkMode && darkTheme" :theme-overrides="darkMode ? DarkThemeOverrides : LightThemeOverrides">
     <slot />
-    <div id="sweetforms__overlay" style="z-index: 20000;" v-if="formInstances.length" class="fixed left-0 top-0 bg-black bg-opacity-50 grid place-items-center w-full h-screen">
+    <div id="sweetforms__overlay" style="z-index: 1000;" v-if="formInstances.length" class="fixed left-0 top-0 bg-black bg-opacity-50 grid place-items-center w-full h-screen">
       <transition-group
         name="card"
       >
         <Form v-for="(formInstance, key) in formInstances"  @closeForm="CloseForm(key)" @submitForm="SubmitForm($event, key)" :formOptions="formInstance" :key="key" />
       </transition-group>
-      <div v-show="showModalOverlay" ref="modalOverlay" @click="showModalOverlay = false" id="sweetforms__modalContainer" class="absolute top-0 left-0 h-screen w-full">
-      </div>
+      <div v-show="showModalOverlay" ref="modalOverlay" @click="showModalOverlay = false" id="sweetforms__modalContainer" class="absolute top-0 left-0 h-screen w-full" />
     </div>
   </NConfigProvider>
 </template>
@@ -21,12 +20,7 @@
   import { FormInstance } from "@/types/form.types"
   import { GenerateUUID } from "@/utils/"
   import Form from "./Form.vue"
-  const props = defineProps({
-    darkMode: {
-      type: Boolean,
-      default: false
-    },
-  })
+  const props = defineProps(['darkMode', 'hljs'])
 
   const formInstances = ref<FormInstance[]>([])
 

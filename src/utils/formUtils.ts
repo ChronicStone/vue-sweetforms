@@ -23,13 +23,12 @@ export const MapFormInitialState = (fields: any[], inputFormData: any = {}) => {
 export const MapFormRules = (fields: any[]) => {
     let rules: any = {}    
     fields.forEach((field: any) => {
-        if(!['array', 'object'].includes(field.type)) rules[field.key] = field.validators ? { ...field.validators } : { required }
+        if(!['array', 'object'].includes(field.type)) rules[field.key] = field.validators ? { ...field.validators } : { ...(field.required && { required }) }
         else if(field.type === 'object') rules[field.key] = MapFormRules(field.fields ?? [])
         else if(field.type === 'array') rules[field.key] = { $each: { ...MapFormRules(field.fields ?? []), $trackBy: '_id' } }
     })
 
     return rules   
-
 }
 
 export const MapStepsAsFields = (steps: any[]) => steps.map((step, _stepIndex) =>  step.fields.map((field: any) => ({ ...field, _stepIndex}))).flat()
