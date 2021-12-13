@@ -119,7 +119,7 @@
                                         :key="childFieldKey"
                                         :gridSize="field.gridSize"
                                         :field="childField"
-                                        :validator="validator[childField.key]"
+                                        :validator="{$errors: validator.$errors.find((err: any) => err.$validator === '$each')?.$response?.$errors[index][childField.key] ?? null }"
                                         v-model="value[childField.key]"
                                         :indent="indent + 1"            
                                     />
@@ -133,7 +133,7 @@
         <NAlert type="error" :show-icon="false" v-if="validator?.$errors?.length" class="w-full">
             <div class="flex items-center gap-2">
                 <i-mdi-information class="text-red-500"/>
-                <span class="text-red-500">{{ validator.$errors[0].$message }}</span>
+                <span class="text-red-500">{{ validator.$errors.filter((err: any) => err.$validator != '$each')[0]?.$message }}</span>
             </div>
         </NAlert>
     </div>

@@ -1,5 +1,5 @@
 import { FormField } from "@/types/form.types";
-import { required, helpers } from "@vuelidate/validators"
+import { required, helpers, minLength } from "@vuelidate/validators"
 
 interface InternalFormField extends FormField {
     _stepIndex?: number
@@ -11,11 +11,12 @@ export const MapArrayToObject = (array: any[]) => {
     return obj
 }
 
-export const MapFormInitialState = (fields: any[], inputFormData: any = {}) => {
-    let state: any = {}
+export const MapFormInitialState = (fields: any[], inputFormData: any = {}, parentKey = "") => {
+    const state: any = {}
     fields.forEach((field: any) => {
-        if(!['array', 'object'].includes(field.type)) state[field.key] = inputFormData[field.key] ?? field.type === 'array' ? [] : field.type === 'object' ? {} : field.type === 'boolean' ? false : null
-        else state[field.key] = MapFormInitialState(field.fields ?? [], inputFormData[field.key] ?? {})
+        if(!['array', 'object'].includes(field.type)) state[field.key] = inputFormData[field.key] ?? null
+        else if(field.type === 'array') state[field.key] = inputFormData[field.key] ?? []
+        else state[field.key] = MapFormInitialState(field.fields ?? [], inputFormData[field.key] ?? {}, field.key)
     })
     return state
 }
@@ -25,7 +26,7 @@ export const MapFormRules = (fields: any[]) => {
     fields.forEach((field: any) => {
         if(!['array', 'object'].includes(field.type)) rules[field.key] = field.validators ? { ...field.validators } : { ...(field.required && { required }) }
         else if(field.type === 'object') rules[field.key] = MapFormRules(field.fields ?? [])
-        else if(field.type === 'array') rules[field.key] = { $each: { ...MapFormRules(field.fields ?? []), $trackBy: '_id' } }
+        else if(field.type === 'array') rules[field.key] = { $each: helpers.forEach({ ...MapFormRules(field.fields ?? []), $trackBy: '_id' }), ...(field.minLength && { minLength: minLength(field.minLength) } ) }
     })
 
     return rules   
