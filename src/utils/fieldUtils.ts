@@ -7,8 +7,8 @@ export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any = {}) => {
         case 'password':
             return {
                 'show-count': fieldProps.showCharacterCount ?? false,
-                rows: fieldProps.rows ?? 3,
-                autosize: fieldProps.autosize ?? true,
+                rows: fieldProps?.rows ?? 3,
+                autosize: fieldProps?.autosize ?? false,
                 ...(fieldProps.minLength && { minLength: fieldProps.minLength }),
                 ...(fieldProps.maxLength && { maxLength: fieldProps.maxLength }),
                 ...(fieldProps.prefix && { prefix: fieldProps.prefix }),
@@ -36,14 +36,13 @@ export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any = {}) => {
             }
         case 'slider':
             return {
-                'show-button': fieldProps.showIncrementButtons ?? false,
                 min: fieldProps.min ?? 0,
                 max: fieldProps.max ?? 100,
                 step: fieldProps.step ?? 1,
                 range: fieldProps.range ?? false,
                 reverse: fieldProps.reverse ?? false,
-                tooltip: fieldProps.showTooltip ?? false,
-                ...(fieldProps.formatTooltip && { 'format-tooltip': fieldProps.formatTooltip }),
+                tooltip: fieldProps.showTooltip ?? true,
+                'format-tooltip': fieldProps.formatTooltip ?? function(value: number) { return value },
                 ...(fieldProps.marks && { marks: fieldProps.marks }),
             }
         case 'switch':

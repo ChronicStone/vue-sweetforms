@@ -31,8 +31,8 @@ const defaultFormStyles: DefaultFormStyles = {
     maxWidth: {
         sm: '95vw',
         md: '85vw',
-        lg: '75vw',
-        xl: '65vw'
+        lg: '80vw',
+        xl: '80vw'
     },
     grid: '1 md:2 lg:4 xl:8',
     col: '1 md:1 lg:2 xl:4'

@@ -1,5 +1,17 @@
-import { fetchGet, GenerateLoremIpsumText } from "@/utils"
+export const fetchGet = async (url, method = 'GET', options = {}) => {
+  try {
+      const response = await fetch(url, { ...options, method }).then(response => response.json())
+      return response
+  } catch(err) {
+      console.error(err)
+      throw err
+  }
+}
 
+export const GenerateLoremIpsumText = (length) => {
+  const loremIpsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+  return loremIpsum.slice(0, length)
+}
 
 export default [
   {
@@ -17,12 +29,6 @@ export default [
           placeholder: "Your placeholder"
         },
         {
-          key: "textarea",
-          label: "Textarea",
-          type: "textarea",
-          required: true
-        },
-        {
           key: "number",
           label: "Number",
           type: "number",
@@ -34,19 +40,27 @@ export default [
           type: "password",
         },
         {
-          key: "slider",
-          label: "Slider",
-          type: "slider",
-          required: true,
-          fieldParams: {
-            min: 175, max: 252, step: 1
-          }
-        },
-        {
           type: "select",
           key: "select",
           label: "Select",
           options: () => Array.from({ length: 49}, (_, i) => ({ label: `Option ${i + 1}`, value: i + 1 })),
+        },
+        {
+          key: "textarea",
+          label: "Textarea",
+          type: "textarea",
+          required: true,
+          size: "8"
+        },
+        {
+          key: "slider",
+          label: "Slider",
+          type: "slider",
+          required: true,
+          size: "8",
+          fieldParams: {
+            min: 175, max: 252, step: 1
+          }
         },
         {
           type: "radio",
@@ -209,7 +223,7 @@ export default [
         {
           key: "descr2",
           label: "Description with title",
-          type: "textarea",
+          type: "text",
           required: true,
           description: {
             title: "Description title",
@@ -217,10 +231,11 @@ export default [
           }
         },
         {
-          key: "descr2",
+          key: "descr3",
           label: "Description with html",
           type: "textarea",
           required: true,
+          size: 8,
           description: {
             title: "Description title",
             content: "This is a <b style='color: red;'>description</b> with a HTML content rendered"
@@ -230,7 +245,7 @@ export default [
     }
   },
   {
-    label: "Field dependencies",
+    label: "Field dependencies + async options fetch",
     value: {
       title: "Field dependencies + async options fetch",
       gridSize: "8",
@@ -274,5 +289,8 @@ export default [
         }
       ]
     }
+  },
+  {
+    label: 'Validation, cross-field dependency & async'
   }
 ]

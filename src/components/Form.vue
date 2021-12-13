@@ -1,11 +1,11 @@
 <template>
     <n-card 
+        :style="{ maxWidth: formStyle.maxWidth, width: '100%' }"
         ref="formRef" 
         class="transition-all opacity-100 fixed w-9/10 md:w-3/4 lg:w-1/2 rounded-lg h-auto" 
         id="sweetforms__form"
-        :content-style="{ height: 'fit-content', maxHeight: formStyle.maxHeight, width: '100%', maxWidth: formStyle.maxWidth, padding: '10px' }"
+        :content-style="{ height: 'fit-content', maxHeight: formStyle.maxHeight, width: '100%', padding: '10px' }"
     >
-
         <!-- FORM TITLE -->
         <template #header>
             <FormStepper class="mt-2" v-if="isMultiStep" :steps="formSteps" :current-step="currentStepIndex" />
