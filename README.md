@@ -37,6 +37,13 @@
 - Supports multiple steps forms
 - And many more !
 
+
+## Documentation and live examples
+
+DOCUMENTATION : https://sweetforms-demo.netlify.app/
+LIVE EXAMPLES : https://sweetforms.netlify.app/
+
+
 ## How To Use
 
 #### 1. Install the package
@@ -100,11 +107,6 @@ import "vue-sweetforms/dist/style.css"
   <button @click="OpenForm">OPEN FORM</button>
 </template>
 ```
-
-## Documentation and live examples
-
-COMING SOON
-
 ## Improvements roadmap
 
 COMING SOON
