@@ -40,8 +40,8 @@
 
 ## Documentation and live examples
 
-DOCUMENTATION : https://sweetforms-demo.netlify.app/
-LIVE EXAMPLES : https://sweetforms.netlify.app/
+- DOCUMENTATION : https://sweetforms-demo.netlify.app/
+- LIVE EXAMPLES : https://sweetforms.netlify.app/
 
 
 ## How To Use
