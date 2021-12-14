@@ -1,4 +1,4 @@
-import { gridMap } from "./twClasses"
+import { gridMap } from "../constants/twClasses"
 type TailwindBreakpoint = '' | 'sm:' | 'md:' | 'lg:' | 'xl:'
 type TailwindSizeCtrl = 'grid-cols' | 'col-span'
 type TailwindSizeList = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | '11' | '12'
@@ -31,8 +31,8 @@ const defaultFormStyles: DefaultFormStyles = {
     maxWidth: {
         sm: '95vw',
         md: '85vw',
-        lg: '75vw',
-        xl: '65vw'
+        lg: '80vw',
+        xl: '80vw'
     },
     grid: '1 md:2 lg:4 xl:8',
     col: '1 md:1 lg:2 xl:4'
@@ -55,7 +55,6 @@ export const ComputeSizeFromBreakpoint = (params: BreakpointsObject, defaultPara
 }
 
 export const ComputePropSize = (property: any, propKey: StylesProps, breakpoints: any) => {
-    console.log({ property, propKey, val: ComputeSizeFromBreakpoint({}, defaultFormStyles[propKey], breakpoints) })
     if(!property) return ComputeSizeFromBreakpoint({}, defaultFormStyles[propKey], breakpoints)
     else if (typeof property === 'string') return property
     else if (typeof property === 'number') return ['maxWidth', 'maxHeight'].includes(propKey) ? `${property}vh` : property

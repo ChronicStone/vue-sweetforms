@@ -377,6 +377,5 @@ export default [
         }
       ]
     }
-          
   }
 ]

@@ -1,157 +1,191 @@
 import { fetchGet, GenerateLoremIpsumText } from "@/utils"
-<<<<<<< Updated upstream
-=======
 import { sameAs, helpers, email, minLength } from "@vuelidate/validators"
 
->>>>>>> Stashed changes
 export default [
   {
-    label: "VERY BASIC NO-STEPS DEMO",
+    label: 'Field types example',
     value: {
-      title: "Simple demonstration sweetforms",
-      gridSize: "1 md:8",
-      fieldSize: "1",
+      title: "Demo of field types",
+      gridSize: "8",
+      fieldSize: "8 md:4",
       fields: [
         {
-          key: "field1",
-          label: "First field",
+          key: "text",
+          label: "Text",
           type: "text",
-          size: "1 md:4",
-        }, 
-        {
-          key: "fieldSelect",
-          label: "First field",
-          type: "select",
-          options: ['Cypri', 'Test', 'Null'].map(x => ({label: 'Valeur' + x, value: x}))
-        }, 
-        {
-          key: "field2",
-          label: "Second field",
-          type: "select",
-          dependencies: ['field1', 'fieldSelect'],
-          options: async (dependencies) => {
-            console.log('OPTIONS RELOADED', dependencies.fieldSelect)
-            await new Promise(resolve => setTimeout(resolve, 2500))
-            return ['Cyprien THAO', 'Benoit THAO', 'Philippe MACY'].map(val => ({ label: val, value: val })).filter(({ value }) => !dependencies.field1 ? true : value.toLowerCase().includes(dependencies.field1.toLowerCase()))
-          },
-          // condition: (formData: any) => !!formData.field1
+          required: true,
+          placeholder: "Your placeholder"
         },
         {
-          key: "testField1",
-          label: "Test field",
+          key: "textarea",
+          label: "Textarea",
+          type: "textarea",
+          required: true
+        },
+        {
+          key: "number",
+          label: "Number",
           type: "number",
+          required: true
         },
         {
-          key: "testField",
-          label: "Test field",
-          type: "text",
+          key: "password",
+          label: "Password",
+          type: "password",
         },
         {
-          key: "field3",
-          label: "Field textarera",
-          type: "textarea",
-          dependencies: ['field2'],
-          condition: ({ field2 }: any) => !!field2,
-        },
-        {
-          key: "field3",
-          label: "Field textarera",
-          type: "textarea",
-          condition: ({ field2 }: any) => !!field2,
-        },
-        {
-          key: "bottomSelect",
-          label: "Bottom select",
-          type: "select",
-          options: Array.from({ length: 128 }, (_, i) => ({ label: `Option ${i}`, value: i })),
-        }
-      ],
-      onCancel: () => console.log('FORM CANCELLED'),
-      onSubmit: (formData: any) => console.log({ formData }),
-    }
-  },
-  {
-    label: "Radio / date / time inputs",
-    value: {
-      title: "TEST WITH MORE INPUTS",
-      gridSize: 12,
-      fields: [
-        {
-          key: "dateTest",
-          label: "Date field",
-          type: "date",
-          size: 6,
-        },
-        {
-          key: "timeTest",
-          label: "Time field",
-          type: "time",
-          size: 6,
-        },
-        {
-          key: "dateTimeRange",
-          label: "DateTime range",
-          type: "datetimerange",
-          size: 12,
-        },
-        {
-          key: "dateTimeRange",
-          label: "DateTime range",
-          type: "datetimerange",
-          size: 12,
-        },
-        {
-          key: "dateTimeRange",
-          label: "DateTime range",
-          type: "datetimerange",
-          size: 12,
-        },
-        {
-          key: "dateTimeRange",
-          label: "DateTime range",
-          type: "datetimerange",
-          size: 12,
-        },
-        {
-          key: "radio",
-          label: "TEST RADIO GRP",
-          type: "radio",
-          size: 12,
-          options: ['Cyprien THAO', 'Benoit THAO', 'Philippe MACY', 'Cyprien THAO', 'Benoit THAO', 'Philippe MACY', 'Cyprien THAO', 'Benoit THAO', 'Philippe MACY'].map(val => ({ label: val, value: val })), 
+          key: "slider",
+          label: "Slider",
+          type: "slider",
+          required: true,
           fieldParams: {
-            gridSize: 6
+            min: 175, max: 252, step: 1
           }
+        },
+        {
+          type: "select",
+          key: "select",
+          label: "Select",
+          options: () => Array.from({ length: 49}, (_, i) => ({ label: `Option ${i + 1}`, value: i + 1 })),
+        },
+        {
+          type: "radio",
+          key: "radio",
+          label: "Radio",
+          options: () => Array.from({ length: 12}, (_, i) => ({ label: `Option ${i + 1}`, value: i + 1 })),
+          size: 8
+        },
+        {
+          type: "date",
+          key: "date",
+          label: "Date",
+        },
+        {
+          key: "time",
+          label: "Time",
+          type: "time",
+        },
+        {
+          key: "datetime",
+          label: "Date time",
+          type: "datetime",
+        },
+        {
+          key: "datetimeRange",
+          label: "Date time range",
+          type: "datetimerange",
+        },
+        {
+          key: "object",
+          label: "Object",
+          type: "object",
+          required: true,
+          gridSize: "8",
+          size: "8",
+          fields: [
+            {
+              key: "string",
+              label: "String",
+              type: "text",
+              size: "8 md:4",
+              required: true
+            },
+            {
+              key: "number",
+              label: "Number",
+              type: "text",
+              size: "8 md:4",
+              required: true
+            },
+            {
+              key: "slider",
+              label: "Slider",
+              type: "slider",
+              size: "8",
+              required: true
+            }
+          ]
+        },
+        {
+          key: "array",
+          label: "Array",
+          type: "array",
+          size: "8",
+          fields: [
+            {
+              key: "string",
+              label: "String",
+              type: "text",
+              size: "8 md:4",
+              required: true
+            },
+            {
+              key: "number",
+              label: "Number",
+              type: "text",
+              size: "8 md:4",
+              required: true
+            },
+            {
+              key: "slider",
+              label: "Slider",
+              type: "slider",
+              size: "8",
+              required: true
+            }
+          ]
         }
       ]
     }
+
   },
   {
-    label: "Dependency with select source async",
+    label: "Multi-steps form example",
     value: {
-      title: "Demonstration",
-      gridSize: 6,
+      gridSize: 8,
+      fieldSize: 8,
       steps: [
         {
           title: "Step 1",
           fields: [
-            { key: "firstName", type: "text", label: "First name", placeholder: "John", size: 2, description: Array.from({ length: 10 }, () => GenerateLoremIpsumText()).join(' ') },
-            { key: "lastName", type: "text", label: "Last name", placeholder: "Doe", size: 2 },
-            { key: "email", type: "text", label: "Email address", placeholder: "john.doe@gmail.com", size: 2 },
-            { key: "dogBreed", type: "select", label: "Dog breed", placeholder: "Select a breed", options: async () => await fetchGet('https://dog.ceo/api/breeds/list/all').then(response => Object.keys(response.message).map(item => ({ label: item, value: item }))).catch(_ => []), size: 3 },
-            { key: "dogSubBreed", type: "select", label: "Dog sub-breed", placeholder: "Select a sub-breed", dependencies: ['dogBreed'], options: async ({ dogBreed }) => !dogBreed ? [] : await fetchGet(`https://dog.ceo/api/breed/${dogBreed}/list`).then(response => response.message.map(item => ({ label: item, value: item }))).catch(err => []), size: 3 }     
+            {
+              key: "text",
+              label: "Text",
+              type: "textarea",
+              required: true
+            }
           ]
         },
         {
           title: "Step 2",
           fields: [
-            { key: "testStep2", type: "text", label: "Dog name", placeholder: "John", size: 6 },
-            { key: "testObj", type: "object", label: "Test object", size: 6, gridSize: 3, fields: [
-                { key: "testObj1", type: "text",  label: "Test object 1", },
-                { key: "testObj2", type: "object", label: "Test object 2", gridSize: 6, fields: [
-                    { label: "Test object 2.1", key: "testObj2Child", type: "text", size: 3  }
-                  ]
-                },
-              ]
+            {
+              key: "tedzqqdzxt",
+              label: "Text",
+              type: "textarea",
+              required: true
+            }
+          ]
+        },
+        {
+          title: "Step 3",
+          fields: [
+            {
+              key: "texdqzt",
+              label: "Text",
+              type: "textarea",
+              required: true
+            }
+          ]
+        },
+        {
+          title: "Step 4",
+          fields: [
+            {
+              key: "text2",
+              label: "Text",
+              type: "textarea",
+              required: true
             }
           ]
         }
@@ -159,30 +193,131 @@ export default [
     }
   },
   {
-    label: "Array fields demo",
-    gridSize: 12,
+    label: "Fields with description",
     value: {
-      title: "Array field demo",
+      title: "Click icon to open description",
+      gridSize: 8,
+      fieldSize: "8 md:4",
       fields: [
         {
-          key: "arrayField",
-          label: "Array field",
-          type: "array",
-<<<<<<< Updated upstream
-          size: 12,
-          gridSize: 6,
-          headerTemplate: (item: any, index: number) => `<div class="font-bold">${index} - ${item.arrayField2}</div>`,
+          key: "descr1",
+          label: "Text",
+          type: "text",
+          required: true,
+          description: "This is a simple description"
+        },
+        {
+          key: "descr2",
+          label: "Description with title",
+          type: "textarea",
+          required: true,
+          description: {
+            title: "Description title",
+            content: "This is a description with a title"
+          }
+        },
+        {
+          key: "descr2",
+          label: "Description with html",
+          type: "textarea",
+          required: true,
+          description: {
+            title: "Description title",
+            content: "This is a <b style='color: red;'>description</b> with a HTML content rendered"
+          }
+        },
+      ]
+    }
+  },
+  {
+    label: "Field dependencies",
+    value: {
+      title: "Field dependencies + async options fetch",
+      gridSize: "8",
+      fieldSize: "8",
+      fields: [
+        { 
+          key: "dogBreed", 
+          type: "select", 
+          label: "Dog breed", 
+          placeholder: "Select a breed", 
+          options: async () => await fetchGet('https://dog.ceo/api/breeds/list/all').then(response => Object.keys(response.message).map(item => ({ label: item, value: item }))).catch(_ => [])
+        },
+        { 
+          key: "dogSubBreed", 
+          type: "select", 
+          label: "Dog sub-breed", 
+          placeholder: "Select a sub-breed", 
+          description: "This field depends on dogBreed. When DogBreen changes, the async function will be re-executed to get the updated options.",
+          dependencies: ['dogBreed'], 
+          options: async ({ dogBreed }) => !dogBreed ? [] : await fetchGet(`https://dog.ceo/api/breed/${dogBreed}/list`).then(response => response.message.map(item => ({ label: item, value: item }))).catch(err => []) 
+        },
+        {
+          label: "Dependencies works also with objects",
+          type: "object",
+          key: "objectDemo",
           fields: [
-            { key: "arrayField1", type: "number", label: "Array field 1", size: 3 },
-            { key: "arrayField2", type: "text", label: "Array field 2", size: 3 },
-            { key: "arrayField3", type: "slider", label: "Array field 3", size: 6 },
-            { key: "testObj2", type: "object", label: "Test object 2", size: 6, gridSize: 6, fields: [
-                { label: "Test object 2.1", key: "testObj2Child", type: "text", size: 3  },
-                { label: "Test object 2.1", key: "testObj2Child2", type: "text", size: 3  }
-              ]
+            {
+              label: "Test repro err",
+              type: "select",
+              options: [{ label: 'dog', value: 'dog' }, { label: 'cat', value: 'cat' }],
+              key: "testReproErr",
+              condition: ({ dogBreed }) => dogBreed === 'african',
+              dependencies: ['dogBreed'],
             },
+            {
+              key: "objectFieldd",
+              label: "Set me to a value",
+              type: "select",
+              options: () => [{ label: 'dog', value: 'dog' }, { label: 'cat', value: 'cat' }],
+            }
           ]
-=======
+        },
+        {
+          label: "Test object",
+          key: "objectTest",
+          type: "object",
+          fields: [
+            { label: "Field 1", key: "field1", type: "text" },
+            { label: "Field 2", key: "field2", type: "text" },
+            {
+              type: "array",
+              key: "arrayOfObj",
+              label: "Array of obj",
+              fields: [
+                {
+                  dependencies: ['objectDemo.testReproErr'],
+                  key: "objField",
+                  label: "Set me to 'dog'",
+                  type: "select",
+                  options: () => [{ label: 'dog', value: 'dog' }, { label: 'cat', value: 'cat' }],
+                  condition: (dependencies: any) => {
+                    console.log({ dependencies })
+                    return dependencies['objectDemo.testReproErr'] === 'dog'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+        // {
+        //   type: "text",
+        //   key: "text",
+        //   label: "Text",
+        //   // dependencies: ['object.objectField'],
+        //   condition: ({ 'object.objectField': objectField }) => objectField === 'dog'
+        // }
+      ]
+    }
+  },
+  {
+    label: "Simple array",
+    value: {
+      title: "Simple array",
+      gridSize: 8,
+      fieldSize: 8,
+      fields: [
+        {
           key: "array",
           label: "Array",
           required: true,
@@ -198,12 +333,9 @@ export default [
               required: true
             }
           ],
->>>>>>> Stashed changes
         }
       ],
     }
-<<<<<<< Updated upstream
-=======
   },
   {
     label: "Simple cross-field validation (Password & Password Confirm)",
@@ -262,7 +394,40 @@ export default [
         }
       ]
     }
-          
->>>>>>> Stashed changes
+  },
+  {
+    label: "Simple cross-field validation (Password & Password Confirm)",
+    description: "This example shows how to validate a field based on another field. 'password' is set as a depencency of 'passwordConfirm'. Then, the field passwordConfirm have a 'validators' function that returns an object of Vuelidate validators. The parameter of this 'validators' function is the object containing the dependencies of the field",
+    value: {
+      title: "Password & password confirmation",
+      gridSize: 8,
+      fieldSize: "8 md:4",
+      fields: [
+        {
+          key: "email",
+          label: "Email address",
+          type: "password",
+          required: true,
+          validators: { email },
+          size: 8
+        },
+        {
+          key: "password",
+          label: "Password",
+          type: "password",
+          required: true
+        },
+        {
+          key: "passwordConfirmation",
+          label: "Password confirmation",
+          type: "password",
+          dependencies: ['password'],
+          required: true,
+          validators: (dependencies: any) => ({
+            sameAsPassword: helpers.withMessage('The password and the confirmation does not match', sameAs(dependencies.password)) 
+          })
+        }
+      ]
+    }
   }
 ]

@@ -3,5 +3,4 @@ node_modules
 dist
 dist-ssr
 *.local
-# Local Netlify folder
 .netlify

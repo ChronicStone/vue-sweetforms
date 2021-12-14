@@ -20,27 +20,35 @@
 
 ## Key Features
 
-- Grid-based templating - Create your layouts
-  - High depth of forms layout customisation, based on css grid
+- Grid-based templating
+  - Highly customizable layout, based on css grid
+  - Responsiveness control through breakpoints (Tailwindcss-like API)
 - A lot of field types supported
-  - List of supported field types : text, textarea, password, number, email, select, radio, checkbox, date, time, datetime, datetimerange, daterange, month, year, file, array, object
+  - List of supported field types : 'text' | 'textarea' | 'password' | 'number' | 'slider' | 'switch' | 'select' | 'radio' | 'checkbox' | 'checkboxGroup' | 'date' | 'time' | 'datetime' | 'datetimerange' | 'daterange' | 'month' | 'year' | 'file' | 'array' | 'object'
   - Support deeply nested form objects
   - Supports custom vue components as fields [COMING SOON]
 - Advanced cross-fields dependency
   - Cross-field field disabling / hiding (supports async)
-  - Cross-field validation (supports async) (In progress)
+  - Cross-field validation (supports async validation, & validation of deeply nested data structures)
   - Cross-field computed option list for list-like inputs (Select, radio group, ...) (supports async)
 - Advanced validation based on [Vuelidate](https://vuelidate-next.netlify.app/)
 - Dark/Light mode
 - Highly customizable design
-- Supports multiple steps forms [IN PROGRESS (90%)]
-- 100% Responsive [IN PROGRESS]
+- Supports multiple steps forms
+- And many more !
+
+
+## Documentation and live examples
+
+- DOCUMENTATION : https://sweetforms.netlify.app/
+- LIVE EXAMPLES : https://sweetforms-demo.netlify.app/
+
 
 ## How To Use
 
 #### 1. Install the package
 ```bash
-NPM PACKAGE COMING SOON
+npm i -s @chronicstone/vue-sweetforms
 ```
 
 #### 2. Import styles in main.js
@@ -78,7 +86,8 @@ import "vue-sweetforms/dist/style.css"
   const { createForm } = useSweetform()
   
   
-  const OpenForm = () => createForm({
+  const OpenForm = async () => {
+    const { isCompleted, formData } = await createForm({
       title: "Demonstration",
       onSubmit: (formData) => alert(JSON.stringify(formData)),
       onCancel: () => alert('CANCELLED'),
@@ -91,17 +100,13 @@ import "vue-sweetforms/dist/style.css"
         { key: "dogSubBreed", type: "select", label: "Dog sub-breed", placeholder: "Select a sub-breed", dependencies: ['dogBreed'], options: GetSubbreedByBreed, size: 3 }     
       ]
     })
+  }
 </script>
 
 <template>
   <button @click="OpenForm">OPEN FORM</button>
 </template>
 ```
-
-## Documentation and live examples
-
-COMING SOON
-
 ## Improvements roadmap
 
 COMING SOON

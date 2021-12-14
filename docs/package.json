@@ -10,6 +10,7 @@
     "exp": "gridsome explore"
   },
   "dependencies": {
+    "@chronicstone/vue-sweetforms": "^0.1.4",
     "@gridsome/vue-remark": "^0.2.6",
     "fuse.js": "^6.4.3",
     "gridsome": "^0.7.22",

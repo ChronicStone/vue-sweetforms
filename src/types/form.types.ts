@@ -1,4 +1,8 @@
-type GridSize = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+import { FieldOption } from "./fieldOption.types"
+import { Ref, ComputedRef } from "vue"
+
+export type UnknownObject = { [key: string]: any };
+export type FieldTypes = 'text' | 'textarea' | 'password' | 'number' | 'slider' | 'switch' | 'select' | 'radio' | 'checkbox' | 'checkboxGroup' | 'date' | 'time' | 'datetime' | 'datetimerange' | 'daterange' | 'month' | 'year' | 'file' | 'array' | 'object'
 
 export interface SelectOption {
     label: string
@@ -16,25 +20,33 @@ export interface ValidatorParams {
 export interface FormField {
     key: string,
     label: string,
-    type: 'text' | 'textarea' | 'password' | 'number' | 'email' | 'select' | 'radio' | 'checkbox' | 'date' | 'time' | 'datetime' | 'datetimerange' | 'daterange' | 'month' | 'year' | 'file' | 'array' | 'object',
+    type: FieldTypes
     placeholder?: string,
-    size?: GridSize,
+    size?: string,
     options?: SelectOption[] | any[]
     dependencies?: string[]
     condition?: () => boolean,
     conditionEffect?: 'disable' | 'hide'
     validators?: Array<(validatorParams: ValidatorParams) => boolean>
-    fieldParams?: {
-        clearable?: boolean,
-        multiple?: boolean,
-        fileType?: string[] | string
-        fileMaxSize?: number,
-    },
+    fieldParams?: FieldOption
+    gridSize?: string
     children?: FormField[]
+}
+
+export interface InternalFormField extends FormField {
+    _dependencies: UnknownObject
+    _evalOptions: Ref<boolean>
+    _evalEnable: Ref<boolean>
+    size: string | any
+    gridSize: string | any
+    _enable: boolean | ComputedRef<boolean>
+    _options?: ComputedRef<SelectOption[]>
+    _watcherOptions?: any
 }
 
 interface FormStep {
     title: string,
+    gridSize?: string
     fields: FormField[],
 }
 
