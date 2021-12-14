@@ -1,20 +1,22 @@
 <template>
   <Layout>
-      <div class="flex flex-wrap items-start justify-start">
-
-        <div class="order-2 w-full md:w-1/3 sm:pl-4 md:pl-6 lg:pl-8 sticky" style="top: 4rem">
-          <OnThisPage />
-        </div>
-
-        <div class="order-1 w-full md:w-2/3">
-          <div class="content" v-html="$page.markdownPage.content" />
-
-          <div class="mt-8 pt-8 lg:mt-12 lg:pt-12 border-t border-ui-border">
-            <NextPrevLinks />
-          </div>
-        </div>
-
+    <div class="flex flex-wrap items-start justify-start">
+      <div
+        class="sticky order-2 w-full md:w-1/3 sm:pl-4 md:pl-6 lg:pl-8"
+        style="top: 4rem; position: sticky !important;"
+      >
+        <OnThisPage id="MarkdownContent" />
       </div>
+
+      <div class="order-1 w-full md:w-2/3">
+        <!-- eslint-disable-next-line vue/no-v-html -->
+        <!-- <div class="content" v-html="$page.markdownPage.content" /> -->
+        <VueRemarkContent class="content" />
+        <div class="pt-8 mt-8 border-t lg:mt-12 lg:pt-12 border-ui-border">
+          <NextPrevLinks />
+        </div>
+      </div>
+    </div>
   </Layout>
 </template>
 
@@ -25,7 +27,6 @@ query ($id: ID!) {
     title
     description
     path
-    timeToRead
     content
     sidebar
     next
@@ -48,18 +49,25 @@ query ($id: ID!) {
 </page-query>
 
 <script>
-import OnThisPage from '@/components/OnThisPage.vue';
-import NextPrevLinks from '@/components/NextPrevLinks.vue';
+import OnThisPage from '@/components/OnThisPage.vue'
+import NextPrevLinks from '@/components/NextPrevLinks.vue'
 
 export default {
   components: {
     OnThisPage,
-    NextPrevLinks
+    NextPrevLinks,
   },
-  
+  mounted() {
+    console.log({ FormProvider })
+  },
+  setup() {
+    console.log('SCRIPT SETUP')
+  },
+
   metaInfo() {
-    const title = this.$page.markdownPage.title;
-    const description = this.$page.markdownPage.description || this.$page.markdownPage.excerpt;
+    const title = this.$page.markdownPage.title
+    const description =
+      this.$page.markdownPage.description || this.$page.markdownPage.excerpt
 
     return {
       title: title,
@@ -71,23 +79,23 @@ export default {
         {
           key: 'og:title',
           name: 'og:title',
-          content: title,
+          content: title
         },
         {
           key: 'twitter:title',
           name: 'twitter:title',
-          content: title,
+          content: title
         },
         {
           key: 'og:description',
           name: 'og:description',
-          content: description,
+          content: description
         },
         {
           key: 'twitter:description',
           name: 'twitter:description',
-          content: description,
-        },
+          content: description
+        }
       ]
     }
   }
@@ -95,5 +103,5 @@ export default {
 </script>
 
 <style>
-@import 'prism-themes/themes/prism-material-oceanic.css';
+  @import 'prism-themes/themes/prism-material-oceanic.css';
 </style>

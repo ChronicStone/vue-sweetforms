@@ -54,7 +54,11 @@ const props = defineProps({
 })
 
 const formRef = ref(null)
+<<<<<<< Updated upstream
 const { isMultiStep, currentStepIndex, formState, formRules, formContent, SubmitForm, CloseForm, formStyle, $v } = useForm(props.formOptions, props.formData, emit)
+=======
+const { isMultiStep, currentStepIndex, formState, formSteps, formContent, formRules, SubmitForm, CloseForm, formStyle, PreviousStep, $v } = useForm(props.formOptions, props.formData, emit)
+>>>>>>> Stashed changes
 
 provide('__sweetformsFormStyles', formStyle)
 

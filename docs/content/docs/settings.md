@@ -33,10 +33,8 @@ The standard navigation on the top left is defined in the `gridsome.config.js` f
 module.exports = {
   settings: {
     nav: {
-      links: [
-        { path: '/docs/', title: 'Docs' }
-      ]
-    },
+      links: [{ path: '/docs/', title: 'Docs' }]
+    }
   }
 }
 ```

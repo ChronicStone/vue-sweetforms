@@ -24,9 +24,20 @@ export const MapFormRules = (fields: any[]) => {
     console.log({ fields })
     let rules: any = {}    
     fields.forEach((field: any) => {
+<<<<<<< Updated upstream
         if(!['array', 'object'].includes(field.type)) rules[field.key] = field.validators ? { ...field.validators } : { required }
         else if(field.type === 'object') rules[field.key] = MapFormRules(field.fields ?? [])
         else if(field.type === 'array') rules[field.key] = { $each: { ...MapFormRules(field.fields ?? []), $trackBy: '_id' } }
+=======
+        rules[field.key] = { 
+            ...(typeof rules[field.key] === 'object' && { ...rules[field.key] }),
+            ...(field.type === 'object' && { ...rules[field.key], ...MapFormRules(field.fields ?? []) }),
+            ...(field.type === 'array' && { ...rules[field.key], $each: helpers.forEach({ ...MapFormRules(field.fields ?? []), $trackBy: '_id' }) }),
+            ...(typeof field?.validators === 'function' && { ...field.validators(field._dependencies, field), }),
+            ...(typeof field.validators === 'object' && { ...field.validators, }),
+            ...(field.required && { required: helpers.withMessage(`The field ${field.label} can't be empty`, required) })
+        }
+>>>>>>> Stashed changes
     })
     console.log({ rules })
 

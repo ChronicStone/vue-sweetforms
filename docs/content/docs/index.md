@@ -6,52 +6,60 @@ next: '/docs/installation/'
 
 # Introduction
 
-Docc is a starter theme for [Gridsome](https://gridsome.org/) which is a static site generator powered by Vue. It allows you to quickly start writing your technical documentation for any kind of project.
+Sweetforms is a schema-based form generator built on top of [Naive UI](https://github.com/TuSimple/naive-ui). It takes away all the inconvenience of setting up components, validation, form behaviour like cross-fields dependencies, async data sources for select, checkbox group, radio fields, while supporting a wide range of features.
 
-## Fast by default
+## Promise-based API
 
-This is the catchphrase of Gridsome and true in any sense of the word. Static site generators output plain html files and have other great features like image processing and lazy-loading. After Serving the initial html, Gridsome site turn into a snappy single page application.
+Instead of importing a component, declare it on your page / component template, setting up its state and everything, you just have to wrap your app with the Form Provider component, and then use sweetforms as a function anywhere in your app.
 
-If I may quote Gridsome themselves:
+## Wide range of fields supported
 
-> Gridsome builds ultra performance into every page automatically. You get code splitting, asset optimization, progressive images, and link prefetching out of the box. With Gridsome you get almost perfect page speed scores by default.
+Sweetforms offers you a wide range of fields, that you can combine to create complex data structures. Here's an exhaustive list of supported field types :
+- text
+- textarea
+- password
+- number
+- select
+- radio
+- checkbox
+- checkbox group
+- slider
+- date
+- time
+- date range
+- date-time range
+- month 
+- year
+- object
+- array
 
-In combination with [Netlify](https://www.netlify.com/) this theme gives you a perfect Lighthouse score out of the box.
+## Deep nesting support
 
-## Simple Navigation
+As array and objects have first-class support for object and array fields, you can create deeply nested data structures in a breeze.
 
-Any good documentation has great navigation. This theme has support for an organized sidebar fore cross-page navigation as well as an autmatic generated table of contents for each page in your documentation.
+## Multi-steps forms
 
-## Search
+Thanks to the schema-based API that Sweetforms provides, it's super easy to create multiple-steps forms !
 
-The search component which is shipped with this theme, automatically indexes all headlines in your markdown pages and provides instant client side search powered by [Fuse.js](https://fusejs.io/).
+## Cross-field dependencies
 
-## Dark Mode
+With sweetforms, it's super easy to create relations between fields, even in deeply nested data structures. Once a dependency is initiated on a field, you can use the dependency to :
+- Control whether a field should be displayed or not
+- Use it as a parameter for a data-source, in select / checkbox-group / radio, to filter the list of available options 
+- Validate a field based on its dependencies
 
-This seems to be a must have for any site in current year. Click the icon at the top of the page and try it out for yourself!
+## Async data-sources
 
-## TailwindCSS
+Use async functions as data-source for select / radio / checkbox-group fields. If the field has a dependency, the list of options for the field will be re-computed each time a dependency is updated.
 
-This starter uses [TailwindCSS](https://tailwindcss.com/) for layout and styling. You can easily configure it by editing the `tailwind.config.js` file. [PurgeCSS](https://purgecss.com/) is included as well to keep the bundle size as low as possible and the website fast and snappy!
+## Advanced form validation
 
-### Changing Colors
+Sweetforms uses [Vuelidate](https://vuelidate-next.netlify.app/) as its form validation engine. It has a first-class integration, that lets you validate any data structure, including deeply nested array of objects for example. Field dependencies are also available in the context of validation, which makes cross-field validation super easy !
 
-The most inportant colors are defined in the `src/layouts/Default.vue` file at the top of the `style` block via CSS variables. If you want to change the primary color to orange for example, you would simply touch that value there.
+## Grid-based templating & responsiveness
 
-```css
-:rrot {
-  --color-ui-primary: theme('colors.orange.600');
-}
-```
+Sweetforms use a grid-based templating system that allows you to design highly customizable forms easily. It also uses a tailwindcss-like API to let you control the size of the grid and fields with 4 different breakpoints (sm, md, lg & xl). You can even customize the breakpoint sizes to make them match your requirements.
 
-## Make it your own
+## Dark / light themes & customization
 
-Of course this is just a starter to quickly get you going. After downloading and installing you can do whatever you want with this theme. Check out the `src` folder and take a look at the components.
-
-Docc uses [TailwindCSS](https://tailwindcss.com/). Colors and spacing can easily configured. To change the accent color, you only need to touch a single line in the code.
-
-Don't like how something was designed or implemented? Just change the code and **make it your way**.
-
-### Contribute
-
-If you find any spelling mistakes or have improvements to offer, I am open to anyone who has ideas and wants to contribute to this starter theme.
+Sweetforms comes with build-in light / dark themes out of the box. But you can make it match your own design requirements by using [Naive UI](https://naive-ui.com)'s excellent theme customization system to overwrite the base themes.
