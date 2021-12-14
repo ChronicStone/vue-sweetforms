@@ -1,5 +1,5 @@
 import { fetchGet, GenerateLoremIpsumText } from "@/utils"
-import { sameAs, helpers, email } from "@vuelidate/validators"
+import { sameAs, helpers, email, minLength } from "@vuelidate/validators"
 
 export default [
   {
@@ -318,11 +318,13 @@ export default [
       fieldSize: 8,
       fields: [
         {
-          type: "array",
           key: "array",
           label: "Array",
           required: true,
-          minLength: 4,
+          validators: () => ({
+            minLength: minLength(4),
+            // sameAs: helpers.withMessage('Not the same', sameAs('MyValue'))
+          }),
           fields: [
             {
               type: "text",
@@ -330,7 +332,65 @@ export default [
               label: "Inner field",
               required: true
             }
-          ]
+          ],
+        }
+      ],
+    }
+  },
+  {
+    label: "Simple cross-field validation (Password & Password Confirm)",
+    description: "This example shows how to validate a field based on another field. 'password' is set as a depencency of 'passwordConfirm'. Then, the field passwordConfirm have a 'validators' function that returns an object of Vuelidate validators. The parameter of this 'validators' function is the object containing the dependencies of the field",
+    value: {
+      title: "Password & password confirmation",
+      gridSize: 8,
+      fieldSize: "8 md:4",
+      fields: [
+        {
+          key: "email",
+          label: "Email address",
+          type: "password",
+          required: true,
+          validators: { email },
+          size: 8
+        },
+        {
+          key: "password",
+          label: "Password",
+          type: "password",
+          required: true
+        },
+        {
+          key: "passwordConfirmation",
+          label: "Password confirmation",
+          type: "password",
+          dependencies: ['password'],
+          required: true,
+          validators: (dependencies: any) => ({
+            sameAsPassword: helpers.withMessage('The password and the confirmation does not match', sameAs(dependencies.password)) 
+          })
+        }
+      ]
+    }
+  },
+  {
+    label: "Complex nested form example",
+    value: {
+      title: "Exam configuration",
+      gridSize: 8,
+      fieldSize: "8",
+      fields: [
+        {
+          type: "array",
+          label: "Main section",
+          key: "mainModules",
+          headerTemplate: (value, index) => `${index + 1}. ${value?.key ?? 'ENTER A MODULE KEY'}`,
+          gridSize: "8",
+          fieldSize: "8 md:4",
+          fields: [
+            { type: "text", key: "key", label: "Module key", required: true, },
+            { type: "select", key: "type", label: "Module type", required: true, options: ['Composite', 'External', 'Async'].map(item => ({ label: item, value: item.toLowerCase()})) },
+            { type: "slider", key: "Score overall scale", label: "Description", required: true, fieldParams: { gap: 0.5}, size: "8 lg:9", required: true },
+          ],
         }
       ]
     }

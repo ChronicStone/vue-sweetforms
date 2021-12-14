@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-4">
-    <NCard :segmented="{content: true}" >
+    <!-- <NCard :segmented="{content: true}" >
       <template #header>
         What is sweetforms ?
       </template>
@@ -15,14 +15,16 @@
 
         <span v-for="({ label, value }, index) in usageInstructions" :key="index">
           <h5>{{label}}</h5>
-          <NCard class="p-0 m-0">
-            <NCode language="javascript" :code="value" />
+          <NCard content-style="{ overflow-x: auto; }" class="p-0 m-0">
+            <div class="overflow-x-auto w-full pb-4">
+              <NCode language="javascript" :code="value" />
+            </div>
           </NCard>
         </span>
       </div>
-    </NCard>
-    <div v-for="(DemoGroup, groupIndex) of demonstrations" :key="groupIndex" class="grid grid-cols-1 gap-4">
-      <NCard :segmented="{content: true}" hoverable :title="label" v-for="({ label, value, expanded}, demoIndex) in DemoGroup" :key="demoIndex">
+    </NCard> -->
+    <div v-for="(DemoGroup, groupIndex) of demonstrations" :key="groupIndex" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+      <NCard :segmented="{content: true}" hoverable :title="label" v-for="({ label, value, expanded, vuelidate }, demoIndex) in DemoGroup" :key="demoIndex" class="col-span-1">
         <div class="flex flex-col gap-4" v-if="value">
           <div class="flex justify-center w-full items-center gap-8">
             <NButton @click="OpenForm(value)" type="primary">OPEN FORM</NButton>
@@ -33,7 +35,9 @@
           </div>         
           <NCollapseTransition :show="expanded">
             <NCard>
-              <NCode language="javascript" :code="BundleCodeExample(value)" />
+              <div class="overflow-x-auto pb-4">
+                <NCode language="javascript" :code="BundleCodeExample(value, vuelidate)" />
+              </div>
             </NCard>
             <!-- <highlightjs language="javascript" :code="'const form = ' + JSONstringifyWithFuncs(value)" class="overflow-x-auto rounded overflow-y-hidden" /> -->
           </NCollapseTransition>

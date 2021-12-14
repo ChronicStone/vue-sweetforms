@@ -1,4 +1,16 @@
 module.exports = {
+  future: {
+    removeDeprecatedGapUtilities: true,
+    purgeLayersByDefault: true,
+    defaultLineHeights: true,
+    standardFontWeights: true
+  },
+  purge: {
+    content: ['./src/**/*.vue'],
+    options: {
+      whitelist: ['token']
+    }
+  },
   theme: {
     extend: {
       colors: {
@@ -11,10 +23,8 @@ module.exports = {
         }
       },
       spacing: {
+        half: '0.125rem',
         sm: '24rem'
-      },
-      screens: {
-        xxl: '1400px'
       }
     },
     container: {
@@ -22,6 +32,7 @@ module.exports = {
       padding: '1rem'
     }
   },
-  variants: {},
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar')
+  ]
 }

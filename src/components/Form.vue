@@ -59,7 +59,7 @@ const props = defineProps({
 })
 
 const formRef = ref(null)
-const { isMultiStep, currentStepIndex, formState, formSteps, formContent, SubmitForm, CloseForm, formStyle, PreviousStep, $v } = useForm(props.formOptions, props.formData, emit)
+const { isMultiStep, currentStepIndex, formState, formSteps, formContent, formRules, SubmitForm, CloseForm, formStyle, PreviousStep, $v } = useForm(props.formOptions, props.formData, emit)
 
 
 onClickOutside(formRef, ({ target }: any) => {

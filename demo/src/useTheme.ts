@@ -1,7 +1,7 @@
 import { ref, watch, computed } from "vue"
 import { useStorage } from "@vueuse/core"
 export const useTheme = () => {
-    const isDark = useStorage('darkTheme', false, localStorage)
+    const isDark = useStorage('darkTheme', true, localStorage)
     const themeName = computed(() => isDark ? 'dark' : 'light')
     const toggle = () => isDark.value = !isDark.value
     watch(() => isDark.value, (value) => { 

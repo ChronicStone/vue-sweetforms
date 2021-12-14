@@ -102,6 +102,7 @@
                 <NDynamicInput
                     v-model:value="fieldValue"
                     :on-create="InitArrayFieldItem"
+                    :on-remove="RemoveArrayFieldItem"
                     #="{ value, index }"
                 >
                     <div class="flex flex-col gap-4 w-full">
@@ -150,8 +151,9 @@
     import { NCard, NCollapseTransition, NInput, NSelect, NInputNumber, NAlert, NDatePicker, NTimePicker, NSlider, NRadioGroup, NRadio, NTooltip, NDynamicInput, useThemeVars } from "naive-ui"
     import DescriptionPopup from "./DescriptionPopup.vue"
     import CollapseButton from "./CollapseButton.vue"
-    import { MapFormInitialState, MapFieldProps, ParseErrMsg } from "../utils"
-    const props = defineProps({
+    import { MapFormInitialState, MapFieldProps, ParseErrMsg, GenerateUUID } from "../utils"
+
+		const props = defineProps({
         gridSize: { 
             type: String, 
             default: 2 
@@ -179,7 +181,17 @@
         get() { return props.modelValue },
         set(value: any) { emit('update:modelValue', value) }
     })
-    const InitArrayFieldItem = () => ({ _id: fieldValue?.value?.length ?? 0, _collapsed: false, ...MapFormInitialState(props.field.fields) })
+
+    const formStyle = inject('SweetformsFormStyles')
+
+
+
+    const InitArrayFieldItem = () => {
+        const _uuid = GenerateUUID()
+        props.field._setItemRef(fieldValue?.value?.length, _uuid)
+        return { _uuid, _collapsed: false, ...MapFormInitialState(props.field.fields) }
+    }
+    const RemoveArrayFieldItem = (index: number) => props.field._removeItemRef(fieldValue.value[index]._uuid)
 </script>
 
 <style>

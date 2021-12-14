@@ -2,64 +2,74 @@
 description: ''
 sidebar: 'docs'
 prev: '/docs/'
-next: '/docs/writing-content/'
+next: '/docs/writing-content/'  
 ---
 
 # Installation
 
-There are several ways to to install this theme.
-
-## Using the Gridsome CLI
-
-The easiest way to install this theme or a Gridsome theme in general is by using their CLI tool.
-
-If you don't already have it installed, simply run:
+1. Install the package :
 
 ```bash
-npm i -g @gridsome/cli
+npm i -g @chronicstone/vue-sweetforms
 ```
 
-After that run `gridsome -v` to verify that the tool is working.
 
-If everything is working as expected, run the following command:
+2. If you need validation in your forms, install [Vuelidate](https://vuelidate-next.netlify.app/) validators :
 
 ```bash
-gridsome create your-project-name https://github.com/mrcrmn/docc
+npm i -g @vuelidate/validators
 ```
 
-This command creates a folder named `your-project-name` in your current working directory, clones the repository and automatically installs the dependencies.
 
-If everything is downloaded and installed you can now run `npm run develop` which starts the development server and bundles all assets. After bootstrapping has finished, head to `http://localhost:8080` to view your freshly created site!
+3. Import the styles in your app entry point :
 
-## Installing manually
-
-To install this theme manually you need to:
-
-1. Clone the repository
-2. Install the dependencies
-
-To clone the repository simply run:
-
-```bash
-git clone https://github.com/mrcrmn/docc.git
+```javascript
+// main.js
+import 'vue-sweetforms/dist/style.css'
 ```
 
-After cloning the project, change to the project you just created.
 
-```bash
-cd docc
+4. Wrap your app with the FormProvider component :
+
+```javascript
+<script setup>
+import { FormProvider } from "@chronicstone/vue-sweetforms"
+</script>
+
+<template>
+    <FormProvider>
+        <!-- YOUR APP CONTENT -->
+        <router-view/>
+    </FormProvider>
+</template>
 ```
 
-Now you only need to install the dependencies.
+5. Use sweetforms API anywhere in your app :
 
-Using npm:
-```bash
-npm install
+```javascript
+<script setup>
+    import { useSweetform } from "vue-sweetforms"
+    import axios from "axios"
+    
+      
+    const { createForm } = useSweetform()
+    
+    
+    const OpenForm = async () => {
+      const { isCompleted, formData } = await createForm({
+        title: "Demonstration",
+        gridSize: "8",
+        fieldSize: "8 md:4"
+        fields: [
+          { key: "firstName", type: "text", label: "First name", placeholder: "John", required: true },
+          { key: "lastName", type: "text", label: "Last name", placeholder: "Doe", required: true },
+          { key: "email", type: "text", label: "Email address", placeholder: "john.doe@gmail.com", size: 8, required: true },
+        ]
+      })
+    }
+</script>
+
+<template>
+  <button @click="OpenForm">OPEN FORM</button>
+</template>
 ```
-
-Or by using yarn:
-```bash
-yarn
-```
-
-After all dependencies are installed you can now run `npm run develop` to start the development server!

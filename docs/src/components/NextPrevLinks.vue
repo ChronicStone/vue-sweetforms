@@ -1,10 +1,10 @@
 <template>
   <div>
-    <div class="flex flex-col sm:flex-row justify-between items-center">
+    <div class="flex flex-col items-center justify-between sm:flex-row">
       <g-link
         v-if="prev"
         :to="prev.path"
-        class="mb-4 sm:mb-0 flex items-center mr-auto text-ui-primary font-bold px-4 py-2 border border-ui-border rounded-lg hover:bg-ui-primary hover:text-white transition-colors"
+        class="flex items-center px-4 py-2 mb-4 mr-auto font-bold transition-colors border rounded-md sm:mb-0 text-ui-primary border-ui-border hover:bg-ui-primary hover:text-white"
       >
         <ArrowLeftIcon class="mr-2" size="1x" />
         {{ prev.title }}
@@ -13,7 +13,7 @@
       <g-link
         v-if="next"
         :to="next.path"
-        class="flex items-center ml-auto text-ui-primary font-bold px-4 py-2 border border-ui-border rounded-lg hover:bg-ui-primary hover:text-white transition-colors"
+        class="flex items-center px-4 py-2 ml-auto font-bold transition-colors border rounded-md text-ui-primary border-ui-border hover:bg-ui-primary hover:text-white"
       >
         {{ next.title }}
         <ArrowRightIcon class="ml-2" size="1x" />
@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { ArrowLeftIcon, ArrowRightIcon } from 'vue-feather-icons';
+import { ArrowLeftIcon, ArrowRightIcon } from 'vue-feather-icons'
 
 export default {
   components: {
@@ -33,25 +33,24 @@ export default {
 
   computed: {
     page() {
-      return this.$page.markdownPage;
+      return this.$page.markdownPage
     },
+
     pages() {
-      return this.$page.allMarkdownPage.edges.map(edge => edge.node);
+      return this.$page.allMarkdownPage.edges.map(edge => edge.node)
     },
+
     next() {
-      if (this.pages && ! this.page.next) {
-        return false;
-      }
-
-      return this.pages.find(page => page.path === this.page.next);
+      return this.pages && !this.page.next
+        ? false
+        : this.pages.find(page => page.path === this.page.next)
     },
-    prev() {
-      if (this.pages && ! this.page.prev) {
-        return false;
-      }
 
-      return this.pages.find(page => page.path === this.page.prev);
+    prev() {
+      return this.pages && !this.page.prev
+        ? false
+        : this.pages.find(page => page.path === this.page.prev)
     }
   }
-};
+}
 </script>

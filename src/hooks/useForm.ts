@@ -1,4 +1,5 @@
-import { MapFormInitialState, MapOutputState, MapFormRules, MapStepsAsFields, MapDependenciesAsObject, ResolveFromString, ComputePropSize, ComputeTwGridBreakpoint } from "@/utils"
+
+import { MapFormInitialState, MapOutputState, MapFormRules, MapStepsAsFields, MapDependenciesAsObject, ResolveFromString, ComputePropSize, ComputeTwGridBreakpoint, GenerateUUID } from "@/utils"
 import { ref, reactive, computed, watch } from "vue"
 import { asyncComputed, useBreakpoints, breakpointsTailwind } from "@vueuse/core"
 import useVuelidate from '@vuelidate/core'
@@ -26,15 +27,19 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     const currentStepIndex = ref(0)
     const isMultiStep = computed(() => formSteps.length > 1)
 
-    const InitializeFormFields: (fields: any[]) => any[] = (fields: any[]) => fields
+    const InitializeFormFields: (fields: any[], options?: any) => any[] = (fields: any[], options = {}) => fields
         // BASE FIELD + ASYNC-COMPUTED EVALUATORS + DEPENDENCIES SETUP
         .map((field: any) => ({
             ...field,
+            _uuid: GenerateUUID(),
             _dependencies: computed(() => MapDependenciesAsObject(field.dependencies ? field.dependencies.map((key: string) => ({ key, value: ResolveFromString(key, formState) })) :  [])),
             _evalOptions: ref(false),
             _evalEnable: ref(false),
             size: computed(() => ComputeTwGridBreakpoint(field.size ?? formOptions.fieldSize, 'col')),
-            ...(['array', 'object'.includes(field.type)] && { gridSize: computed(() => ComputeTwGridBreakpoint(field?.gridSize ?? formOptions.gridSize, 'grid')) })
+            ...(options.parentType && { _parentType: options.parentType }),
+            ...(options.parentId && { _parentId: options.parentId }),
+            ...(['array', 'object'.includes(field.type)] && { gridSize: computed(() => ComputeTwGridBreakpoint(field?.gridSize ?? formOptions.gridSize, 'grid')) }),
+            ...(field.type === 'array' && { _itemsRefs: reactive([]) })
         }))
         // ASYNC COMPUTED SETUP
         .map((field: any) => ({
@@ -54,9 +59,11 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         // RECURSIVELY DO THIS PROCESS FOR CHILDREN
         .map((field: any) => ({
             ...field,
-            ...(field.fields &&  {
-                fields: InitializeFormFields(field.fields)
-            })
+            ...(field.type === 'array' && {
+                _setItemRef: (index: number, uuid: string) => field._itemsRefs.push({ index, uuid }),
+                _removeItemRef: (_uuid: number) => field._itemsRefs.splice(field._itemsRefs.findIndex((item: any) => item._uuid === _uuid), 1),
+            }),
+            ...(field.fields &&  { fields: InitializeFormFields(field.fields, { parentType: field.type, parentId: field._uuid}) }),
         }))
 
 

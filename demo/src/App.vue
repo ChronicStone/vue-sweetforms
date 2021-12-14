@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full dark:bg-[#101014] min-h-screen">
+  <div class="h-full dark:bg-[#101014] min-h-screen overflow-x-hidden">
     <FormProvider :darkMode="isDark">
       <NConfigProvider :hljs="hljs" :theme-overrides="isDark ? DarkThemeOverrides : LightThemeOverrides"  :theme="isDark ? darkTheme : null">
         <NNotificationProvider>

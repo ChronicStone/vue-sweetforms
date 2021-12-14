@@ -315,14 +315,14 @@ export default [
       gridSize: 8,
       fieldSize: "8 md:4",
       fields: [
-        // {
-        //   key: "email",
-        //   label: "Email address",
-        //   type: "password",
-        //   required: true,
-        //   validators: { email },
-        //   size: 8
-        // },
+        {
+          key: "email",
+          label: "Email address",
+          type: "text",
+          required: true,
+          validators: { email },
+          size: 8
+        },
         {
           key: "password",
           label: "Password",
@@ -338,6 +338,42 @@ export default [
           validators: (dependencies) => ({
             sameAsPassword: helpers.withMessage('The password and the confirmation does not match', sameAs(dependencies.password)) 
           })
+        }
+      ]
+    }
+  },
+  {
+    label: "Complex nested form example",
+    value: {
+      title: "Exam configuration",
+      gridSize: 8,
+      fieldSize: "8",
+      fields: [
+        {
+          key: "scoring",
+          type: "object",
+          label: "Scoring config",
+          fields: [
+            {
+              type: "array",
+              label: "Main section",
+              key: "mainModules",
+              headerTemplate: (value, index) => `${index + 1}. ${value?.key ?? 'ENTER A MODULE KEY'}`,
+              gridSize: "8",
+              fieldSize: "8 md:4",
+              fields: [
+                { type: "text", key: "key", label: "Module key", required: true },
+                { type: "select", key: "type", label: "Module type", required: true, options: ['Composite', 'External', 'Async'].map(item => ({ label: item, value: item.toLowerCase()})) },
+                { type: "slider", key: "Score overall scale", label: "Description", required: true, fieldParams: { gap: 0.5}, size: "8 lg:9", required: true },
+              ]
+            }
+          ]
+        },
+        {
+          key: "results",
+          type: "object",
+          label: "Results config",
+          fields: []
         }
       ]
     }

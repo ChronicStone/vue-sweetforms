@@ -24,9 +24,14 @@ export const MapFormInitialState = (fields: any[], inputFormData: any = {}, pare
 export const MapFormRules = (fields: any[]) => {
     let rules: any = {}    
     fields.forEach((field: any) => {
-        if(!['array', 'object'].includes(field.type)) rules[field.key] = field.validators && typeof field.validators === 'function' ? { ...field.validators(field._dependencies), ...(field.required && { required } ) } : typeof field.validators === 'object' ? { ...field.validators, ...(field.required && { required  }) } : { ...(field.required && { required  }) } 
-        else if(field.type === 'object') rules[field.key] = MapFormRules(field.fields ?? [])
-        else if(field.type === 'array') rules[field.key] = { $each: helpers.forEach({ ...MapFormRules(field.fields ?? []), $trackBy: '_id' }), }
+        rules[field.key] = { 
+            ...(typeof rules[field.key] === 'object' && { ...rules[field.key] }),
+            ...(field.type === 'object' && { ...rules[field.key], ...MapFormRules(field.fields ?? []) }),
+            ...(field.type === 'array' && { ...rules[field.key], $each: helpers.forEach({ ...MapFormRules(field.fields ?? []), $trackBy: '_id' }) }),
+            ...(typeof field?.validators === 'function' && { ...field.validators(field._dependencies, field), }),
+            ...(typeof field.validators === 'object' && { ...field.validators, }),
+            ...(field.required && { required: helpers.withMessage(`The field ${field.label} can't be empty`, required) })
+        }
     })
 
     return rules   

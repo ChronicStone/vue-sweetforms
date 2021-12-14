@@ -36,12 +36,13 @@ delete Array.prototype.toJSON;
 return ClearCodeString(str);
 }
 
-export const BundleCodeExample = obj => {
+export const BundleCodeExample = (obj, vuelidate) => {
 const preparedString = JSONstringifyWithFuncs(obj)
 return `
 <script setup>
   import { useSweetform } from '@chronicstone/vue-sweetforms';
   const { createForm } = useSweetform()
+  ${vuelidate ? `import { ${vuelidate.join(', ')} } from "@vuelidate/validators"` : ''}
 
   const GetDataFromForm = async () => {
     const { isCompleted, formData } = await createForm(${preparedString})
