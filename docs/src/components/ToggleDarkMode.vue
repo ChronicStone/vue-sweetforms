@@ -1,15 +1,11 @@
 <template>
-  <button
-    aria-label="Toggle Darkmode"
-    title="Toggle Darkmode"
-    @click="handleClick"
-  >
+  <button @click="handleClick" aria-label="Toggle Darkmode" title="Toggle Darkmode">
     <slot :dark="isDarkMode" />
   </button>
 </template>
 
 <script>
-export const LIGHTS_OUT = 'lights-out'
+export const LIGHTS_OUT = 'lights-out';
 
 export default {
   data() {
@@ -18,46 +14,56 @@ export default {
     }
   },
 
-  mounted() {
-    this.hasInStorage()
-      ? this.toggleDarkMode(this.getFromStorage())
-      : process.isClient &&
-        window.matchMedia &&
-        this.toggleDarkMode(this.detectPrefered())
-  },
-
   methods: {
     handleClick() {
-      const hasDarkMode = document.documentElement.hasAttribute(LIGHTS_OUT)
+      const hasDarkMode = document.documentElement.hasAttribute(LIGHTS_OUT);
 
       // Toggle dark mode on click.
-      return this.toggleDarkMode(!hasDarkMode)
+      return this.toggleDarkMode(! hasDarkMode);
     },
 
     toggleDarkMode(shouldBeDark) {
-      document.documentElement.toggleAttribute(LIGHTS_OUT, shouldBeDark)
+      document.documentElement.toggleAttribute(LIGHTS_OUT, shouldBeDark);
 
-      this.isDarkMode = shouldBeDark
-      this.writeToStorage(shouldBeDark)
+      this.isDarkMode = shouldBeDark;
 
-      return shouldBeDark
+      this.writeToStorage(shouldBeDark);
+
+      return shouldBeDark;
     },
 
     detectPrefered() {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
     },
 
     hasInStorage() {
-      return localStorage.getItem(LIGHTS_OUT) !== null
+      const check = localStorage.getItem(LIGHTS_OUT);
+
+      return check !== null;
     },
 
     writeToStorage(prefersDark) {
-      localStorage.setItem(LIGHTS_OUT, prefersDark ? 'true' : 'false')
+      localStorage.setItem(LIGHTS_OUT, prefersDark ? 'true' : 'false');
     },
 
     getFromStorage() {
-      return localStorage.getItem(LIGHTS_OUT) === 'true'
+      return localStorage.getItem(LIGHTS_OUT) === 'true' ? true : false;
+    }
+  },
+
+  mounted() {
+    if (this.hasInStorage()) {
+      this.toggleDarkMode(
+        this.getFromStorage()
+      );
+    } else if (process.isClient && window.matchMedia) {
+      this.toggleDarkMode(
+        this.detectPrefered()
+      );
     }
   }
-}
+};
 </script>
+
+<style>
+</style>

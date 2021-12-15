@@ -5,7 +5,9 @@ prev: '/docs/'
 next: '/docs/writing-content/'  
 ---
 
-# Installation
+# Install & use
+
+## Package installation
 
 1. Install the package :
 
@@ -28,8 +30,10 @@ npm i -g @vuelidate/validators
 import 'vue-sweetforms/dist/style.css'
 ```
 
+## Instanciate the FormProvider
 
-4. Wrap your app with the FormProvider component :
+
+The FormProvider component needs to be instanciated at the root of your application. Without it, you won't be able to use the createForm method provided by the useSweetform hook.
 
 ```javascript
 <script setup>
@@ -44,7 +48,11 @@ import { FormProvider } from "@chronicstone/vue-sweetforms"
 </template>
 ```
 
-5. Use sweetforms API anywhere in your app :
+## Start using sweetforms
+
+Once everything is setup, you can use the useSweetform hook to get access to the createForm method, and generate forms at will. 
+
+Sweetforms is promise-based, so you'll just need to await the output (or use the then / catch syntax) of the createForm method to get the completed status, and the form data. Use it just like a regular function, and sweetforms will take care of mounting / unmounting the UI and all the logic behind for you.
 
 ```javascript
 <script setup>

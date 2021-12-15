@@ -1,15 +1,8 @@
 <template>
-  <div
-    class="relative"
-    @keydown.down="increment"
-    @keydown.up="decrement"
-    @keydown.enter="go"
-  >
+  <div class="relative" @keydown.down="increment" @keydown.up="decrement" @keydown.enter="go">
     <label class="relative block">
       <span class="sr-only">Search Documentation</span>
-      <div
-        class="absolute inset-y-0 left-0 flex items-center justify-center px-3 py-2 opacity-50"
-      >
+      <div class="absolute inset-y-0 left-0 flex items-center justify-center px-3 py-2 opacity-50">
         <SearchIcon size="1.25x" class="text-ui-typo" />
       </div>
       <input
@@ -21,7 +14,7 @@
         @focus="focused = true"
         @blur="focused = false"
         @input="
-          focusIndex = -1
+  focusIndex = -1
           query = $event.target.value
         "
         @change="query = $event.target.value"
@@ -29,12 +22,13 @@
     </label>
     <div
       v-if="showResult"
-      class="fixed inset-x-0 bottom-0 z-10 overflow-y-auto border-2 border-t-0 rounded-md rounded-t-none shadow-lg bg-ui-background sm:bottom-auto sm:absolute border-ui-sidebar"
+      class="fixed inset-x-0 z-50 overflow-y-auto border-2 border-t-0 rounded-lg rounded-t-none shadow-lg results bg-ui-background bottom:0 sm:bottom-auto sm:absolute border-ui-sidebar"
+      style="max-height: calc(100vh - 120px)"
     >
       <ul class="px-4 py-2 m-0">
         <li v-if="results.length === 0" class="px-2">
-          No results for <span class="font-bold">{{ query }}</span
-          >.
+          No results for
+          <span class="font-bold">{{ query }}</span>.
         </li>
 
         <li
@@ -55,9 +49,7 @@
               'bg-ui-sidebar text-ui-primary': focusIndex === index
             }"
           >
-            <span v-if="result.value === result.title">
-              {{ result.value }}
-            </span>
+            <span v-if="result.value === result.title">{{ result.value }}</span>
 
             <span v-else class="flex items-center">
               {{ result.title }}

@@ -30,6 +30,7 @@ module.exports = {
             items: [
               '/docs/usage/',
               '/docs/usage/fields/',
+              '/docs/usage/steps/',
               '/docs/usage/dependencies/',
               '/docs/usage/validation/',
               '/docs/usage/data-sources/',
