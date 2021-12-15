@@ -57,13 +57,6 @@ export default {
     OnThisPage,
     NextPrevLinks,
   },
-  mounted() {
-    console.log({ FormProvider })
-  },
-  setup() {
-    console.log('SCRIPT SETUP')
-  },
-
   metaInfo() {
     const title = this.$page.markdownPage.title
     const description =

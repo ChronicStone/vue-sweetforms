@@ -71,6 +71,7 @@ export default {
 
   methods: {
     observerCallback(entries, observer) {
+      console.log('OBSERVER CALLBACK')
       // This early return fixes the jumping
       // of the bubble active state when we click on a link.
       // There should be only one intersecting element anyways.
@@ -109,11 +110,12 @@ export default {
   },
 
   mounted() {
+    this.initObserver()
+
     if (process.isClient) {
       if (window.location.hash) {
         this.activeAnchor = window.location.hash;
       }
-      this.$nextTick(this.initObserver);
     }
   }
 };
