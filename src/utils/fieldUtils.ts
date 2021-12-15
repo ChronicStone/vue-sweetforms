@@ -59,7 +59,7 @@ export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any = {}) => {
                 'default-checked': fieldProps.defaultChecked ?? false,
                 indeterminate: fieldProps.hasThirdState ?? false,
             }
-        case 'checkboxGroup':
+        case 'checkbox-group':
             return {
                 ...(fieldProps.minChecked && { min: fieldProps.minChecked }),
                 ...(fieldProps.maxChecked && { max: fieldProps.maxChecked }),

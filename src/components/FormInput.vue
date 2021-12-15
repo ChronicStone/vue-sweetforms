@@ -60,6 +60,32 @@
                 v-bind="MapFieldProps(field.type, field.fieldParams)"
             />
         </div>
+
+        <NCheckbox 
+            v-if="field.type === 'checkbox'"
+            v-model:checked="fieldValue"
+            @blur="validator.$touch"
+            v-bind="MapFieldProps(field.type, field.fieldParams)"
+        />
+
+        <NCheckboxGroup 
+            v-if="field.type === 'checkbox-group'"
+            v-model:value="fieldValue"
+            v-bind="MapFieldProps(field.type, field.fieldParams)"
+        >
+            <div class="grid gap-4" :class="field.gridSize ?? gridSize">
+                <NCheckbox 
+                    class="col-span-1"
+                    v-for="(option, index) in field._options ?? field.options" 
+                    :key="index" 
+                    :value="option?.value ?? option" 
+                    :label="option?.label ?? option"
+                    @blur="validator.$touch" 
+                />
+            </div>
+        </NCheckboxGroup>
+
+
         <NRadioGroup
             @blur="validator.$touch" 
             v-if="field.type === 'radio'" 
@@ -87,7 +113,7 @@
                     <FormInput 
                         v-for="(childField, childFieldKey) in field.fields.filter((field: any) => field._enable) ?? []"
                         :key="childFieldKey"
-                        :gridSize="field.gridSize"
+                        :gridSize="field?.gridSize ?? gridSize"
                         :field="childField"
                         :validator="validator[childField.key]"
                         v-model="fieldValue[childField.key]"
@@ -118,7 +144,7 @@
                                     <FormInput 
                                         v-for="(childField, childFieldKey) in field.fields.filter((field: any) => field._enable) ?? []"
                                         :key="childFieldKey"
-                                        :gridSize="field.gridSize"
+                                        :gridSize="field?.gridSize ?? gridSize"
                                         :field="childField"
                                         :validator="{$errors: validator.$errors.find((err: any) => err.$validator === '$each')?.$response?.$errors[index][childField.key] ?? null }"
                                         v-model="value[childField.key]"
@@ -148,7 +174,7 @@
 
 <script setup lang="ts">
     import { computed, ref, inject } from "vue"
-    import { NCard, NCollapseTransition, NInput, NSelect, NInputNumber, NAlert, NDatePicker, NTimePicker, NSlider, NRadioGroup, NRadio, NTooltip, NDynamicInput, useThemeVars } from "naive-ui"
+    import { NCard, NCollapseTransition, NInput, NSelect, NInputNumber, NAlert, NDatePicker, NTimePicker, NSlider, NRadioGroup, NRadio, NCheckbox, NCheckboxGroup, NDynamicInput, useThemeVars } from "naive-ui"
     import DescriptionPopup from "./DescriptionPopup.vue"
     import CollapseButton from "./CollapseButton.vue"
     import { MapFormInitialState, MapFieldProps, ParseErrMsg, GenerateUUID } from "../utils"
@@ -168,7 +194,7 @@
             default: () => ({})
         },
         modelValue: {
-            type: [String, Number, Date, Array, Object],
+            type: [String, Number, Date, Array, Object, Boolean],
         },
         indent: {
             type: Number,
@@ -181,10 +207,6 @@
         get() { return props.modelValue },
         set(value: any) { emit('update:modelValue', value) }
     })
-
-    const formStyle = inject('SweetformsFormStyles')
-
-
 
     const InitArrayFieldItem = () => {
         const _uuid = GenerateUUID()

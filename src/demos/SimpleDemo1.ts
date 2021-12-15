@@ -56,6 +56,20 @@ export default [
           size: 8
         },
         {
+          type: "checkbox",
+          key: "checkbox",
+          label: "Checkbox",
+          size: 8,
+        },
+        {
+          type: "checkbox-group",
+          key: "checkbox-group",
+          label: "Checkbox group",
+          gridSize: "3",
+          size: "8",
+          options: () => Array.from({ length: 12}, (_, i) => ({ label: `Option ${i + 1}`, value: i + 1 })),
+        },
+        {
           type: "date",
           key: "date",
           label: "Date",
@@ -389,7 +403,7 @@ export default [
           fields: [
             { type: "text", key: "key", label: "Module key", required: true, },
             { type: "select", key: "type", label: "Module type", required: true, options: ['Composite', 'External', 'Async'].map(item => ({ label: item, value: item.toLowerCase()})) },
-            { type: "slider", key: "Score overall scale", label: "Description", required: true, fieldParams: { gap: 0.5}, size: "8 lg:9", required: true },
+            { type: "slider", key: "Score overall scale", label: "Description", required: true, fieldParams: { gap: 0.5}, size: "8 lg:9" },
           ],
         }
       ]
