@@ -18,11 +18,12 @@
         <!-- Form body -->
         <div class="h-10/12 max-h-55vh grid gap-4 px-6 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-rounded-full text-left" :class="formStyle.gridSize" :style="`height:fit-content !important;`">
             <FormInput 
-                v-for="(field, fieldIndex) of formContent.filter((field: any) => field._enable && (isMultiStep ? currentStepIndex === field._stepIndex : true))" :key="fieldIndex"
+                v-for="(field, fieldIndex) of formContent.filter((field: any) => (field._enable || field.conditionEffect === 'disable') && (isMultiStep ? currentStepIndex === field._stepIndex : true))" :key="fieldIndex"
                 :gridSize="formStyle.gridSize"
                 :field="field"
                 :validator="$v[field.key]"
                 v-model="formState[field.key]"
+                :disabled="!field._enable && field.conditionEffect === 'disable'"
             />
         </div>
 

@@ -71,7 +71,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     const formState = reactive(MapFormInitialState(inputFields, formInputData))
     const formContent = reactive(InitializeFormFields(inputFields))
     const formRules = computed(() => MapFormRules(formContent.filter((field: any) => {
-        if(field.condition && !field._enable.value) return false
+        if(field.condition && !field._enable) return (field?.conditionEffect && field.conditionEffect != 'hide') ?? false
         if(isMultiStep.value && field._stepIndex !== currentStepIndex.value) return false
         return true
     })))

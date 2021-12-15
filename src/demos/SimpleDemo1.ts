@@ -443,5 +443,27 @@ export default [
         }
       ]
     }
+  },
+  {
+    label: "Simple deps",
+    value: {
+      title: 'basic dependency',
+      fields: [
+        {
+          key: 'displayName',
+          label: 'Check to display other field',
+          type: 'checkbox',
+          required: true,
+        },
+        {
+          key: 'name',
+          label: 'Displayed if checkbox is checked',
+          type: 'text',
+          required: true,
+          dependencies: ['displayName'],
+          condition: (dependencies) => dependencies.displayName,
+        },
+      ]
+    }
   }
 ]

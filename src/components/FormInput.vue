@@ -18,6 +18,7 @@
             v-model:value="fieldValue"
             v-bind="MapFieldProps(field.type, field.fieldParams)"
             :placeholder="field.placeholder"
+            :disabled="disabled"
         />
         <NSelect 
             @blur="validator.$touch" 
@@ -28,6 +29,7 @@
             v-bind="MapFieldProps(field.type, field.fieldParams)" 
             :loading="field._evalOptions"
             filterable
+            :disabled="disabled"
         />
         <NInputNumber 
             @blur="validator.$touch" 
@@ -35,6 +37,7 @@
             v-model:value="fieldValue" 
             v-bind="MapFieldProps(field.type, field.fieldParams)"
             :placeholder="field.placeholder"
+            :disabled="disabled"
         />
         <NDatePicker
             @blur="validator.$touch" 
@@ -44,6 +47,7 @@
             :type="field.type"
             v-bind="MapFieldProps(field.type, field.fieldParams)"
             update-value-on-close
+            :disabled="disabled"
         />
         <NTimePicker
             @blur="validator.$touch" 
@@ -51,6 +55,7 @@
             v-model:value="fieldValue" 
             :placeholder="field.placeholder"
             v-bind="MapFieldProps(field.type, field.fieldParams)"
+            :disabled="disabled"
 
         />
         <div class="flex flex-col gap-1 justify-center items-center h-full" v-if="['slider'].includes(field.type)">
@@ -58,6 +63,7 @@
                 @blur="validator.$touch" 
                 v-model:value="fieldValue"
                 v-bind="MapFieldProps(field.type, field.fieldParams)"
+                :disabled="disabled"
             />
         </div>
 
@@ -66,12 +72,14 @@
             v-model:checked="fieldValue"
             @blur="validator.$touch"
             v-bind="MapFieldProps(field.type, field.fieldParams)"
+            :disabled="disabled"
         />
 
         <NCheckboxGroup 
             v-if="field.type === 'checkbox-group'"
             v-model:value="fieldValue"
             v-bind="MapFieldProps(field.type, field.fieldParams)"
+            :disabled="disabled"
         >
             <div class="grid gap-4" :class="field.gridSize ?? gridSize">
                 <NCheckbox 
@@ -81,6 +89,7 @@
                     :value="option?.value ?? option" 
                     :label="option?.label ?? option"
                     @blur="validator.$touch" 
+                    :disabled="disabled"
                 />
             </div>
         </NCheckboxGroup>
@@ -91,6 +100,7 @@
             v-if="field.type === 'radio'" 
             v-model:value="fieldValue"
             :name="field.key"
+            :disabled="disabled"
         >
             <div class="gap-4 flex flex-wrap justify-start">
                 <NRadio 
@@ -111,13 +121,14 @@
             <NCard>
                 <div class="grid gap-4" :class="field.gridSize ?? gridSize">
                     <FormInput 
-                        v-for="(childField, childFieldKey) in field.fields.filter((field: any) => field._enable) ?? []"
+                        v-for="(childField, childFieldKey) in field.fields.filter((field: any) => (field._enable || field.conditionEffect === 'disable')) ?? []"
                         :key="childFieldKey"
                         :gridSize="field?.gridSize ?? gridSize"
                         :field="childField"
                         :validator="validator[childField.key]"
                         v-model="fieldValue[childField.key]"
-                        :indent="indent + 1"            
+                        :indent="indent + 1"  
+                        :disabled="!field._enable && field.conditionEffect === 'disable'"          
                     />
                 </div>
             </NCard>
@@ -142,13 +153,14 @@
                             <NCard style="width: 100%;">
                                 <div class="grid gap-4" :class="field.gridSize ?? gridSize">
                                     <FormInput 
-                                        v-for="(childField, childFieldKey) in field.fields.filter((field: any) => field._enable) ?? []"
+                                        v-for="(childField, childFieldKey) in field.fields.filter((field: any) => (field._enable || field.conditionEffect === 'disable')) ?? []"
                                         :key="childFieldKey"
                                         :gridSize="field?.gridSize ?? gridSize"
                                         :field="childField"
                                         :validator="{$errors: validator.$errors.find((err: any) => err.$validator === '$each')?.$response?.$errors[index][childField.key] ?? null }"
                                         v-model="value[childField.key]"
-                                        :indent="indent + 1"            
+                                        :indent="indent + 1" 
+                                        :disabled="!field._enable && field?.conditionEffect === 'disable'"           
                                     />
                                 </div>
                             </NCard>
@@ -199,6 +211,10 @@
         indent: {
             type: Number,
             default: 1
+        },
+        disabled: {
+            type: Boolean,
+            default: false
         }
     })
     const collapsed = ref(props.field.collapsed ?? false)
