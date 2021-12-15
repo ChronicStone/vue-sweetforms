@@ -8,7 +8,7 @@
     >
         <!-- FORM TITLE -->
         <template #header>
-            <FormStepper class="mt-2" v-if="isMultiStep" :steps="formSteps" :current-step="currentStepIndex" />
+            <FormStepper class="mt-2" v-if="(formOptions?.showSteps ?? true) && isMultiStep" :steps="formSteps" :current-step="currentStepIndex" />
             <div class="text-center uppercase text-xl">{{ isMultiStep ? `${currentStepIndex + 1} - ${formSteps[currentStepIndex].title}` : formOptions.title }}</div>
             <div v-if="formOptions?.showCloseButton ?? true" @click="CloseForm" class="absolute top-2 right-2 h-5 w-5 rounded-full cursor-pointer grid place-items-center hover:(bg-gray-500 bg-opacity-20 text-red-500)">
                 <i-mdi-close class="h-4 w-4"/>
@@ -30,8 +30,8 @@
         <template #footer>
             <div class="h-1/12 flex w-full justify-center items-center gap-4 pt-6">
                 <NButton @click="CloseForm" v-if="formOptions?.showCancelButton ?? true" type="error">CANCEL</NButton>
-                <NButton @click="PreviousStep" v-if="isMultiStep" :disabled="currentStepIndex === 0" type="primary">PREVIOUS</NButton>
-                <NButton @click="SubmitForm" type="primary">{{isMultiStep ? `${currentStepIndex === formSteps.length - 1 ? 'SUBMIT' : 'NEXT'}` : 'SUBMIT'}}</NButton>
+                <NButton @click="PreviousStep" v-if="(formOptions?.showPreviousButton ?? true) && isMultiStep" :disabled="currentStepIndex === 0" type="primary">{{formOptions?.previousButtonText ?? 'PREVIOUS'}}</NButton>
+                <NButton @click="SubmitForm" type="primary">{{isMultiStep ? `${currentStepIndex === formSteps.length - 1 ? (formOptions?.submitButtonText ?? 'SUBMIT') : (formOptions?.nextButtonText ?? 'NEXT')}` : (formOptions?.submitButtonText ?? 'SUBMIT')}}</NButton>
             </div>
         </template>
     </n-card>
@@ -41,7 +41,7 @@
 import FormInput from "./FormInput.vue";
 import FormStepper from "./FormSteps.vue";
 import { NCard, NButton } from "naive-ui"
-import { onClickOutside, useBreakpoints, breakpointsTailwind } from "@vueuse/core"
+import { onClickOutside } from "@vueuse/core"
 import { ref, computed, reactive, provide } from "vue"
 import { useForm } from "../hooks"
 import { ComputePropSize } from "@/utils"
