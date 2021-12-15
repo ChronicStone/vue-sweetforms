@@ -92,7 +92,7 @@
             v-model:value="fieldValue"
             :name="field.key"
         >
-            <div class="gap-4 flex flex-wrap justify-start justify-between">
+            <div class="gap-4 flex flex-wrap justify-start">
                 <NRadio 
                     @blur="validator.$touch" 
                     v-for="({ label, value}, optionId) in field._options ?? field.options" 
@@ -109,7 +109,7 @@
         
         <NCollapseTransition v-if="field.type === 'object'" :show="!collapsed">
             <NCard>
-                <div class="grid gap-4" :style="`grid-template-columns: repeat(${field.gridSize ?? '2'},minmax(0,1fr));`">
+                <div class="grid gap-4" :class="field.gridSize ?? gridSize">
                     <FormInput 
                         v-for="(childField, childFieldKey) in field.fields.filter((field: any) => field._enable) ?? []"
                         :key="childFieldKey"
@@ -140,7 +140,7 @@
 
                         <NCollapseTransition :show="!value.collapsed">
                             <NCard style="width: 100%;">
-                                <div class="grid gap-4" :style="`grid-template-columns: repeat(${field.gridSize ?? '2'},minmax(0,1fr));`">
+                                <div class="grid gap-4" :class="field.gridSize ?? gridSize">
                                     <FormInput 
                                         v-for="(childField, childFieldKey) in field.fields.filter((field: any) => field._enable) ?? []"
                                         :key="childFieldKey"
