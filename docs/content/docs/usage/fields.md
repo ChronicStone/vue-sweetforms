@@ -26,7 +26,7 @@ All the fields share a common set of options. These options will allow you to co
     - Description: The label of the field displayed on the form.
 
 - **type**:
-    - Type: `text` | `textarea` | `password` | `number` | `slider` | `switch` | `select` | `radio` | `checkbox` | `checkbox-group` | `checkboxGroup` | `date` | `time` | `datetime` | `datetimerange` | `daterange` | `month` | `year` | `file` | `array` | `object`
+    - Type: `text` | `textarea` | `password` | `number` | `slider` | `switch` | `select` | `radio` | `checkbox` | `checkbox-group` | `checkboxGroup` | `date` | `time` | `datetime` | `datetimerange` | `daterange` | `month` | `year` | `file` | `array` | `object` | `custom-component`
     - Required: YES,
     - Default :
     - Description: The label of the field displayed on the form.
@@ -88,11 +88,18 @@ All the fields share a common set of options. These options will allow you to co
     - Default :
     - Description: The description of the field. When defined, adds a clickable icon that will open a popup with the description. Both title & content supports HTML.
 
-- **defaultValue**: 
+- **default**: 
     - Type: `STRING` | `NUMBER` | `BOOLEAN` | `ARRAY` | `OBJECT` | `NULL`
     - Required: `NO`,
     - Default :
     - Description: The default value of the field.
+
+- **component**: 
+    - Type: `VUE COMPONENT`
+    - Required: `NO`,
+    - Default :
+    - Description: If you want to use a custom component for the field, you can pass your component with this attribute.
+    - Field types: `custom-component`
 
 ## Available fields
 
@@ -454,14 +461,42 @@ The object field allows you to have nested objects in your form. It fully suppor
 
 The array field allow you to have arrays of objects inside your form. It fully supports deep nesting & validation. It supports field dependency with a few limitations, refer to the [validation](/docs/usage/validation) section for more informations.
 
-### Image
+
+
+### Custom component
+
+This field type allows you to use custom components as actual fields in the form. Be aware that it does not support named v-model (ex: v-model: value, or v-model:checked ...) so you must use the regular v-model.
+
+It fully supports any other Sweetforms feature (ex: validation, field dependency, ...)
+
+```js
+import MyComponent from "./components/MyComponent.vue";
+const OpenForm = () => {
+    const { isCompleted, formData } = await CreateForm({
+        fields: [{
+            key: "customComp",
+            label: "customComp",
+            type: 'custom-component',
+            component: MyComponent,
+            fieldProps: {
+                type: 'password',
+                placeholder: 'Your name'
+            }
+        }]
+    })
+}
+
+```
+
+For this example, we have a custom component which is just a native HTML input. We make the input inherit of the props & attrs defined in fieldParams, which allows us to manipulate props on the field definiton level :
+
+<iframe width="100%" height="650px" src="https://stackblitz.com/edit/vue-cvj96m?embed=1&file=src/components/SimpleDependency.vue&hideExplorer=1&theme=dark&view=preview" />
+
+
+### Image (Coming soon)
 
 Allows you to handle images uploading inside your forms. Includes preview, & other features. Coming soon ...
 
 ### File dropzone (coming soon)
 
 A dropzone component allowing you to upload files. Coming soon ...
-
-### Custom component
-
-This new field type will allow you to define your own components as field types and use them in your form. Coming soon.
