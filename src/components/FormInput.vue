@@ -228,8 +228,7 @@
         }
     })
 
-    // const componentCustom = props.field.component ? markRaw(defineComponent(props.field.component)) : null
-    const componentStore: any = toRaw(inject('componentStore', {}))
+const componentStore: any = toRaw(inject('componentStore', {}))
     const collapsed = ref(props.field.collapsed ?? false)
     const emit = defineEmits(['update:modelValue'])
     const fieldValue = computed({
