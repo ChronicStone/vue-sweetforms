@@ -23,7 +23,7 @@
 
         <div class="flex justify-center mt-8">
           <g-link
-            to="/docs/"
+            to="/docs/#introduction"
             class="flex items-center px-6 py-4 ml-auto text-2xl font-bold leading-none text-white transition-all duration-200 ease-out transform border rounded-md shadow-lg bg-ui-primary border-ui-primary hover:shadow-xl hover:-translate-y-1"
           >
             Get started
