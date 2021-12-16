@@ -100,7 +100,9 @@ The condition attribute, as shown above, can be used to hide or disable a field.
 
 The options of a select / radio / checkbox-group field can be defined in several ways (See [Field data source](/docs/usage/data-sources/)). One of them is defining a function that returns an array of options. If options is a function, then the dependencies object is inject as an argument of this function.
 
-This allows you to change the available options of a field depending of the value of another field.
+This allows you to change the available options of a field depending of the value of another field. 
+
+Something interesting to notice is that if you select an option, and then change the field on which it is dependent and the option is not there anymore, the field value is automatically cleared. For the following example, try checking "Animals", and then select "dogs" on the select field, and finally uncheck "Animals". You'll see the select field clearing itself.
 
 ```js
 const OpenForm = async () => {
