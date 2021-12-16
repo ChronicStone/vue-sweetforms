@@ -130,15 +130,15 @@ export default {
   --color-ui-typo: theme('colors.gray.700');
   --color-ui-sidebar: theme('colors.gray.200');
   --color-ui-border: theme('colors.gray.300');
-  --color-ui-primary: theme('colors.indigo.600');
+  --color-ui-primary: #9375FF;
 }
 
 html[lights-out] {
-  --color-ui-background: theme('colors.gray.900');
+  --color-ui-background: #1D1E27;
   --color-ui-typo: theme('colors.gray.100');
   --color-ui-sidebar: theme('colors.gray.800');
   --color-ui-border: theme('colors.gray.800');
-  --color-ui-primary: theme('colors.indigo.500');
+  --color-ui-primary: #AC96F9;
 
   pre[class*="language-"],
   code[class*="language-"] {

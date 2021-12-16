@@ -31,6 +31,7 @@ module.exports = {
               '/docs/usage/',
               '/docs/usage/fields/',
               '/docs/usage/steps/',
+              '/docs/usage/initial-state/',
               '/docs/usage/dependencies/',
               '/docs/usage/validation/',
               '/docs/usage/data-sources/',

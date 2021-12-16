@@ -1,12 +1,12 @@
 
-import { MapFormInitialState, MapOutputState, MapFormRules, MapStepsAsFields, MapDependenciesAsObject, ResolveFromString, ComputePropSize, ComputeTwGridBreakpoint, GenerateUUID } from "@/utils"
-import { ref, reactive, computed, watch } from "vue"
+import { MapFormInitialState, MapOutputState, MapFormRules, MapStepsAsFields, MapComponentStore, MapDependenciesAsObject, ResolveFromString, ComputePropSize, ComputeTwGridBreakpoint, GenerateUUID } from "@/utils"
+import { ref, reactive, computed, watch, provide, markRaw, toRaw } from "vue"
 import { asyncComputed, useBreakpoints, breakpointsTailwind } from "@vueuse/core"
 import useVuelidate from '@vuelidate/core'
 
 
 export const useForm = (formOptions: any, formInputData: any, emit: any) => {
-    const inputFields = formOptions.fields ?? MapStepsAsFields(formOptions.steps)
+    const [inputFields, customComponentsStore] = MapComponentStore(formOptions.fields ?? MapStepsAsFields(formOptions.steps))
 
     const __breakpoints = useBreakpoints(breakpointsTailwind)
     const breakpoints = reactive({ 
@@ -23,24 +23,28 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         fieldSize: computed(() => ComputeTwGridBreakpoint(formOptions?.fieldSize, 'col'))
     })
 
+    // let customComponentsStore: any = markRaw({})
+
     const formSteps = reactive(!formOptions.steps ? [] : formOptions.steps.map(({ fields, ...step }: any, stepIndex: number) => ({ ...step, _status: stepIndex === 0 ? "InProgress" : "Pending", _index: stepIndex })))
     const currentStepIndex = ref(0)
     const isMultiStep = computed(() => formSteps.length > 1)
 
     const InitializeFormFields: (fields: any[], options?: any) => any[] = (fields: any[], options = {}) => fields
         // BASE FIELD + ASYNC-COMPUTED EVALUATORS + DEPENDENCIES SETUP
-        .map((field: any) => ({
-            ...field,
-            _uuid: GenerateUUID(),
-            _dependencies: computed(() => MapDependenciesAsObject(field.dependencies ? field.dependencies.map((key: string) => ({ key, value: ResolveFromString(key, formState) })) :  [])),
-            _evalOptions: ref(false),
-            _evalEnable: ref(false),
-            size: computed(() => ComputeTwGridBreakpoint(field.size ?? formOptions.fieldSize, 'col')),
-            ...(options.parentType && { _parentType: options.parentType }),
-            ...(options.parentId && { _parentId: options.parentId }),
-            ...(['array', 'object'.includes(field.type)] && { gridSize: computed(() => ComputeTwGridBreakpoint(field?.gridSize ?? formOptions.gridSize, 'grid')) }),
-            ...(field.type === 'array' && { _itemsRefs: reactive([]) })
-        }))
+        .map((field: any) => {
+            return {
+                ...field,
+                _uuid: GenerateUUID(),
+                _dependencies: computed(() => MapDependenciesAsObject(field.dependencies ? field.dependencies.map((key: string) => ({ key, value: ResolveFromString(key, formState) })) :  [])),
+                _evalOptions: ref(false),
+                _evalEnable: ref(false),
+                size: computed(() => ComputeTwGridBreakpoint(field.size ?? formOptions.fieldSize, 'col')),
+                ...(options.parentType && { _parentType: options.parentType }),
+                ...(options.parentId && { _parentId: options.parentId }),
+                ...(['array', 'object'.includes(field.type)] && { gridSize: computed(() => ComputeTwGridBreakpoint(field?.gridSize ?? formOptions.gridSize, 'grid')) }),
+                ...(field.type === 'array' && { _itemsRefs: reactive([]) }),
+            }
+        })
         // ASYNC COMPUTED SETUP
         .map((field: any) => ({
             ...field,
@@ -71,7 +75,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     const formState = reactive(MapFormInitialState(inputFields, formInputData))
     const formContent = reactive(InitializeFormFields(inputFields))
     const formRules = computed(() => MapFormRules(formContent.filter((field: any) => {
-        if(field.condition && !field._enable.value) return false
+        if(field.condition && !field._enable) return (field?.conditionEffect && field.conditionEffect != 'hide') ?? false
         if(isMultiStep.value && field._stepIndex !== currentStepIndex.value) return false
         return true
     })))
@@ -100,6 +104,8 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         }
     }
 
+    provide('componentStore', customComponentsStore)
+
     return { 
         isMultiStep,
         formState, 
@@ -111,6 +117,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         CloseForm,
         breakpoints,
         formStyle,
+        customComponentsStore,
         $v,
         ...(formOptions.steps && { 
             currentStepIndex, 

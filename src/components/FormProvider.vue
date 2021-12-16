@@ -1,11 +1,11 @@
 <template>
-  <NConfigProvider :hljs="hljs" :theme="darkMode && darkTheme" :theme-overrides="darkMode ? DarkThemeOverrides : LightThemeOverrides">
+  <NConfigProvider :theme="darkMode && darkTheme" :theme-overrides="darkMode ? DarkThemeOverrides : LightThemeOverrides">
     <slot />
     <div id="sweetforms__overlay" style="z-index: 1000;" v-if="formInstances.length" class="fixed left-0 top-0 bg-black bg-opacity-50 grid place-items-center w-full h-screen">
       <transition-group
         name="card"
       >
-        <Form v-for="(formInstance, key) in formInstances"  @closeForm="CloseForm(key)" @submitForm="SubmitForm($event, key)" :formOptions="formInstance" :key="key" />
+        <Form v-for="(formInstance, key) in formInstances"  @closeForm="CloseForm(key)" @submitForm="SubmitForm($event, key)" v-bind="formInstance" :key="key" />
       </transition-group>
       <div v-show="showModalOverlay" ref="modalOverlay" @click="showModalOverlay = false" id="sweetforms__modalContainer" class="absolute top-0 left-0 h-screen w-full" />
     </div>
@@ -31,14 +31,14 @@
   }
 
   provide(FormInjectKey, {
-    createForm: (formInstance: FormInstance) => {
+    createForm: (formInstance: FormInstance, formInputData: any) => {
       const _id = GenerateUUID()
       return new Promise(resolve => {
         const _resolver = ({ isCompleted, formData }: { isCompleted: boolean, formData: any}) => {
           CloseForm(formInstances.value.findIndex(({ _id }) => _id === _id))
           resolve({ isCompleted, formData })
         }
-        formInstances.value.push({ _id, ...formInstance, _resolve: _resolver })
+        formInstances.value.push({ formOptions: { _id, ...formInstance, _resolve: _resolver, }, formData: formInputData })
       })
     },
     formInstances: computed(() => formInstances.value)

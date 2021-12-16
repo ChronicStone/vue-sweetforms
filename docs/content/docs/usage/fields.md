@@ -446,14 +446,6 @@ All these fields have access to the same field params.
     - Default :
     - Description: Callback function for disabling hours/minutes/seconds. (Takes a timestamp as argument)
 
-### Image
-
-Allows you to handle images uploading inside your forms. Includes preview, & other features. Coming soon ...
-
-### File dropzone (coming soon)
-
-A dropzone component allowing you to upload files. Coming soon ...
-
 ### Object
 
 The object field allows you to have nested objects in your form. It fully supports deep nesting & validation, & field dependency
@@ -461,6 +453,14 @@ The object field allows you to have nested objects in your form. It fully suppor
 ### Array
 
 The array field allow you to have arrays of objects inside your form. It fully supports deep nesting & validation. It supports field dependency with a few limitations, refer to the [validation](/docs/usage/validation) section for more informations.
+
+### Image
+
+Allows you to handle images uploading inside your forms. Includes preview, & other features. Coming soon ...
+
+### File dropzone (coming soon)
+
+A dropzone component allowing you to upload files. Coming soon ...
 
 ### Custom component
 

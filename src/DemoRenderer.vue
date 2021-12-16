@@ -10,10 +10,15 @@
               <template #checked>HDE FORM DEFINITION</template>
             </n-switch>
           </div>         
-          <NCollapseTransition :show="expanded">
+          <!-- <NCollapseTransition :show="expanded">
             <highlightjs language="js" :code="'const form = ' + JSONstringifyWithFuncs(value)" class="overflow-x-auto rounded overflow-y-hidden" />
-          </NCollapseTransition>
+          </NCollapseTransition> -->
         </div>
+      </NCard>
+
+      <NCard>
+        <TestComp v-model="testVal" />
+        {{testVal}}
       </NCard>
     </div>
     
@@ -21,7 +26,8 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue"
+import TestComp from "./TestComp.vue"
+import { reactive, ref } from "vue"
 import { NCard, NButton, useThemeVars, NDivider, NCollapseTransition,  NSwitch } from "naive-ui"
 import { FormProvider, useSweetform, SweetformTypes } from './index';
 import * as AllDemos from "@/demos/"
@@ -32,6 +38,7 @@ const OpenForm = async (formContent: any) => {
 }
 
 const demonstrations = reactive(Object.values(AllDemos).map((DemoGroup: any) => DemoGroup.map((demo: any) => ({ ...demo, expanded: false}))))
+const testVal = ref('')
 
 function JSONstringifyWithFuncs(obj) {
   Object.prototype.toJSON = function() {

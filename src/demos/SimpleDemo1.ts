@@ -1,6 +1,7 @@
 import { fetchGet, GenerateLoremIpsumText } from "@/utils"
-import { sameAs, helpers, email, minLength } from "@vuelidate/validators"
-
+import { sameAs, helpers, email, minLength, maxLength } from "@vuelidate/validators"
+import TestComp from "../TestComp.vue"
+import component from '../env';
 export default [
   {
     label: 'Field types example',
@@ -439,6 +440,89 @@ export default [
           required: true,
           validators: (dependencies: any) => ({
             sameAsPassword: helpers.withMessage('The password and the confirmation does not match', sameAs(dependencies.password)) 
+          })
+        }
+      ]
+    }
+  },
+  {
+    label: "Simple deps",
+    value: {
+      title: 'basic dependency',
+      fields: [
+        {
+          key: 'displayName',
+          label: 'Check to display other field',
+          type: 'checkbox',
+          required: true,
+        },
+        {
+          key: 'name',
+          label: 'Displayed if checkbox is checked',
+          type: 'text',
+          required: true,
+          dependencies: ['displayName'],
+          condition: (dependencies) => dependencies.displayName,
+        },
+      ]
+    }
+  },
+  {
+    label: "Test custom component",
+    value: {
+      title: "Test custom component",
+      fields: [
+        ...Array.from({ length: 100 }, (v, i) => ({
+          type: "custom-component",
+          key: "testCustomComp" + i,
+          component: TestComp,
+          label: "Test custom" + i,
+          required: true  
+        }))
+      ]
+    }
+  },
+  {
+    label: "Array limit",
+    value: {
+      title: "Array limit",
+      gridSize: 8,
+      fieldSize: 8,
+      fields: [
+        { type: "slider", key: "maxItemsInArray", label: "Max items in array", required: true, fieldParams: { gap: 1, min: 1, max: 10}, size: "8" },
+        {
+          type: "array",
+          label: "Array",
+          key: "array",
+          fields: [
+            { type: "text", key: "innerField", label: "Inner field", required: true },
+          ],
+          required: true,
+          dependencies: ['maxItemsInArray'],
+          validators: (dependencies: any) => ({
+            maxItemsInArray: helpers.withMessage('The array can not have more than ' + dependencies.maxItemsInArray + ' items', maxLength(dependencies.maxItemsInArray))
+          })
+        }
+      ]
+    }
+  },
+  {
+    label: "Checkbox limit",
+    value: {
+      title: "Array limit",
+      gridSize: 8,
+      fieldSize: 8,
+      fields: [
+        { type: "slider", key: "maxItemsInArray", label: "Max items in array", required: true, fieldParams: { gap: 1, min: 1, max: 10}, size: "8" },
+        {
+          type: "checkbox-group",
+          label: "Array",
+          key: "array",
+          options: Array.from({ length: 32 }, (v, i) => ({ label: "Option " + i, value: i })),
+          required: true,
+          dependencies: ['maxItemsInArray'],
+          validators: (dependencies: any) => ({
+            maxItemsInArray: helpers.withMessage('The array can not have more than ' + (dependencies?.maxItemsInArray ?? 0) + ' items', maxLength(dependencies?.maxItemsInArray ?? 0))
           })
         }
       ]
