@@ -169,6 +169,16 @@
                 </NDynamicInput>
             </NCard>
         </NCollapseTransition>
+
+        <div v-if="field.type === 'custom-component'">
+            <component 
+                :is="componentStore[field.component]" 
+                v-model="fieldValue" 
+                v-bind="field.fieldParams" 
+            />
+        </div>
+
+        
         <NAlert type="error" :show-icon="false" v-if="validator?.$errors?.length" class="w-full">
             <div class="flex items-center gap-2">
                 <i-mdi-information class="text-red-500"/>
@@ -185,7 +195,7 @@
 </script>
 
 <script setup lang="ts">
-    import { computed, ref, inject } from "vue"
+    import { computed, ref, inject, defineComponent, toRaw, isReactive } from 'vue';
     import { NCard, NCollapseTransition, NInput, NSelect, NInputNumber, NAlert, NDatePicker, NTimePicker, NSlider, NRadioGroup, NRadio, NCheckbox, NCheckboxGroup, NDynamicInput, useThemeVars } from "naive-ui"
     import DescriptionPopup from "./DescriptionPopup.vue"
     import CollapseButton from "./CollapseButton.vue"
@@ -217,6 +227,9 @@
             default: false
         }
     })
+
+    // const componentCustom = props.field.component ? markRaw(defineComponent(props.field.component)) : null
+    const componentStore: any = toRaw(inject('componentStore', {}))
     const collapsed = ref(props.field.collapsed ?? false)
     const emit = defineEmits(['update:modelValue'])
     const fieldValue = computed({

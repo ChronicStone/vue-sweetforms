@@ -32,7 +32,6 @@
 import { useTheme } from "./useTheme"
 import { NConfigProvider, darkTheme, NInput, NCard, NButton, NSwitch  } from "naive-ui"
 import { FormProvider, useSweetform, SweetformTypes } from './index';
-import javascript from 'highlight.js/lib/languages/javascript'
 import DemoRenderer from "./DemoRenderer.vue"
 
 const { isDark, toggle, themeName } = useTheme()

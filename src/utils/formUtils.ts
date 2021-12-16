@@ -1,5 +1,7 @@
 import { FormField } from "@/types/form.types";
 import { required, helpers, minLength } from "@vuelidate/validators"
+import { GenerateUUID } from "./baseUtils";
+import { markRaw, toRaw } from 'vue';
 
 interface InternalFormField extends FormField {
     _stepIndex?: number
@@ -38,6 +40,26 @@ export const MapFormRules = (fields: any[]) => {
 }
 
 export const MapStepsAsFields = (steps: any[]) => steps.map((step, _stepIndex) =>  step.fields.map((field: any) => ({ ...field, _stepIndex}))).flat()
+
+export const MapComponentStore = (fields: any[]) => {
+    let componentStore: any = {}
+    const mappedFields: any = fields
+    .map((field: any) => {
+        const customComponentRef = field.component ? GenerateUUID() : null
+        if(customComponentRef) componentStore[customComponentRef] = toRaw(field.component)
+        return { ...field, ...(field.component && { component: customComponentRef }) }
+    })
+    .map(field => {
+        const [subfields, subComponents] = field.fields ? MapComponentStore(field.fields) : [null, null]
+        if(subComponents) componentStore = { ...componentStore, ...subComponents }
+        return {
+            ...field,
+            ...(field.fields && { fields: subfields })
+        }
+    })
+
+    return [mappedFields, componentStore]
+}
 
 export const MapDependenciesAsObject = (arrayDependencies: any) => {
     let dependencies: any = {};

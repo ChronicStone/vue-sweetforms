@@ -43,7 +43,7 @@ import FormInput from "./FormInput.vue";
 import FormStepper from "./FormSteps.vue";
 import { NCard, NButton } from "naive-ui"
 import { onClickOutside } from "@vueuse/core"
-import { ref, computed, reactive, provide } from "vue"
+import { ref, computed, reactive, provide, defineComponent } from "vue"
 import { useForm } from "../hooks"
 import { ComputePropSize } from "@/utils"
 
@@ -61,7 +61,6 @@ const props = defineProps({
 
 const formRef = ref(null)
 const { isMultiStep, currentStepIndex, formState, formSteps, formContent, formRules, SubmitForm, CloseForm, formStyle, PreviousStep, $v } = useForm(props.formOptions, props.formData, emit)
-
 
 onClickOutside(formRef, ({ target }: any) => {
     if(target?.id === 'sweetforms__overlay' && (props?.formOptions?.allowClickOutside ?? true)) CloseForm()
