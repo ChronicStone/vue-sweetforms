@@ -2,7 +2,7 @@
 description: ''
 sidebar: 'docs'
 prev: '/docs/usage/fields'
-next: '/docs/usage/validation/'  
+next: '/docs/usage/initial-state/'  
 ---
 
 # Cross-field dependencies
@@ -186,5 +186,4 @@ Here's the output of our example :
      allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
-
 
