@@ -527,5 +527,36 @@ export default [
         }
       ]
     }
+  },
+  {
+    label: "Input data",
+    inputData: {
+      firstName: "John",
+      lastName: "Doe",
+      address: {
+          street: "1 Main St",
+          city: "New York",
+          state: "NY",
+          // zip: "10001"
+      }
+    },
+    value: {
+      title: "Input data",
+      fields: [
+        { key: "firstName", label: "First name", type: "text" }, 
+        { key: "lastName", label: "Last name", type: "text" }, 
+        { 
+            key: "address", 
+            label: "Address", 
+            type: "object",
+            fields: [
+                { key: "street", label: "Street", type: "text", }, 
+                { key: "city", label: "City", type: "text" }, 
+                { key: "state", label: "State", type: "text" }, 
+                { key: "zip", label: "Zip", type: "text", default: "Hahaha" }
+            ]
+        }
+      ]
+    }
   }
 ]

@@ -1,6 +1,6 @@
 {
   "name": "@chronicstone/vue-sweetforms",
-  "version": "0.2.0",
+  "version": "0.2.0-rc0",
   "description": "A Vue 3 highly customizable rich-featured form popup generator",
   "files": [
     "dist"
