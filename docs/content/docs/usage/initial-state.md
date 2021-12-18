@@ -44,4 +44,4 @@ const OpenForm = async () => {
 }
 ```
 
-STACKBLITZ LIVE EXAMPLE COMING SOON ...
+<iframe width="100%" height="650px" src="https://stackblitz.com/edit/vue-t3uzjx?embed=1&file=src/components/SimpleDependency.vue&hideExplorer=1&theme=dark&view=preview" />

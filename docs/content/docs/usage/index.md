@@ -21,7 +21,31 @@ Remember that you can only use createForm if the FormProvider component has been
 
 Here are the list of methods available in the form object attributes you can use to define your form object :
 
-## Form definition :
+## createForm method
+
+The createForm method is an async function that returns a Promise. It can takes two arguments : 
+
+```typescript
+interface FormData {
+    [key: string]: any
+}
+
+interface FormResult {
+    isCompleted: boolean;
+    formData: FormData;
+}
+
+declare function createForm(
+    formOptions: FormOptions, 
+    formInputData: FormData
+): Promise<FormResult>;
+
+
+```
+
+The first argument is the definition of the form, and the second one is the input data to inject to the form when initializing it.
+
+## Form definition
 
 - **title**:
     - type: `STRING`,
