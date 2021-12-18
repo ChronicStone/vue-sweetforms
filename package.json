@@ -1,6 +1,6 @@
 {
   "name": "@chronicstone/vue-sweetforms",
-  "version": "0.2.0-rc0",
+  "version": "0.2.0-rc3",
   "description": "A Vue 3 highly customizable rich-featured form popup generator",
   "files": [
     "dist"
@@ -24,8 +24,7 @@
     "@vuelidate/core": "^2.0.0-alpha.32",
     "@vuelidate/validators": "^2.0.0-alpha.25",
     "@vueuse/core": "^7.2.2",
-    "naive-ui": "^2.21.5",
-    "vue": "^3.2.23"
+    "naive-ui": "^2.21.5"
   },
   "devDependencies": {
     "@highlightjs/vue-plugin": "^2.1.0",
@@ -44,6 +43,7 @@
     "vite": "^2.7.0",
     "vite-plugin-windicss": "^1.5.4",
     "vue-tsc": "^0.28.10",
-    "windicss": "^3.2.1"
+    "windicss": "^3.2.1",
+    "vue": "^3.2.23"
   }
 }
