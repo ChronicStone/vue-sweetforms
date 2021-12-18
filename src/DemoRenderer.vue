@@ -34,7 +34,7 @@ import * as AllDemos from "@/demos/"
 const { createForm, formInstances }: any = useSweetform()
 const OpenForm = async (formContent: any, inputData: any) => {
   const data = await createForm(formContent, inputData)
-  console.log({ data })
+  console.log(JSON.stringify(data, null, 4))
 }
 
 const demonstrations = reactive(Object.values(AllDemos).map((DemoGroup: any) => DemoGroup.map((demo: any) => ({ ...demo, expanded: false}))))

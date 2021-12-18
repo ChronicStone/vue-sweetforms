@@ -558,5 +558,78 @@ export default [
         }
       ]
     }
+  },
+  {
+    label: "Create form test",
+    value: {
+      gridSize: '1',
+      fieldSize: '1',
+      steps: [
+          {
+              title: 'General config',
+              root: 'general',
+              fields: [
+                  { type: 'text', key: 'examLogo', label: 'Exam logo', required: false, placeholder: 'Select a timezone' },
+                  {
+                      type: 'object',
+                      key: 'locales',
+                      label: 'Candidate app language',
+                      required: false,
+                      gridSize: '2',
+                      fieldSize: '2 md:1',
+                      fields: [
+                          { type: 'select', key: 'default', label: 'Default language', required: false, options: [] },
+                          { type: 'select', key: 'options', label: 'Authorized languages', required: false, options: [] }
+                      ]
+                  },
+                  {
+                      type: 'object',
+                      key: 'accessibilityWindow',
+                      label: 'Time restriction',
+                      required: false,
+                      gridSize: '2',
+                      fieldSize: '2 md:1',
+                      fields: [
+                          { type: 'checkbox', key: 'enable', label: 'Enable time restriction', required: false },
+                          {
+                              type: 'select',
+                              key: 'timezone',
+                              label: 'Time zone',
+                              required: true,
+                              options: [],
+                              dependencies: ['general.accessibilityWindow.enable'],
+                              condition: ({ 'general.accessibilityWindow.enable': enable }: { 'general.accessibilityWindow.enable': boolean}) => !!enable
+                          },
+                          {
+                              type: 'datetime',
+                              key: 'startDateTime',
+                              label: 'Start date',
+                              required: true,
+                              fieldParams: { format: null },
+                              dependencies: ['general.accessibilityWindow.enable'],
+                              condition: ({ 'general.accessibilityWindow.enable': enable }: { 'general.accessibilityWindow.enable': boolean}) => {
+                                  console.log({ enable })
+                                  return enable
+                              }
+                          },
+                          {
+                              type: 'datetime',
+                              key: 'endDateTime',
+                              label: 'End date',
+                              required: true,
+                              fieldParams: { format: null },
+                              dependencies: ['general.accessibilityWindow.enable'],
+                              condition: ({ 'general.accessibilityWindow.enable': enable }: { 'general.accessibilityWindow.enable': boolean}) => !!enable
+                          }
+                      ]
+                  }
+              ]
+          },
+          {
+              title: 'Emails config',
+              fields: []
+          }
+      ]
+    }
   }
 ]

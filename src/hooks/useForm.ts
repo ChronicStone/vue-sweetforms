@@ -74,11 +74,24 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
 
     const formState = reactive(MapFormInitialState(inputFields, formInputData))
     const formContent = reactive(InitializeFormFields(inputFields))
-    const formRules = computed(() => MapFormRules(formContent.filter((field: any) => {
-        if(field.condition && !field._enable) return (field?.conditionEffect && field.conditionEffect != 'hide') ?? false
-        if(isMultiStep.value && field._stepIndex !== currentStepIndex.value) return false
-        return true
-    })))
+
+    const FilterAppliedRules: (fields: any[], parentKey: string | null) => any[] = (fields: any[], parentKey: string | null = null) => {
+        return fields
+        .filter((field: any) => {
+            if(field.condition && !field._enable) return field.conditionEffect === 'disable' ? true : false
+            if(isMultiStep.value && field._stepIndex !== currentStepIndex.value && !parentKey) return false
+            return true
+        })
+        .map((field: any) => ({
+            ...field,
+            ...(field.fields && { fields: FilterAppliedRules(field.fields, field.key) }),
+        }))
+    }
+    const formRules = computed(() => {
+        const fields = FilterAppliedRules(formContent, null)
+        console.log({ fields })
+        return MapFormRules(fields)
+    })
 
     const $v = useVuelidate(formRules, formState);
 
