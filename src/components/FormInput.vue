@@ -1,11 +1,11 @@
 <template>
     <div class="flex flex-col gap-2" :class="field.size">
         <div class="flex gap-2 items-center justify-between">
-            <span class="m-0 capitalize flex gap-2 justify-start items-center">
+            <span class="m-0 capitalize flex gap-2 justify-start items-center group cursor-pointer" style="cursor:pointer !important;" @click="['object', 'array'].includes(field.type) ? collapsed = !collapsed : null">
                 <CollapseButton v-model="collapsed" v-if="['object', 'array'].includes(field.type)"/>
-                <span>
+                <label :class="{'cursor-pointer':  ['object', 'array'].includes(field.type)}" :for="field.label">
                     {{field.label}}<span class="text-red-500 ml-1.5">{{field.required ? '*' : ''}}</span>
-                </span>
+                </label>
             </span>
 
             <DescriptionPopup v-if="field.description" :description="field.description" :fieldLabel="field.label" />
