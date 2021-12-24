@@ -63,3 +63,9 @@ export const ComputePropSize = (property: any, propKey: StylesProps, breakpoints
 
 export const ComputeTwGridBreakpoint = (breakpoints: string | number, target: 'grid' | 'col') => (breakpoints ?? defaultFormStyles[target]).toString().split(' ').map((b: string) => gridMap[b][target]).join(' ')
 
+export const ComputeStyleModifier = (value: string, type: 'grid' | 'col') => {
+    if(type === 'grid') return `grid-template-columns: repeat(${value}, minmax(0, 1fr));`
+    if(type === 'col') return `grid-column: span ${value} / span ${value};`
+    if(type === 'maxWidth') return `max-width: ${value};`
+    if(type === 'maxHeight') return `max-height: ${value};`
+}

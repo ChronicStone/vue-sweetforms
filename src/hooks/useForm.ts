@@ -1,26 +1,24 @@
 
 import { MapFormInitialState, MapOutputState, MapFormRules, MapStepsAsFields, MapComponentStore, MapDependenciesAsObject, ResolveFromString, ComputePropSize, ComputeTwGridBreakpoint, GenerateUUID } from "@/utils"
-import { ref, reactive, computed, watch, provide, markRaw, toRaw } from "vue"
-import { asyncComputed, useBreakpoints, breakpointsTailwind } from "@vueuse/core"
+import { ref, reactive, computed, watch, provide, inject } from "vue"
+import { asyncComputed } from "@vueuse/core"
+import { useBreakpointStyle, useBreakpoints } from "@/hooks"
+import { BreakpointsInjectKey } from "@/constants/injectionKeys"
+import { defaultStyles } from '@/constants'
 import useVuelidate from '@vuelidate/core'
 
 
 export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     const [inputFields, customComponentsStore] = MapComponentStore(formOptions.fields ?? MapStepsAsFields(formOptions.steps))
 
-    const __breakpoints = useBreakpoints(breakpointsTailwind)
-    const breakpoints = reactive({ 
-        sm: __breakpoints.smaller('sm'),
-        md: __breakpoints.between('sm', 'md'), 
-        lg: __breakpoints.between('md', 'lg'), 
-        xl: __breakpoints.greater('lg')
-    })
+    const breakpointsDef = inject(BreakpointsInjectKey, {})
+    const breakpointsConfig = useBreakpoints(breakpointsDef)
+
     const formStyle = reactive({
-        _breakpoints: breakpoints,
-        maxHeight: computed(() => ComputePropSize(formOptions?.maxHeight ?? {}, 'maxHeight', breakpoints)),
-        maxWidth: computed(() => ComputePropSize(formOptions?.maxWidth ?? {}, 'maxWidth', breakpoints)),
-        gridSize: computed(() => ComputeTwGridBreakpoint(formOptions?.gridSize, 'grid')),
-        fieldSize: computed(() => ComputeTwGridBreakpoint(formOptions?.fieldSize, 'col'))
+        maxHeight: useBreakpointStyle(formOptions?.maxHeight ?? defaultStyles.maxHeight, breakpointsConfig),
+        maxWidth: useBreakpointStyle(formOptions?.maxWidth ?? defaultStyles.maxWidth, breakpointsConfig, 'maxWidth'),
+        gridSize: useBreakpointStyle(formOptions?.gridSize ?? defaultStyles.gridSize, breakpointsConfig, 'grid'),
+        fieldSize: useBreakpointStyle(formOptions?.fieldSize ?? defaultStyles.fieldSize, breakpointsConfig, 'col'),
     })
 
     // let customComponentsStore: any = markRaw({})
@@ -38,10 +36,10 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
                 _dependencies: computed(() => MapDependenciesAsObject(field.dependencies ? field.dependencies.map((key: string) => ({ key, value: ResolveFromString(key, formState) })) :  [])),
                 _evalOptions: ref(false),
                 _evalEnable: ref(false),
-                size: computed(() => ComputeTwGridBreakpoint(field.size ?? formOptions.fieldSize, 'col')),
+                size: useBreakpointStyle(field.size ?? formOptions?.fieldSize ?? defaultStyles.fieldSize, breakpointsConfig, 'col'),
                 ...(options.parentType && { _parentType: options.parentType }),
                 ...(options.parentId && { _parentId: options.parentId }),
-                ...(['array', 'object'.includes(field.type)] && { gridSize: computed(() => ComputeTwGridBreakpoint(field?.gridSize ?? formOptions.gridSize, 'grid')) }),
+                ...(['array', 'object'.includes(field.type)] && { gridSize: useBreakpointStyle(field?.gridSize ?? formOptions?.gridSize ?? defaultStyles.gridSize, breakpointsConfig, 'grid') }),
                 ...(field.type === 'array' && { _itemsRefs: reactive([]) }),
             }
         })
@@ -128,7 +126,6 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         PreviousStep: () => currentStepIndex.value > 0 && (formSteps[currentStepIndex.value]._status = 'Pending', currentStepIndex.value--), 
         SubmitForm,
         CloseForm,
-        breakpoints,
         formStyle,
         customComponentsStore,
         $v,
