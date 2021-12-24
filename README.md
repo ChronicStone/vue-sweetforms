@@ -89,8 +89,6 @@ import "vue-sweetforms/dist/style.css"
   const OpenForm = async () => {
     const { isCompleted, formData } = await createForm({
       title: "Demonstration",
-      onSubmit: (formData) => alert(JSON.stringify(formData)),
-      onCancel: () => alert('CANCELLED'),
       gridSize: 6,
       fields: [
         { key: "firstName", type: "text", label: "First name", placeholder: "John", size: 2 },
