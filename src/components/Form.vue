@@ -1,6 +1,6 @@
 <template>
     <n-card 
-        :style="{ maxWidth: formStyle.maxWidth, width: '100%' }"
+        :style="`${formStyle.maxWidth} width: 100%;`"
         ref="formRef" 
         class="transition-all opacity-100 fixed w-9/10 md:w-3/4 lg:w-1/2 rounded-lg h-auto" 
         id="sweetforms__form"
@@ -14,18 +14,22 @@
                 <i-mdi-close class="h-4 w-4"/>
             </div>
 
+            {{ formStyle.maxHeight}}
         </template>
         <!-- Form body -->
-        <div class="h-10/12 max-h-55vh grid gap-4 px-6 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-rounded-full text-left" :class="formStyle.gridSize" :style="`height:fit-content !important;`">
+        <form class="h-10/12 max-h-55vh grid gap-4 px-6 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-rounded-full text-left" :style="`height:fit-content !important;${formStyle.gridSiz}`">
             <FormInput 
                 v-for="(field, fieldIndex) of formContent.filter((field: any) => (field._enable || field.conditionEffect === 'disable') && (isMultiStep ? currentStepIndex === field._stepIndex : true))" :key="fieldIndex"
                 :gridSize="formStyle.gridSize"
                 :field="field"
                 :validator="$v[field.key]"
-                v-model="formState[field.key]"
                 :disabled="!field._enable && field.conditionEffect === 'disable'"
+                :modelValue="field._stepRoot ? formState[field._stepRoot][field.key] : formState[field.key]"
+                @update:modelValue="HandleRootValUpdate(field, $event)"
             />
-        </div>
+        </form>
+        <!--                 v-model="field._stepRoot ? formState[field._stepRoot][field.key] : formState[field.key]"
+ -->
 
         <!-- Form buttons -->
         <template #footer>
@@ -44,7 +48,7 @@ import FormStepper from "./FormSteps.vue";
 import { NCard, NButton } from "naive-ui"
 import { onClickOutside } from "@vueuse/core"
 import { ref, computed, reactive, provide, defineComponent } from "vue"
-import { useForm } from "../hooks"
+import { useForm, useBreakpointStyle } from "../hooks"
 import { ComputePropSize } from "@/utils"
 
 const emit = defineEmits(['closeForm', 'submitForm', 'cancelForm'])
@@ -62,9 +66,16 @@ const props = defineProps({
 const formRef = ref(null)
 const { isMultiStep, currentStepIndex, formState, formSteps, formContent, formRules, SubmitForm, CloseForm, formStyle, PreviousStep, $v } = useForm(props.formOptions, props.formData, emit)
 
+const HandleRootValUpdate = (field: any, value: any) => {
+    if (field._stepRoot) formState[field._stepRoot][field.key] = value 
+    else formState[field.key] = value
+}
+
 onClickOutside(formRef, ({ target }: any) => {
     if(target?.id === 'sweetforms__overlay' && (props?.formOptions?.allowClickOutside ?? true)) CloseForm()
 })
+
+// const currentBreakpointVal = useBreakpointStyle('1 md:2 lg:3 xl:4', 'grid')
 
 </script>
 

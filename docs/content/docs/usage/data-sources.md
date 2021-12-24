@@ -60,3 +60,4 @@ const OpenForm = async () => {
 
 Both of these select fields use an async function to get the options. When the "breed" field changes, the options of "subBreed" are re-computed accordingly to the value of "breed".
 
+<iframe width="100%" height="600px" src="https://stackblitz.com/edit/vue-xyzwq9?embed=1&file=src/components/SimpleDependency.vue&hideExplorer=1&theme=dark&view=preview" />
