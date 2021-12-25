@@ -20,7 +20,7 @@
 
 - 📝 Schema-based form definition
 
-- 📐 Auto grid-based templating, with breakpoint-based responsiveness control
+- 📐 Auto grid-based templating, with breakpoint-based responsiveness control (Tailwind-like API)
 
 - ✏️ Any type of field supported A lot of field types supported (`text` | `textarea` | `password` | `number` | `slider` | `switch` | `select` | `radio` | `checkbox` | `checkboxGroup` | `date` | `time` | `datetime` | `datetimerange` | `daterange` | `month` | `year` | `file` | `array` | `object` | `customComponent`)
 
