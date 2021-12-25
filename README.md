@@ -24,7 +24,7 @@
 
 - 📐 Auto grid-based templating, with breakpoint-based responsiveness control
 
-- ✏️ Any type of field supported A lot of field types supported ( 'text' | 'textarea' | 'password' | 'number' | 'slider' | 'switch' | 'select' | 'radio' | 'checkbox' | 'checkboxGroup' | 'date' | 'time' | 'datetime' | 'datetimerange' | 'daterange' | 'month' | 'year' | 'file' | 'array' | 'object')
+- ✏️ Any type of field supported A lot of field types supported (`text` | `textarea` | `password` | `number` | `slider` | `switch` | `select` | `radio` | `checkbox` | `checkboxGroup` | `date` | `time` | `datetime` | `datetimerange` | `daterange` | `month` | `year` | `file` | `array` | `object`)
 
 - 📁 Supports deeply nested data structures (objects & arrays)
 
