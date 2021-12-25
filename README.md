@@ -107,7 +107,15 @@ import "vue-sweetforms/dist/style.css"
 ```
 ## Improvements roadmap
 
-COMING SOON
+- [ ] Improve / complete documentation
+- [ ] Migrate documentation to [VitePress](https://vitepress.vuejs.org/) or  [IlesJs](https://github.com/ElMassimo/iles)
+- [ ] Integrate documentation examples to docs app (w/ Vitepress or IlesJs)
+- [ ] Make Sweetform work as standalone component (If user don't want to use the function-based API)
+- [ ] Make optimizations to improve performance
+- [ ] Add full WAI-ARIA support
+- [ ] Improve styles customization API
+
+Any PR is gladly welcomed and will be greatly appreciated.
 
 ## Credits
 
