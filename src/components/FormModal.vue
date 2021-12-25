@@ -1,22 +1,21 @@
 <template>
     <n-card 
+        :style="`${formStyle.maxWidth} width: 100%;`"
         ref="formRef" 
-        class="transition-all opacity-100 fixed w-9/10 md:w-3/4 lg:w-1/2 h-max-[85vh] rounded-lg h-auto z-max" 
-        style="height: fit-content;max-height:85vh;"
+        class="transition-all opacity-100 fixed w-9/10 md:w-3/4 lg:w-1/2 rounded-lg h-auto" 
         id="sweetforms__form"
-        content-style="height:fit-content;padding: 10px;"
+        :content-style="{ height: 'fit-content', maxHeight: formStyle.maxHeight, width: '100%', padding: '10px' }"
     >
     <!--         content-style="overflow-y: auto;"
  -->
     <!-- FORM TITLE -->
         <template #header>
-            <slot name="title" />
-            <slot name="steps" v-if="$slots.steps"/>
+            <slot name="header" />
         </template>
         <!-- Form body -->
-        <div class="h-10/12 max-h-55vh grid gap-4 px-6 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-rounded-full" :style="`height:fit-content !important;grid-template-columns: repeat(${formOptions.gridSize ?? '2'},minmax(0,1fr));`">
+        <form class="h-10/12 max-h-55vh grid gap-4 px-6 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-rounded-full text-left" :style="`height:fit-content !important;${formStyle.gridSize}`">
             <slot name="fields" />
-        </div>
+        </form>
 
         <!-- Form buttons -->
         <template #footer>
@@ -36,6 +35,10 @@ const props = defineProps({
     allowClickOutside: {
         type: Boolean,
         default: true
+    },
+    formStyle: {
+        type: Object,
+        default: () => ({})
     }
 })
 
