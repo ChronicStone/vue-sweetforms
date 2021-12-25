@@ -5,9 +5,7 @@
 <h4 align="center">A Vue 3 package based on  <a href="https://github.com/TuSimple/naive-ui" target="_blank">Naive UI</a> that provides highly customizable promised-based popup forms, with features like form advanced validation, optional http request handling, multiple-steps, and many more !</h4>
 
 <p align="center">
-  <a href="https://badge.fury.io/js/%40chronicstone%2Fsweetforms">
-    <img src="https://badge.fury.io/js/%40chronicstone%2Fsweetforms.svg" alt="npm version" height="18">
-  </a>
+  <a href="https://badge.fury.io/js/@chronicstone%2Fvue-sweetforms"><img src="https://badge.fury.io/js/@chronicstone%2Fvue-sweetforms.svg" alt="npm version" height="18"></a>
 </p>
 
 <p align="center">
@@ -20,22 +18,25 @@
 
 ## Key Features
 
-- Grid-based templating
-  - Highly customizable layout, based on css grid
-  - Responsiveness control through breakpoints (Tailwindcss-like API)
-- A lot of field types supported
-  - List of supported field types : 'text' | 'textarea' | 'password' | 'number' | 'slider' | 'switch' | 'select' | 'radio' | 'checkbox' | 'checkboxGroup' | 'date' | 'time' | 'datetime' | 'datetimerange' | 'daterange' | 'month' | 'year' | 'file' | 'array' | 'object'
-  - Support deeply nested form objects
-  - Supports custom vue components as fields [COMING SOON]
-- Advanced cross-fields dependency
-  - Cross-field field disabling / hiding (supports async)
-  - Cross-field validation (supports async validation, & validation of deeply nested data structures)
-  - Cross-field computed option list for list-like inputs (Select, radio group, ...) (supports async)
-- Advanced validation based on [Vuelidate](https://vuelidate-next.netlify.app/)
-- Dark/Light mode
-- Highly customizable design
-- Supports multiple steps forms
-- And many more !
+- 📝 Schema-based form definition
+
+- 📐 Auto grid-based templating, with breakpoint-based responsiveness control
+
+- ✏️ Any type of field supported A lot of field types supported (`text` | `textarea` | `password` | `number` | `slider` | `switch` | `select` | `radio` | `checkbox` | `checkboxGroup` | `date` | `time` | `datetime` | `datetimerange` | `daterange` | `month` | `year` | `file` | `array` | `object` | `customComponent`)
+
+- 📁 Supports deeply nested data structures (objects & arrays)
+
+- 🔗 Advanced cross-fields dependency system (conditional rendering, validation, field options, ...)
+
+- ✔️ Advanced validation based on [Vuelidate](https://vuelidate-next.netlify.app/)
+
+- 🌙 Dark/Light mode
+
+- 🎨 Highly customizable design
+
+- ⚙️ Supports multiple steps forms
+
+- ➕ And many more !
 
 
 ## Documentation and live examples
@@ -107,7 +108,15 @@ import "vue-sweetforms/dist/style.css"
 ```
 ## Improvements roadmap
 
-COMING SOON
+- [ ] Improve / complete documentation
+- [ ] Migrate documentation to [VitePress](https://vitepress.vuejs.org/) or  [IlesJs](https://github.com/ElMassimo/iles)
+- [ ] Integrate documentation examples to docs app (w/ Vitepress or IlesJs)
+- [ ] Make Sweetform work as standalone component (If user don't want to use the function-based API)
+- [ ] Make optimizations to improve performance
+- [ ] Add full WAI-ARIA support
+- [ ] Improve styles customization API
+
+Any PR is gladly welcomed and will be greatly appreciated.
 
 ## Credits
 
