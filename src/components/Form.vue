@@ -13,8 +13,6 @@
             <div v-if="formOptions?.showCloseButton ?? true" @click="CloseForm" class="absolute top-2 right-2 h-5 w-5 rounded-full cursor-pointer grid place-items-center hover:(bg-gray-500 bg-opacity-20 text-red-500)">
                 <i-mdi-close class="h-4 w-4"/>
             </div>
-
-            {{ formStyle.maxHeight}}
         </template>
         <!-- Form body -->
         <form class="h-10/12 max-h-55vh grid gap-4 px-6 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-rounded-full text-left" :style="`height:fit-content !important;${formStyle.gridSiz}`">
