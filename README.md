@@ -5,9 +5,7 @@
 <h4 align="center">A Vue 3 package based on  <a href="https://github.com/TuSimple/naive-ui" target="_blank">Naive UI</a> that provides highly customizable promised-based popup forms, with features like form advanced validation, optional http request handling, multiple-steps, and many more !</h4>
 
 <p align="center">
-  <a href="https://badge.fury.io/js/%40chronicstone%2Fsweetforms">
-    <img src="https://badge.fury.io/js/%40chronicstone%2Fsweetforms.svg" alt="npm version" height="18">
-  </a>
+  <a href="https://badge.fury.io/js/@chronicstone%2Fvue-sweetforms"><img src="https://badge.fury.io/js/@chronicstone%2Fvue-sweetforms.svg" alt="npm version" height="18"></a>
 </p>
 
 <p align="center">
