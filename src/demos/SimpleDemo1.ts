@@ -9,6 +9,7 @@ export default [
       title: "Demo of field types",
       gridSize: "8",
       fieldSize: "8 md:4",
+      fullScreen: true,
       fields: [
         {
           key: "text",
@@ -159,6 +160,7 @@ export default [
     value: {
       gridSize: 8,
       fieldSize: 8,
+      fullScreen: true,
       steps: [
         {
           title: "Step 1",

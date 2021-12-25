@@ -15,6 +15,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     const breakpointsConfig = useBreakpoints(breakpointsDef)
 
     const formStyle = reactive({
+        fullScreen: useBreakpointStyle(formOptions?.fullScreen ?? defaultStyles.fullScreen, breakpointsConfig, 'boolean'),
         maxHeight: useBreakpointStyle(formOptions?.maxHeight ?? defaultStyles.maxHeight, breakpointsConfig),
         maxWidth: useBreakpointStyle(formOptions?.maxWidth ?? defaultStyles.maxWidth, breakpointsConfig, 'maxWidth'),
         gridSize: useBreakpointStyle(formOptions?.gridSize ?? defaultStyles.gridSize, breakpointsConfig, 'grid'),
