@@ -160,7 +160,7 @@ export default [
     value: {
       gridSize: 8,
       fieldSize: 8,
-      fullScreen: true,
+      fullScreen: "true md:false",
       steps: [
         {
           title: "Step 1",

@@ -1,10 +1,11 @@
 <template>
     <div class="flex flex-col gap-2" :style="field.size">
-        <div class="flex gap-2 items-center justify-between">
+        <div class="flex gap-2 items-center justify-between" v-if="(!field?.label && field.type === 'info') ? false : true">
             <span class="m-0 capitalize flex gap-2 justify-start items-center group cursor-pointer" style="cursor:pointer !important;" @click="['object', 'array'].includes(field.type) ? collapsed = !collapsed : null">
                 <CollapseButton v-model="collapsed" v-if="['object', 'array'].includes(field.type)"/>
                 <label :class="{'cursor-pointer':  ['object', 'array'].includes(field.type)}" :for="field.label">
-                    {{field.label}}<span class="text-red-500 ml-1.5">{{field.required ? '*' : ''}}</span>
+                    <LabelContent />
+                    <span class="text-red-500 ml-1.5">{{field.required ? '*' : ''}}</span>
                 </label>
             </span>
 
@@ -178,9 +179,14 @@
             />
         </div>
 
+        <div v-if="field.type === 'info'">
+            <!-- <component :is="render(field.content, field._dependencies)"/> -->
+            <InfoContent />
+        </div>
+
         
         <NAlert type="error" :show-icon="false" v-if="validator?.$errors?.length" class="w-full">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 py-0.5">
                 <i-mdi-information class="text-red-500"/>
                 <span class="text-red-500">{{ ParseErrMsg(validator, field) }}</span>
             </div>
@@ -188,18 +194,18 @@
     </div>
 </template>
 
-<script lang="ts">
+<script lang="tsx">
     export default {
         name: 'FormInput',
     }
 </script>
 
-<script setup lang="ts">
+<script setup lang="tsx">
     import { computed, ref, inject, defineComponent, toRaw, isReactive } from 'vue';
     import { NCard, NCollapseTransition, NInput, NSelect, NInputNumber, NAlert, NDatePicker, NTimePicker, NSlider, NRadioGroup, NRadio, NCheckbox, NCheckboxGroup, NDynamicInput, useThemeVars } from "naive-ui"
     import DescriptionPopup from "./DescriptionPopup.vue"
     import CollapseButton from "./CollapseButton.vue"
-    import { MapFormInitialState, MapFieldProps, ParseErrMsg, GenerateUUID } from "../utils"
+    import { MapFormInitialState, MapFieldProps, ParseErrMsg, GenerateUUID, render } from "../utils"
 
 		const props = defineProps({
         gridSize: { 
@@ -241,6 +247,9 @@ const componentStore: any = toRaw(inject('componentStore', {}))
         return { _uuid, _collapsed: false, ...MapFormInitialState(props.field.fields) }
     }
     const RemoveArrayFieldItem = (index: number) => props.field._removeItemRef(fieldValue.value[index]._uuid)
+
+    const InfoContent = () => render(props.field.content ?? '', props.field._dependencies)
+    const LabelContent = () => render(props.field.label ?? 'Field label')
 </script>
 
 <style>

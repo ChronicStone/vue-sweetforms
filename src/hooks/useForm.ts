@@ -34,7 +34,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             return {
                 ...field,
                 _uuid: GenerateUUID(),
-                _dependencies: computed(() => MapDependenciesAsObject(field.dependencies ? field.dependencies.map((key: string) => ({ key, value: ResolveFromString(key, formState) })) :  [])),
+                _dependencies: computed(() => MapDependenciesAsObject(field.dependencies ? field.dependencies.map((key: string) => ({ key, value: key === '$root' ? formState : ResolveFromString(key, formState) })) :  [])),
                 _evalOptions: ref(false),
                 _evalEnable: ref(false),
                 size: useBreakpointStyle(field.size ?? formOptions?.fieldSize ?? defaultStyles.fieldSize, breakpointsConfig, 'col'),
