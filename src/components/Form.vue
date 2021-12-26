@@ -1,9 +1,19 @@
 <template>
-    <component :is="formStyle.fullScreen ? FormModalFullscreen : FormModal" :formStyle="formStyle" :allowClickOutside="formOptions?.allowClickOutside ?? true" @closeForm="CloseForm">
-        <template #header>
+    <component :is="!popup ? FormInlineContainer : formStyle.fullScreen ? FormModalFullscreen : FormModal" :formStyle="formStyle" :allowClickOutside="formOptions?.allowClickOutside ?? true" @closeForm="CloseForm">
+        <template #header v-if="formOptions?.title || $slots.title || (isMultiStep && (formOptions?.showSteps ?? true))">
             <FormStepper class="mt-2" v-if="(formOptions?.showSteps ?? true) && isMultiStep" :steps="formSteps" :current-step="currentStepIndex" />
-            <div class="text-center uppercase text-xl">{{ isMultiStep ? `${currentStepIndex + 1} - ${formSteps[currentStepIndex].title}` : formOptions.title }}</div>
-            <div v-if="formOptions?.showCloseButton ?? true" @click="CloseForm" class="absolute top-2 right-2 h-5 w-5 rounded-full cursor-pointer grid place-items-center hover:(bg-gray-500 bg-opacity-20 text-red-500)">
+            
+            <slot 
+                v-if="$slots.title" 
+                name="title" 
+                v-bind="{ 
+                    ...(isMultiStep && { stepIndex: currentStepIndex, stepTitle: formSteps[currentStepIndex].title }),
+                    ...(!isMultiStep && { title: formOptions?.title})
+                }" 
+            />
+            <div  v-else class="text-center uppercase text-xl">{{ isMultiStep ? `${currentStepIndex + 1} - ${formSteps[currentStepIndex].title}` : formOptions.title }}</div>
+
+            <div v-if="!popup ? false : formOptions?.showCloseButton ?? true" @click="CloseForm" class="absolute top-2 right-2 h-5 w-5 rounded-full cursor-pointer grid place-items-center hover:(bg-gray-500 bg-opacity-20 text-red-500)">
                 <i-mdi-close class="h-4 w-4"/>
             </div>
         </template>
@@ -33,9 +43,8 @@ import FormInput from "./FormInput.vue";
 import FormStepper from "./FormSteps.vue";
 import FormModal from "./FormModal.vue";
 import FormModalFullscreen from "./FormModalFullscreen.vue";
-import { NCard, NButton } from "naive-ui"
-import { onClickOutside } from "@vueuse/core"
-import { ref } from "vue"
+import FormInlineContainer from "./FormInlineContainer.vue";
+import { NButton } from "naive-ui"
 import { useForm } from "../hooks"
 
 const emit = defineEmits(['closeForm', 'submitForm', 'cancelForm'])
@@ -47,6 +56,10 @@ const props = defineProps({
     formData: {
         type: Object,
         default: () => ({})
+    },
+    popup: {
+        type: Boolean,
+        default: false
     }
 })
 

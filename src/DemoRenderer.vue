@@ -1,5 +1,12 @@
 <template>
   <div>
+    <NCard title="Standalone form component" class="mb-4" :segmented="{content: true}">
+      <Form :formOptions="SimpleSchema">
+        <template #title="{ title }">
+          hahaha {{title}}
+        </template>
+      </Form>
+    </NCard>
     <div v-for="(DemoGroup, groupIndex) of demonstrations" :key="groupIndex" class="grid grid-cols-1 gap-4">
       <NCard :segmented="{content: true}" hoverable :title="label" v-for="({ label, value, inputData, expanded}, demoIndex) in DemoGroup" :key="demoIndex">
         <div class="flex flex-col gap-4">
@@ -25,12 +32,13 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="tsx">
 import TestComp from "./TestComp.vue"
 import { reactive, ref } from "vue"
-import { NCard, NButton, useThemeVars, NDivider, NCollapseTransition,  NSwitch } from "naive-ui"
-import { FormProvider, useSweetform, SweetformTypes } from './index';
+import { NCard, NButton, useThemeVars,  NSwitch, NTag } from "naive-ui"
+import { useSweetform, Form } from './index';
 import * as AllDemos from "@/demos/"
+import { contentItem } from "./slotRender"
 const { createForm, formInstances }: any = useSweetform()
 const OpenForm = async (formContent: any, inputData: any) => {
   const data = await createForm(formContent, inputData)
@@ -39,6 +47,16 @@ const OpenForm = async (formContent: any, inputData: any) => {
 
 const demonstrations = reactive(Object.values(AllDemos).map((DemoGroup: any) => DemoGroup.map((demo: any) => ({ ...demo, expanded: false}))))
 const testVal = ref('')
+
+
+const SimpleSchema = ref({
+  title: "My form as component",
+  fields: [
+    { label: "First name", key: "firstName", type: "text", required: true },
+    { label: "Last name", key: "lastName", type: "text" },
+    { key: "lastName", type: "info", content: ({ $root }) => <div>{(!$root.firstName || !$root.lastName) ? 'Fill both fields' : <div>Welcome, <NTag>{$root.firstName} {$root.lastName}</NTag></div>} </div>, dependencies: ['$root'] },
+  ]
+})
 
 function JSONstringifyWithFuncs(obj) {
   Object.prototype.toJSON = function() {

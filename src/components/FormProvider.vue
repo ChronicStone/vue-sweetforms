@@ -5,7 +5,7 @@
       <transition-group
         name="card"
       >
-        <Form v-for="(formInstance, key) in formInstances"  @closeForm="CloseForm(key)" @submitForm="SubmitForm($event, key)" v-bind="formInstance" :key="key" />
+        <Form popup v-for="(formInstance, key) in formInstances"  @closeForm="CloseForm(key)" @submitForm="SubmitForm($event, key)" v-bind="formInstance" :key="key" />
       </transition-group>
       <div v-show="showModalOverlay" ref="modalOverlay" @click="showModalOverlay = false" id="sweetforms__modalContainer" class="absolute top-0 left-0 h-screen w-full" />
     </div>

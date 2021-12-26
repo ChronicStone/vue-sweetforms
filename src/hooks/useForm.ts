@@ -95,8 +95,11 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     const $v = useVuelidate(formRules, formState);
 
     const CloseForm = () => formOptions._resolve({ isCompleted: false, formData: MapOutputState(formState, formContent) })
+    const CloseForm = () => formOptions._resolve ? formOptions._resolve({ isCompleted: false, formData: MapOutputState(formState, formContent) }) : emit('cancelForm', { isCompleted: false, formData: MapOutputState(formState, formContent) })
     const SubmitForm = async () => {
         const _emitForm = () => formOptions._resolve({ isCompleted: true, formData: MapOutputState(formState, formContent)})
+        const _emitForm = () => formOptions._resolve ? formOptions._resolve({ isCompleted: true, formData: MapOutputState(formState, formContent)}) : emit('submitForm', { isCompleted: true, formData: MapOutputState(formState, formContent)})
+
         const isValid = await $v.value.$validate()
         if(!isValid) {
             if(!isMultiStep.value) return
