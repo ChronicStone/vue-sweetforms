@@ -16,6 +16,7 @@ export const MapArrayToObject = (array: any[]) => {
 export const MapFormInitialState = (fields: any[], inputFormData: any = {}, parentKey = "") => {
     const state: any = {}
     fields.forEach((field: any) => {
+        if(field.type === 'info') return
         const GetFieldState = () => {
             if(!['array', 'object'].includes(field.type)) return inputFormData?.[field.key] ? inputFormData?.[field.key] : field?.default ? field?.default : field.type === 'checkbox' ? false : field.type === 'number' ? 0 : null
             else if(field.type === 'array') return inputFormData[field.key] ?? field?.default ?? []
@@ -89,7 +90,7 @@ export const MapOutputState = (inputState: any, fields: any = [], parentKey = ""
                 else if(field.type === 'array') return ((field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key]) ?? []).map((item: any) => MapOutputState(item, field.fields ?? [], field.key))
                 else return MapOutputState((field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key]) ?? {}, field.fields ?? [], field.key)
             }
-            if(!field?._enable) return
+            if(!field?._enable || field.type === 'info') return
             else if(field._stepRoot) {
                 if(!state[field._stepRoot]) state[field._stepRoot] = {}
                 state[field._stepRoot][field.key] = GetFieldState()
