@@ -1,14 +1,16 @@
 <template>
   <NConfigProvider :theme="darkMode ? darkTheme : null" :theme-overrides="darkMode ? DarkThemeOverrides : LightThemeOverrides">
-    <slot />
-    <div id="sweetforms__overlay" style="z-index: 1000;" v-if="formInstances.length" class="fixed left-0 top-0 bg-black bg-opacity-50 grid place-items-center w-full h-screen">
-      <transition-group
-        name="card"
-      >
-        <Form popup v-for="(formInstance, key) in formInstances"  @closeForm="CloseForm(key)" @submitForm="SubmitForm($event, key)" v-bind="formInstance" :key="key" />
-      </transition-group>
-      <div v-show="showModalOverlay" ref="modalOverlay" @click="showModalOverlay = false" id="sweetforms__modalContainer" class="absolute top-0 left-0 h-screen w-full" />
-    </div>
+    <NDialogProvider>
+      <slot />
+      <div id="sweetforms__overlay" style="z-index: 1000;" v-if="formInstances.length" class="fixed left-0 top-0 bg-black bg-opacity-50 grid place-items-center w-full h-screen">
+        <transition-group
+          name="card"
+        >
+          <Form popup v-for="(formInstance, key) in formInstances"  @closeForm="CloseForm(key)" @submitForm="SubmitForm($event, key)" v-bind="formInstance" :key="key" />
+        </transition-group>
+      </div>
+    <div v-show="showModalOverlay" ref="modalOverlay" @click="showModalOverlay = false" id="sweetforms__modalContainer" style="z-index: 2000" class="absolute top-0 left-0 h-screen w-full" />
+    </NDialogProvider>
   </NConfigProvider>
 </template>
 
@@ -16,7 +18,7 @@
   import { FormInjectKey, ModalOverlayInjectKey, BreakpointsInjectKey } from "../constants/injectionKeys"
   import { ref, computed, provide, inject, defineProps } from "vue"
   import { useBreakpoints, breakpointsTailwind } from "@vueuse/core"
-  import { NConfigProvider, darkTheme } from "naive-ui"
+  import { NConfigProvider, NDialogProvider, darkTheme } from "naive-ui"
   import { LightThemeOverrides, DarkThemeOverrides } from "@/config"
   import { FormInstance } from "@/types/form.types"
   import { GenerateUUID } from "@/utils/"
