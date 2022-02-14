@@ -5,6 +5,7 @@ import { markRaw, toRaw } from 'vue';
 
 interface InternalFormField extends FormField {
     _stepIndex?: number
+    _dependencies?: { [key: string]: any }
 }
 
 export const MapArrayToObject = (array: any[]) => {
@@ -39,7 +40,7 @@ export const MapFormRules = (fields: any[]) => {
             ...(field.type === 'array' && { ...rules[field.key], $each: helpers.forEach({ ...MapFormRules(field.fields ?? []), $trackBy: '_id' }) }),
             ...(typeof field?.validators === 'function' && { ...field.validators(field._dependencies, field), }),
             ...(typeof field.validators === 'object' && { ...field.validators, }),
-            ...(field.required && { required: helpers.withMessage(`The field ${field.label} can't be empty`, required) })
+            ...(field.required && { required: helpers.withMessage(`The field ${typeof field.label != 'string' ? field.key : field.label} can't be empty`, required) })
         }
     })
 
@@ -85,9 +86,17 @@ export const MapOutputState = (inputState: any, fields: any = [], parentKey = ""
     let state: any = {}
     try {
         fields.forEach((field: any) => {
+            const GetTransformedField = (value: any, field: any) => field.transform ? field.transform(value, field._dependencies) : value
             const GetFieldState = () => {
-                if(!['array', 'object'].includes(field.type)) return (field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key]) ?? null
-                else if(field.type === 'array') return ((field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key]) ?? []).map((item: any) => MapOutputState(item, field.fields ?? [], field.key))
+                if(!['array', 'object'].includes(field.type)) return GetTransformedField(field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key], field) ?? null
+                else if(field.type === 'array') return ((field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key]) ?? []).map((item: any) => {
+                    const { _collapsed, _uuid, ...itemData } = item
+                    let output = MapOutputState(item, field.fields ?? [], field.key)
+                    if(field.extraProperties) {
+                        for(const key in itemData) if(!field.fields.some(field => field.key === key)) output[key] = itemData[key]
+                    }
+                    return output
+                })
                 else return MapOutputState((field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key]) ?? {}, field.fields ?? [], field.key)
             }
             if(!field?._enable || field.type === 'info') return
