@@ -2,7 +2,6 @@
     <component :is="!popup ? FormInlineContainer : formStyle.fullScreen ? FormModalFullscreen : FormModal" :formStyle="formStyle" :allowClickOutside="formOptions?.allowClickOutside ?? true" @closeForm="CloseForm">
         <template #header v-if="formOptions?.title || $slots.title || (isMultiStep && (formOptions?.showSteps ?? true))">
             <FormStepper class="mt-2" v-if="(formOptions?.showSteps ?? true) && isMultiStep" :steps="formSteps" :current-step="currentStepIndex" />
-            
             <slot 
                 v-if="$slots.title" 
                 name="title" 
@@ -30,7 +29,18 @@
             />
         </template>
 
-        <template #actions>
+        {{!$slots}}
+        
+        <template #customActions v-if="$slots.actions">
+            <slot 
+                name="actions" 
+                v-bind="{ 
+                    ...(isMultiStep && { togglePreviousStep: PreviousStep, currentStepIndex: currentStepIndex, formSteps: formSteps }),
+                    toggleSubmit: SubmitForm, 
+                }" 
+            />
+        </template>
+        <template #actions v-if="!$slots.actions">
             <NButton @click="CloseForm" v-if="formOptions?.showCancelButton ?? true" type="error">CANCEL</NButton>
             <NButton @click="PreviousStep" v-if="(formOptions?.showPreviousButton ?? true) && isMultiStep" :disabled="currentStepIndex === 0" type="primary">{{formOptions?.previousButtonText ?? 'PREVIOUS'}}</NButton>
             <NButton @click="SubmitForm" type="primary">{{isMultiStep ? `${currentStepIndex === formSteps.length - 1 ? (formOptions?.submitButtonText ?? 'SUBMIT') : (formOptions?.nextButtonText ?? 'NEXT')}` : (formOptions?.submitButtonText ?? 'SUBMIT')}}</NButton>
@@ -39,6 +49,7 @@
 </template>
 
 <script setup lang="ts">
+import { defineExpose } from "vue"
 import FormInput from "./FormInput.vue";
 import FormStepper from "./FormSteps.vue";
 import FormModal from "./FormModal.vue";
@@ -47,7 +58,7 @@ import FormInlineContainer from "./FormInlineContainer.vue";
 import { NButton } from "naive-ui"
 import { useForm } from "../hooks"
 
-const emit = defineEmits(['closeForm', 'submitForm', 'cancelForm'])
+const emit = defineEmits(['closeForm', 'submitForm', 'cancelForm', 'onSubmit', 'onCancel'])
 const props = defineProps({
     formOptions: {
         type: Object,
@@ -63,11 +74,18 @@ const props = defineProps({
     }
 })
 
-const { isMultiStep, currentStepIndex, formState, formSteps, formContent, formRules, SubmitForm, CloseForm, formStyle, PreviousStep, $v } = useForm(props.formOptions, props.formData, emit)
+const { isMultiStep, currentStepIndex, formState, formSteps, formContent, SubmitForm, CloseForm, formStyle, PreviousStep, $v, mappedSyncState } = useForm(props.formOptions, props.formData, emit)
 const HandleRootValUpdate = (field: any, value: any) => {
     if (field._stepRoot) formState[field._stepRoot][field.key] = value 
     else formState[field.key] = value
 }
+
+defineExpose({
+    formData: mappedSyncState,
+    $validate: $v.validate,
+    formSteps,
+    ...(isMultiStep.value && { PreviousStep, currentStepIndex, formSteps }),
+})
 </script>
 
 <style scoped>
