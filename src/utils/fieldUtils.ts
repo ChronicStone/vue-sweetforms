@@ -23,7 +23,9 @@ export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any = {}) => {
                 'virtual-scroll': fieldProps.virtualScroll ?? false,
                 ...(fieldProps.renderLabel && { 'render-label': fieldProps.renderLabel }),
                 ...(fieldProps.renderOption && { 'render-option': fieldProps.renderOption }),
-                ...(fieldProps.renderTag && { 'render-tag': fieldProps.renderTag })
+                ...(fieldProps.renderTag && { 'render-tag': fieldProps.renderTag }),
+                'max-tag-count': fieldProps.maxSelectedCount ?? 'responsive',
+                tag: fieldProps.writable ?? false,
             }
         case 'number':
             return {
@@ -58,6 +60,8 @@ export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any = {}) => {
             return {
                 'default-checked': fieldProps.defaultChecked ?? false,
                 indeterminate: fieldProps.hasThirdState ?? false,
+                ...(fieldProps.uncheckedValue && { 'unchecked-value': fieldProps.uncheckedValue }),
+                ...(fieldProps.checkedValue && { 'checked-value': fieldProps.checkedValue }),
             }
         case 'checkbox-group':
             return {
@@ -99,7 +103,6 @@ export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any = {}) => {
 export const ParseErrMsg = ($v: any, field: any) => {
     if(field.type != 'array') return $v.$errors.filter((err: any) => err.$validator != '$each')[0]?.$message
     else {
-        console.log({ errType: $v.$errors[0]?.$validator})
         if($v.$errors[0]?.$validator === '$each') return `The field ${field.label} has items with invalid properties`
         else return $v.$errors[0]?.$message
     }
