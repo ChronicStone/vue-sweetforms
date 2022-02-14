@@ -34,7 +34,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             return {
                 ...field,
                 _uuid: GenerateUUID(),
-                _dependencies: computed(() => MapDependenciesAsObject(field.dependencies ? field.dependencies.map((key: string) => ({ key, value: ResolveFromString(key, formState) })) :  [])),
+                _dependencies: computed(() => MapDependenciesAsObject(field.dependencies ? field.dependencies.map((key: string) => ({ key, value: key === '$root' ? formState : ResolveFromString(key, formState) })) :  [])),
                 _evalOptions: ref(false),
                 _evalEnable: ref(false),
                 size: useBreakpointStyle(field.size ?? formOptions?.fieldSize ?? defaultStyles.fieldSize, breakpointsConfig, 'col'),
@@ -88,15 +88,15 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     }
     const formRules = computed(() => {
         const fields = FilterAppliedRules(formContent, null)
-        console.log({ fields })
         return MapFormRules(fields)
     })
 
     const $v = useVuelidate(formRules, formState);
 
-    const CloseForm = () => formOptions._resolve({ isCompleted: false, formData: MapOutputState(formState, formContent) })
+    const CloseForm = () => formOptions._resolve ? formOptions._resolve({ isCompleted: false, formData: MapOutputState(formState, formContent) }) : emit('onCancel', MapOutputState(formState, formContent))
     const SubmitForm = async () => {
-        const _emitForm = () => formOptions._resolve({ isCompleted: true, formData: MapOutputState(formState, formContent)})
+        const _emitForm = () => formOptions._resolve ? formOptions._resolve({ isCompleted: true, formData: MapOutputState(formState, formContent)}) : emit('onSubmit',  MapOutputState(formState, formContent))
+
         const isValid = await $v.value.$validate()
         if(!isValid) {
             if(!isMultiStep.value) return
@@ -116,6 +116,8 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         }
     }
 
+    const mappedSyncState = computed(() => MapOutputState(formState, formContent))
+
     provide('componentStore', customComponentsStore)
 
     return { 
@@ -133,6 +135,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         ...(formOptions.steps && { 
             currentStepIndex, 
             formSteps 
-        }) 
+        }),
+        mappedSyncState
     }
 }

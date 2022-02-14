@@ -28,9 +28,12 @@ export interface FormField {
     condition?: () => boolean,
     conditionEffect?: 'disable' | 'hide'
     validators?: Array<(validatorParams: ValidatorParams) => boolean>
+    transform: (value: any) => any
     fieldParams?: FieldOption
     gridSize?: string
-    children?: FormField[]
+    children?: FormField[],
+    component?: any,
+    extraProperties: boolean
 }
 
 export interface InternalFormField extends FormField {
