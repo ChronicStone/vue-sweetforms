@@ -1,5 +1,6 @@
 import { fetchGet, GenerateLoremIpsumText } from "@/utils"
 import { sameAs, helpers, email, minLength, maxLength } from "@vuelidate/validators"
+import { NTag } from "naive-ui"
 import TestComp from "../TestComp.vue"
 import component from '../env';
 export default [
@@ -48,13 +49,13 @@ export default [
           type: "select",
           key: "select",
           label: "Select",
-          options: () => Array.from({ length: 49}, (_, i) => ({ label: `Option ${i + 1}`, value: i + 1 })),
+          options: () => Array.from({ length: 49 }, (_, i) => ({ label: `Option ${i + 1}`, value: i + 1 })),
         },
         {
           type: "radio",
           key: "radio",
           label: "Radio",
-          options: () => Array.from({ length: 12}, (_, i) => ({ label: `Option ${i + 1}`, value: i + 1 })),
+          options: () => Array.from({ length: 12 }, (_, i) => ({ label: `Option ${i + 1}`, value: i + 1 })),
           size: 8
         },
         {
@@ -69,7 +70,7 @@ export default [
           label: "Checkbox group",
           gridSize: "3",
           size: "8",
-          options: () => Array.from({ length: 12}, (_, i) => ({ label: `Option ${i + 1}`, value: i + 1 })),
+          options: () => Array.from({ length: 12 }, (_, i) => ({ label: `Option ${i + 1}`, value: i + 1 })),
         },
         {
           type: "date",
@@ -243,6 +244,16 @@ export default [
             content: "This is a <b style='color: red;'>description</b> with a HTML content rendered"
           }
         },
+        {
+          key: "descr2",
+          label: () => <div>Description with <NTag>custom content</NTag></div>,
+          type: "textarea",
+          required: true,
+          description: {
+            // title: "Description title",
+            content: () => <div>This is a <b style={{ color: 'red' }}>description</b> with a HTML content rendered<TestComp /></div>
+          }
+        },
       ]
     }
   },
@@ -253,21 +264,21 @@ export default [
       gridSize: "8",
       fieldSize: "8",
       fields: [
-        { 
-          key: "dogBreed", 
-          type: "select", 
-          label: "Dog breed", 
-          placeholder: "Select a breed", 
+        {
+          key: "dogBreed",
+          type: "select",
+          label: "Dog breed",
+          placeholder: "Select a breed",
           options: async () => await fetchGet('https://dog.ceo/api/breeds/list/all').then(response => Object.keys(response.message).map(item => ({ label: item, value: item }))).catch(_ => [])
         },
-        { 
-          key: "dogSubBreed", 
-          type: "select", 
-          label: "Dog sub-breed", 
-          placeholder: "Select a sub-breed", 
+        {
+          key: "dogSubBreed",
+          type: "select",
+          label: "Dog sub-breed",
+          placeholder: "Select a sub-breed",
           description: "This field depends on dogBreed. When DogBreen changes, the async function will be re-executed to get the updated options.",
-          dependencies: ['dogBreed'], 
-          options: async ({ dogBreed }) => !dogBreed ? [] : await fetchGet(`https://dog.ceo/api/breed/${dogBreed}/list`).then(response => response.message.map(item => ({ label: item, value: item }))).catch(err => []) 
+          dependencies: ['dogBreed'],
+          options: async ({ dogBreed }) => !dogBreed ? [] : await fetchGet(`https://dog.ceo/api/breed/${dogBreed}/list`).then(response => response.message.map(item => ({ label: item, value: item }))).catch(err => [])
         },
         {
           label: "Dependencies works also with objects",
@@ -383,7 +394,7 @@ export default [
           dependencies: ['password'],
           required: true,
           validators: (dependencies: any) => ({
-            sameAsPassword: helpers.withMessage('The password and the confirmation does not match', sameAs(dependencies.password)) 
+            sameAsPassword: helpers.withMessage('The password and the confirmation does not match', sameAs(dependencies.password))
           })
         }
       ]
@@ -405,8 +416,8 @@ export default [
           fieldSize: "8 md:4",
           fields: [
             { type: "text", key: "key", label: "Module key", required: true, },
-            { type: "select", key: "type", label: "Module type", required: true, options: ['Composite', 'External', 'Async'].map(item => ({ label: item, value: item.toLowerCase()})) },
-            { type: "slider", key: "Score overall scale", label: "Description", required: true, fieldParams: { gap: 0.5}, size: "8 lg:9" },
+            { type: "select", key: "type", label: "Module type", required: true, options: ['Composite', 'External', 'Async'].map(item => ({ label: item, value: item.toLowerCase() })) },
+            { type: "slider", key: "Score overall scale", label: "Description", required: true, fieldParams: { gap: 0.5 }, size: "8 lg:9" },
           ],
         }
       ]
@@ -441,7 +452,7 @@ export default [
           dependencies: ['password'],
           required: true,
           validators: (dependencies: any) => ({
-            sameAsPassword: helpers.withMessage('The password and the confirmation does not match', sameAs(dependencies.password)) 
+            sameAsPassword: helpers.withMessage('The password and the confirmation does not match', sameAs(dependencies.password))
           })
         }
       ]
@@ -479,7 +490,7 @@ export default [
           key: "testCustomComp" + i,
           component: TestComp,
           label: "Test custom" + i,
-          required: true  
+          required: true
         }))
       ]
     }
@@ -491,7 +502,7 @@ export default [
       gridSize: 8,
       fieldSize: 8,
       fields: [
-        { type: "slider", key: "maxItemsInArray", label: "Max items in array", required: true, fieldParams: { gap: 1, min: 1, max: 10}, size: "8" },
+        { type: "slider", key: "maxItemsInArray", label: "Max items in array", required: true, fieldParams: { gap: 1, min: 1, max: 10 }, size: "8" },
         {
           type: "array",
           label: "Array",
@@ -515,7 +526,7 @@ export default [
       gridSize: 8,
       fieldSize: 8,
       fields: [
-        { type: "slider", key: "maxItemsInArray", label: "Max items in array", required: true, fieldParams: { gap: 1, min: 1, max: 10}, size: "8" },
+        { type: "slider", key: "maxItemsInArray", label: "Max items in array", required: true, fieldParams: { gap: 1, min: 1, max: 10 }, size: "8" },
         {
           type: "checkbox-group",
           label: "Array",
@@ -536,27 +547,27 @@ export default [
       firstName: "John",
       lastName: "Doe",
       address: {
-          street: "1 Main St",
-          city: "New York",
-          state: "NY",
-          // zip: "10001"
+        street: "1 Main St",
+        city: "New York",
+        state: "NY",
+        // zip: "10001"
       }
     },
     value: {
       title: "Input data",
       fields: [
-        { key: "firstName", label: "First name", type: "text" }, 
-        { key: "lastName", label: "Last name", type: "text" }, 
-        { 
-            key: "address", 
-            label: "Address", 
-            type: "object",
-            fields: [
-                { key: "street", label: "Street", type: "text", }, 
-                { key: "city", label: "City", type: "text" }, 
-                { key: "state", label: "State", type: "text" }, 
-                { key: "zip", label: "Zip", type: "text", default: "Hahaha" }
-            ]
+        { key: "firstName", label: "First name", type: "text" },
+        { key: "lastName", label: "Last name", type: "text" },
+        {
+          key: "address",
+          label: "Address",
+          type: "object",
+          fields: [
+            { key: "street", label: "Street", type: "text", },
+            { key: "city", label: "City", type: "text" },
+            { key: "state", label: "State", type: "text" },
+            { key: "zip", label: "Zip", type: "text", default: "Hahaha" }
+          ]
         }
       ]
     }
@@ -567,70 +578,138 @@ export default [
       gridSize: '1',
       fieldSize: '1',
       steps: [
-          {
-              title: 'General config',
-              root: 'general',
+        {
+          title: 'General config',
+          root: 'general',
+          fields: [
+            { type: 'text', key: 'examLogo', label: 'Exam logo', required: false, placeholder: 'Select a timezone' },
+            {
+              type: 'object',
+              key: 'locales',
+              label: 'Candidate app language',
+              required: false,
+              gridSize: '2',
+              fieldSize: '2 md:1',
               fields: [
-                  { type: 'text', key: 'examLogo', label: 'Exam logo', required: false, placeholder: 'Select a timezone' },
+                { type: 'select', key: 'default', label: 'Default language', required: false, options: [] },
+                { type: 'select', key: 'options', label: 'Authorized languages', required: false, options: [] }
+              ]
+            },
+            {
+              type: 'object',
+              key: 'accessibilityWindow',
+              label: 'Time restriction',
+              required: false,
+              // gridSize: '2',
+              // fieldSize: '2 md:1',
+              fieldParams: {
+                frameless: true
+              },
+              fields: [
+                { type: 'checkbox', key: 'enable', label: 'Enable time restriction', required: false },
+                {
+                  type: 'select',
+                  key: 'timezone',
+                  label: 'Time zone',
+                  required: true,
+                  options: [],
+                  dependencies: ['general.accessibilityWindow.enable'],
+                  condition: ({ 'general.accessibilityWindow.enable': enable }: { 'general.accessibilityWindow.enable': boolean }) => !!enable
+                },
+                {
+                  type: 'datetime',
+                  key: 'startDateTime',
+                  label: 'Start date',
+                  required: true,
+                  fieldParams: { format: null },
+                  dependencies: ['general.accessibilityWindow.enable'],
+                  condition: ({ 'general.accessibilityWindow.enable': enable }: { 'general.accessibilityWindow.enable': boolean }) => {
+                    console.log({ enable })
+                    return enable
+                  }
+                },
+                {
+                  type: 'datetime',
+                  key: 'endDateTime',
+                  label: 'End date',
+                  required: true,
+                  fieldParams: { format: null },
+                  dependencies: ['general.accessibilityWindow.enable'],
+                  condition: ({ 'general.accessibilityWindow.enable': enable }: { 'general.accessibilityWindow.enable': boolean }) => !!enable
+                }
+              ]
+            }
+          ]
+        },
+        {
+          title: 'Emails config',
+          fields: []
+        }
+      ]
+    }
+  },
+  {
+    label: "Create form test 2",
+    value: {
+      title: 'CREATE EXAM',
+      maxWidth: '500px',
+      gridSize: 1,
+      fieldSize: 1,
+      fullScreen: false,
+      fields: [
+        { key: 'test_name', label: 'Exam name', type: 'text', required: true },
+        { key: 'short_label', label: 'Exam short label', type: 'text', required: true, validators: { maxLength: helpers.withMessage('The short label must not exceed 35 characters', maxLength(35)) } },
+        {
+          key: 'pages',
+          label: 'START PAGES',
+          type: 'object',
+          size: '8',
+          collapsed: true,
+          fields: ['welcome', 'instructions'].map(page => ({
+              key: page,
+              label: `${page.charAt(0).toUpperCase() + page.slice(1)} page`,
+              type: 'object',
+              fields: [
+                  { key: 'title', type: 'text', label: 'Title', size: '8', required: true },
+                  { key: 'description', type: 'text', label: 'Subtitle', size: '8', required: false },
+                  { key: 'content', type: 'textarea', size: '8', label: 'Content', required: true },
                   {
-                      type: 'object',
-                      key: 'locales',
-                      label: 'Candidate app language',
-                      required: false,
-                      gridSize: '2',
-                      fieldSize: '2 md:1',
-                      fields: [
-                          { type: 'select', key: 'default', label: 'Default language', required: false, options: [] },
-                          { type: 'select', key: 'options', label: 'Authorized languages', required: false, options: [] }
-                      ]
-                  },
-                  {
-                      type: 'object',
-                      key: 'accessibilityWindow',
-                      label: 'Time restriction',
-                      required: false,
-                      gridSize: '2',
-                      fieldSize: '2 md:1',
-                      fields: [
-                          { type: 'checkbox', key: 'enable', label: 'Enable time restriction', required: false },
-                          {
-                              type: 'select',
-                              key: 'timezone',
-                              label: 'Time zone',
-                              required: true,
-                              options: [],
-                              dependencies: ['general.accessibilityWindow.enable'],
-                              condition: ({ 'general.accessibilityWindow.enable': enable }: { 'general.accessibilityWindow.enable': boolean}) => !!enable
-                          },
-                          {
-                              type: 'datetime',
-                              key: 'startDateTime',
-                              label: 'Start date',
-                              required: true,
-                              fieldParams: { format: null },
-                              dependencies: ['general.accessibilityWindow.enable'],
-                              condition: ({ 'general.accessibilityWindow.enable': enable }: { 'general.accessibilityWindow.enable': boolean}) => {
-                                  console.log({ enable })
-                                  return enable
-                              }
-                          },
-                          {
-                              type: 'datetime',
-                              key: 'endDateTime',
-                              label: 'End date',
-                              required: true,
-                              fieldParams: { format: null },
-                              dependencies: ['general.accessibilityWindow.enable'],
-                              condition: ({ 'general.accessibilityWindow.enable': enable }: { 'general.accessibilityWindow.enable': boolean}) => !!enable
-                          }
-                      ]
+                      type: 'info',
+                      dependencies: [`pages.${page}`],
+                      content: (dependencies) => (
+                          <div>
+                              <div class="flex flex-col gap-2">
+                                  <div class="text-center text-xl font-bold text-primary">{dependencies[`pages.${page}`]?.title}</div>
+                                  <div class="text-center text-lg font-bold">{dependencies[`pages.${page}`]?.description}</div>
+                                  <div v-html={dependencies[`pages.${page}`]?.content}></div>
+                              </div>
+                          </div>
+                      )
                   }
               ]
-          },
-          {
-              title: 'Emails config',
-              fields: []
-          }
+          }))
+        }
+      ]
+    }
+  },
+  {
+    label: "Input data arr test",
+    inputData: {
+      test: [
+        { firstName: 'cyp', lastName: 'thao', dzqdzq: 'test'},
+        { firstName: 'cdqzqdzyp', lastName: 'thao', dzqdzq: 'test'},
+        { firstName: 'ddd', lastName: 'thao', dzqdzq: 'test'},
+        { firstName: 'caaaaaayp', lastName: 'thao', dzqdzq: 'test'}
+      ]
+    },
+    value: {
+      title: "test arr input",
+      gridSize: '8',
+      fieldSize: '8',
+      fields: [
+        { key: 'test', type: 'array', label: 'test', extraProperties: true, fields: [
+          { key: "firstName", label: "First name", type: "text" },
+        ]}
       ]
     }
   }

@@ -10,7 +10,7 @@
                     ...(!isMultiStep && { title: formOptions?.title})
                 }" 
             />
-            <div  v-else class="text-center uppercase text-xl">{{ isMultiStep ? `${currentStepIndex + 1} - ${formSteps[currentStepIndex].title}` : formOptions.title }}</div>
+            <div  v-else class="text-center uppercase text-xl" v-if="(!isMultiStep && formOptions.title) || (isMultiStep && formSteps[currentStepIndex].title)">{{ isMultiStep ? `${formSteps[currentStepIndex].title}` : formOptions.title }}</div>
 
             <div v-if="!popup ? false : formOptions?.showCloseButton ?? true" @click="CloseForm" class="absolute top-2 right-2 h-5 w-5 rounded-full cursor-pointer grid place-items-center hover:(bg-gray-500 bg-opacity-20 text-red-500)">
                 <i-mdi-close class="h-4 w-4"/>

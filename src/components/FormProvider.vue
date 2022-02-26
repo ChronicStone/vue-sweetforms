@@ -2,7 +2,7 @@
   <NConfigProvider :theme="darkMode ? darkTheme : null" :theme-overrides="darkMode ? DarkThemeOverrides : LightThemeOverrides">
     <NDialogProvider>
       <slot />
-      <div id="sweetforms__overlay" style="z-index: 1000;" v-if="formInstances.length" class="fixed left-0 top-0 bg-black bg-opacity-50 grid place-items-center w-full h-screen">
+      <div id="sweetforms__overlay" style="z-index: 1000;" v-if="formInstances.length" class="fixed left-0 top-0 bg-black !bg-opacity-50 grid place-items-center w-full h-screen">
         <transition-group
           name="card"
         >

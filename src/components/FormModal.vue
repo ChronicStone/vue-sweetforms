@@ -13,9 +13,11 @@
             <slot name="header" />
         </template>
         <!-- Form body -->
-        <form class="h-10/12 max-h-55vh grid gap-4 px-6 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-rounded-full text-left" :style="`height:fit-content !important;${formStyle.gridSize}`">
-            <slot name="fields" />
-        </form>
+        <NScrollbar style="max-height: 55vh;width: 100%;" class="h-10/12 max-h-55vh px-6 text-left">
+            <div class="w-full h-full pb-4 grid gap-4" :style="`height:fit-content !important;${formStyle.gridSize}`">
+                <slot name="fields" />
+            </div>
+        </NScrollbar>
 
         <!-- Form buttons -->
         <template #footer>
@@ -27,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { NCard} from "naive-ui"
+import { NCard, NScrollbar } from "naive-ui"
 import { ref } from "vue"
 import { onClickOutside } from "@vueuse/core"
 const emit = defineEmits(['closeForm'])
@@ -45,22 +47,7 @@ const props = defineProps({
 const formRef = ref(null)
 
 
-onClickOutside(formRef, (event: PointerEvent) => {
+onClickOutside(formRef, (event: any) => {
     if(event?.target?.id === 'sweetforms__overlay' && props.allowClickOutside) emit('closeForm')
 })
 </script>
-
-<style scoped>
-::-webkit-scrollbar {
-  width: 9px;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-gray-200 dark:bg-gray-600 rounded-full cursor-pointer hover:bg-gray-300;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-  padding: 5px;
-}
-</style>

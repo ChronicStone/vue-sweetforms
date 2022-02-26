@@ -1,9 +1,12 @@
 <template>
   <div>
     <NCard title="Standalone form component" class="mb-4" :segmented="{content: true}">
-      <Form :formOptions="SimpleSchema">
+      <Form ref="inlineDemoForm" class="h-full" :formOptions="SimpleSchema">
         <template #title="{ title }">
-          hahaha {{title}}
+          hahaha {{title}} dqzdqz
+        </template>
+        <template #actions="{ toggleSubmit }">
+          <NButton class="w-full" type="primary" @click="toggleSubmit">Sign in</NButton>
         </template>
       </Form>
     </NCard>
@@ -48,13 +51,17 @@ const OpenForm = async (formContent: any, inputData: any) => {
 const demonstrations = reactive(Object.values(AllDemos).map((DemoGroup: any) => DemoGroup.map((demo: any) => ({ ...demo, expanded: false}))))
 const testVal = ref('')
 
+const inlineDemoForm = ref(null)
+
 
 const SimpleSchema = ref({
   title: "My form as component",
   fields: [
-    { label: "First name", key: "firstName", type: "text", required: true },
-    { label: "Last name", key: "lastName", type: "text" },
-    { key: "lastName", type: "info", content: ({ $root }) => <div>{(!$root.firstName || !$root.lastName) ? 'Fill both fields' : <div>Welcome, <NTag>{$root.firstName} {$root.lastName}</NTag></div>} </div>, dependencies: ['$root'] },
+    { key: 'email', label: 'Email', type: 'text', required: true, placeholder: 'john.doe@gmail.com' },
+    { key: 'password', label: 'Password', type: 'password', required: true, placeholder: '**********' },
+    // { key: 'password', label: 'Password', type: 'password', required: true, placeholder: '**********' },
+    { key: 'rememberMe', label: 'Remember me', type: 'checkbox' },
+    // { type: 'info' },
   ]
 })
 
