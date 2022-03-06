@@ -5,6 +5,28 @@ import TestComp from "../TestComp.vue"
 import component from '../env';
 export default [
   {
+    label: "Test array",
+    value: {
+      title: "My form as component",
+  fields: [
+    {
+      key: "testArray",
+      type: 'array',
+      size: 8,
+      gridSize: "8",
+      fieldSize: "8 md:4",
+      fields: [
+        { key: 'test', type: 'text' },
+        { key: 'test2', type: 'text', dependencies: ['$parent', 'testArray'], condition: (dependencies) => {
+          console.log(dependencies)
+          return dependencies.$parent.test === 'test'
+        } },
+      ]
+    }
+  ]
+    }
+  },
+  {
     label: 'Field types example',
     value: {
       title: "Demo of field types",

@@ -76,6 +76,7 @@ export const MapDependenciesAsObject = (arrayDependencies: any) => {
 }
 
 export const ResolveFromString = (path: string, obj: any, separator = '.') => {
+    console.log({ path })
     var properties: string[] = Array.isArray(path) ? path : path.split(separator);
     return properties.reduce((prev, curr) => prev && prev[curr], obj);
 }

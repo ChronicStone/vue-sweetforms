@@ -4,6 +4,7 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
+    ArrayFrom: typeof import('./src/components/Fields/ArrayFrom.vue')['default']
     CollapseButton: typeof import('./src/components/CollapseButton.vue')['default']
     DescriptionPopup: typeof import('./src/components/DescriptionPopup.vue')['default']
     Form: typeof import('./src/components/Form.vue')['default']
@@ -17,6 +18,9 @@ declare module 'vue' {
     IMdiChevronRight: typeof import('~icons/mdi/chevron-right')['default']
     IMdiClose: typeof import('~icons/mdi/close')['default']
     IMdiInformation: typeof import('~icons/mdi/information')['default']
+    IMdiMoonWaningCrescent: typeof import('~icons/mdi/moon-waning-crescent')['default']
+    IMdiWhiteBalanceSunny: typeof import('~icons/mdi/white-balance-sunny')['default']
+    ObjectFrom: typeof import('./src/components/Fields/ObjectFrom.vue')['default']
   }
 }
 

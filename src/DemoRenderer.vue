@@ -1,7 +1,7 @@
 <template>
   <div>
     <NCard title="Standalone form component" class="mb-4" :segmented="{content: true}">
-      <Form ref="inlineDemoForm" class="h-full" :formOptions="SimpleSchema">
+      <Form ref="inlineDemoForm" class="h-full" :formOptions="SimpleSchema" :onSubmit="LogData">
         <template #title="{ title }">
           hahaha {{title}} dqzdqz
         </template>
@@ -57,13 +57,32 @@ const inlineDemoForm = ref(null)
 const SimpleSchema = ref({
   title: "My form as component",
   fields: [
-    { key: 'email', label: 'Email', type: 'text', required: true, placeholder: 'john.doe@gmail.com' },
-    { key: 'password', label: 'Password', type: 'password', required: true, placeholder: '**********' },
-    // { key: 'password', label: 'Password', type: 'password', required: true, placeholder: '**********' },
-    { key: 'rememberMe', label: 'Remember me', type: 'checkbox' },
-    // { type: 'info' },
+    {
+      key: "testArray",
+      type: 'array',
+      size: 8,
+      gridSize: "1",
+      fields: [
+        { key: 'test', type: 'text', size: '8 md:4', required: true },
+        {
+          key: 'test3',
+          type: 'array',
+          size: 8,
+          gridSize: "1",
+          fields: [
+            { key: 'testInside', type: 'text', size: '8 md:4', required: true },
+            { key: 'test2Inside', type: 'text', dependencies: ['$parent'], condition: ({ $parent }) => $parent.testInside === 'haha'},
+          ]
+        }
+
+      ]
+    }
   ]
 })
+
+const LogData = (data: any) => {
+  console.log(data)
+}
 
 function JSONstringifyWithFuncs(obj) {
   Object.prototype.toJSON = function() {

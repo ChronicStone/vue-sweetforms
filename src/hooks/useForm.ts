@@ -1,7 +1,7 @@
 
 import { MapFormInitialState, MapOutputState, MapFormRules, MapStepsAsFields, MapComponentStore, MapDependenciesAsObject, ResolveFromString, ComputePropSize, ComputeTwGridBreakpoint, GenerateUUID } from "@/utils"
 import { ref, reactive, computed, watch, provide, inject } from "vue"
-import { asyncComputed } from "@vueuse/core"
+import { asyncComputed, reactiveComputed } from "@vueuse/core"
 import { useBreakpointStyle, useBreakpoints } from "@/hooks"
 import { BreakpointsInjectKey } from "@/constants/injectionKeys"
 import { defaultStyles } from '@/constants'
@@ -34,14 +34,24 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             return {
                 ...field,
                 _uuid: GenerateUUID(),
-                _dependencies: computed(() => MapDependenciesAsObject(field.dependencies ? field.dependencies.map((key: string) => ({ key, value: key === '$root' ? formState : ResolveFromString(key, formState) })) :  [])),
+                _dependencies: computed(() => MapDependenciesAsObject(field.dependencies ? field.dependencies.map((key: string) => ({ 
+                    key,
+                    ...(key === '$root' && { value: formState }),
+                    ...(key === '$parent' && options.parentType === 'array' && { value: ResolveFromString([...options.parentKey], formState) }), 
+                    ...(!['$root', '$parent'].includes(key) && { value: ResolveFromString(key, formState) })
+                })) :  [])),
                 _evalOptions: ref(false),
                 _evalEnable: ref(false),
                 size: useBreakpointStyle(field.size ?? formOptions?.fieldSize ?? defaultStyles.fieldSize, breakpointsConfig, 'col'),
                 ...(options.parentType && { _parentType: options.parentType }),
                 ...(options.parentId && { _parentId: options.parentId }),
                 ...(['array', 'object'.includes(field.type)] && { gridSize: useBreakpointStyle(field?.gridSize ?? formOptions?.gridSize ?? defaultStyles.gridSize, breakpointsConfig, 'grid') }),
-                ...(field.type === 'array' && { _itemsRefs: reactive([]) }),
+                ...(field.type === 'array' && { 
+                    _itemsRefs: reactive([]),
+                    items: ref([])
+                }),
+                ...(options.parentRef && { _parentRef: options.parentRef }),
+                ...(options.parentKey && { _parentKey: options.parentKey }),
             }
         })
         // ASYNC COMPUTED SETUP
@@ -57,17 +67,32 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             ...field,
             ...(field.options && typeof field.options === 'function' && {
                 _watcherOptions: watch(() => field._options.value, (options: any[]) => { if(!options.map((option: any) => option.value).includes(formState[field.key])) formState[field.key] = null })
-            })
+            }),
         }))
         // RECURSIVELY DO THIS PROCESS FOR CHILDREN
-        .map((field: any) => ({
-            ...field,
-            ...(field.type === 'array' && {
-                _setItemRef: (index: number, uuid: string) => field._itemsRefs.push({ index, uuid }),
-                _removeItemRef: (_uuid: number) => field._itemsRefs.splice(field._itemsRefs.findIndex((item: any) => item._uuid === _uuid), 1),
-            }),
-            ...(field.fields &&  { fields: InitializeFormFields(field.fields, { parentType: field.type, parentId: field._uuid}) }),
-        }))
+        .map((field: any) => {
+            let finalField = {
+                ...field,
+                ...(field.type === 'array' && {
+                    _setItemRef: (index: number, uuid: string) => field._itemsRefs.push({ index, uuid }),
+                    _removeItemRef: (_uuid: number) => field._itemsRefs.splice(field._itemsRefs.findIndex((item: any) => item._uuid === _uuid), 1),
+                }),
+                ...((field.fields && field.type != 'array') &&  { fields: InitializeFormFields(field.fields, { parentType: field.type, parentId: field._uuid, parentKey: [...options.parentKey ?? [], field.key] }) }),
+            }
+
+            return finalField
+        })
+        .map((field: any) => {
+            return {
+                ...field,
+                ...(field.type === 'array' && {
+                    _watcherItems: watch(field._itemsRefs, (items: any[]) => {
+                        const mappedItems = items.map((item, index) => InitializeFormFields(field.fields, { parentType: field.type, parentId: field._uuid, parentKey: [...options.parentKey ?? [], field.key, index], parentRef: item }), { deep: true })
+                        field.items.value = [ ...mappedItems ]
+                    }),
+                })
+            }
+        })
 
 
 

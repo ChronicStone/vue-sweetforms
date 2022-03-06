@@ -7,7 +7,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@chronicstone/vue-sweetforms": "^0.1.5",
+    "@chronicstone/vue-sweetforms": "^0.3.3",
     "@vuelidate/validators": "^2.0.0-alpha.25",
     "@vueuse/core": "^7.3.0",
     "deepmerge-ts": "^2.0.0",

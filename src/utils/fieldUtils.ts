@@ -6,11 +6,11 @@ export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any = {}) => {
         case 'textarea':
         case 'password':
             return {
-                'show-count': fieldProps.showCharacterCount ?? false,
+                'show-count': fieldProps.showCount ?? false,
                 rows: fieldProps?.rows ?? 3,
                 autosize: fieldProps?.autosize ?? false,
-                ...(fieldProps.minLength && { minLength: fieldProps.minLength }),
-                ...(fieldProps.maxLength && { maxLength: fieldProps.maxLength }),
+                ...(fieldProps.minLength && { minlength: fieldProps.minLength }),
+                ...(fieldProps.maxLength && { maxlength: fieldProps.maxLength }),
                 ...(fieldProps.prefix && { prefix: fieldProps.prefix }),
                 ...(fieldProps.suffix && { suffix: fieldProps.suffix }),
                 ...(fieldType === 'password' && { 'show-password-on': 'click' }),

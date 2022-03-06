@@ -168,11 +168,11 @@
                             <NCard style="width: 100%;">
                                 <div class="grid gap-4" :style="field.gridSize ?? gridSize">
                                     <FormInput 
-                                        v-for="(childField, childFieldKey) in field.fields.filter((field: any) => (field._enable || field.conditionEffect === 'disable')) ?? []"
+                                        v-for="(childField, childFieldKey) in MapArrayItems(field.items[index] ?? [])"
                                         :key="childFieldKey"
                                         :gridSize="field?.gridSize ?? gridSize"
                                         :field="childField"
-                                        :validator="{$errors: validator.$errors.find((err: any) => err.$validator === '$each')?.$response?.$errors[index][childField.key] ?? null }"
+                                        :validator="{$errors: validator.$errors?.find?.((err: any) => err.$validator === '$each')?.$response?.$errors[index][childField.key] ?? null }"
                                         v-model="value[childField.key]"
                                         :indent="indent + 1" 
                                         :disabled="!field._enable && field?.conditionEffect === 'disable'"           
@@ -189,7 +189,7 @@
             <component 
                 :is="componentStore[field.component]" 
                 v-model="fieldValue" 
-                v-bind="field.fieldParams" 
+                v-bind="{ ...field.fieldParams, dependencies: field._dependencies}" 
             />
         </div>
 
@@ -216,7 +216,7 @@
 </script>
 
 <script setup lang="tsx">
-    import { computed, ref, inject, defineComponent, toRaw, isReactive } from 'vue';
+    import { computed, ref, inject, defineComponent, toRaw, isReactive, onMounted, watch } from 'vue';
     import { NCard, NCollapseTransition, NInput, NSelect, NInputNumber, NAlert, NDatePicker, NTimePicker, NSlider, NRadioGroup, NRadio, NCheckbox, NCheckboxGroup, NDynamicInput, useDialog } from "naive-ui"
     import DescriptionPopup from "./DescriptionPopup.vue"
     import CollapseButton from "./CollapseButton.vue"
@@ -249,6 +249,9 @@
         }
     })
 
+    // watch(() => props.field, () => console.log({ field: props.field }), { deep: true })
+
+
     const dialog = useDialog()
     const componentStore: any = toRaw(inject('componentStore', {}))
     const collapsed = ref(props.field.collapsed ?? false)
@@ -277,6 +280,8 @@
 
     const InfoContent = () => render(props.field.content ?? '', props.field._dependencies)
     const LabelContent = () => render(props.field.label ?? 'Field label')
+
+    const MapArrayItems = (fields) => fields.filter(itemField => (itemField._enable?.value ?? itemField._enable) === true || itemField.conditionEffect === 'disable')
 </script>
 
 <style lang="scss">
