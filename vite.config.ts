@@ -6,6 +6,7 @@ import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import Components from 'unplugin-vue-components/vite'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import PurgeIcons from 'vite-plugin-purge-icons'
 
 
 // https://vitejs.dev/config/
@@ -14,9 +15,11 @@ export default defineConfig({
     vue(), 
     WindiCSS(),
     Components({
-      resolvers: IconsResolver(),
+      dts: true,
+      resolvers: [IconsResolver()],
     }),
-    Icons(),
+    PurgeIcons(),
+    Icons({ autoInstall: true }),
     vueJsx()
   ],
   resolve: {

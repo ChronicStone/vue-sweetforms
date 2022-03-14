@@ -74,7 +74,7 @@ const props = defineProps({
     }
 })
 
-const { isMultiStep, currentStepIndex, formState, formSteps, formContent, SubmitForm, CloseForm, formStyle, PreviousStep, $v, mappedSyncState } = useForm(props.formOptions, props.formData, emit)
+const { isMultiStep, currentStepIndex, formState, formRules, formSteps, formContent, SubmitForm, CloseForm, formStyle, PreviousStep, $v, mappedSyncState } = useForm(props.formOptions, props.formData, emit)
 const HandleRootValUpdate = (field: any, value: any) => {
     if (field._stepRoot) formState[field._stepRoot][field.key] = value 
     else formState[field.key] = value

@@ -1,6 +1,7 @@
+import { SetPropertyFromPath } from './../utils/formUtils';
 
-import { MapFormInitialState, MapOutputState, MapFormRules, MapStepsAsFields, MapComponentStore, MapDependenciesAsObject, ResolveFromString, ComputePropSize, ComputeTwGridBreakpoint, GenerateUUID } from "@/utils"
-import { ref, reactive, computed, watch, provide, inject } from "vue"
+import { MapFormInitialState, MapOutputState, MapFormRules, MapStepsAsFields, MapComponentStore, MapDependenciesAsObject, GetPropertyFromPath, ComputePropSize, ComputeTwGridBreakpoint, GenerateUUID } from "@/utils"
+import { ref, reactive, computed, watch, provide, inject, nextTick } from "vue"
 import { asyncComputed, reactiveComputed } from "@vueuse/core"
 import { useBreakpointStyle, useBreakpoints } from "@/hooks"
 import { BreakpointsInjectKey } from "@/constants/injectionKeys"
@@ -34,12 +35,18 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             return {
                 ...field,
                 _uuid: GenerateUUID(),
-                _dependencies: computed(() => MapDependenciesAsObject(field.dependencies ? field.dependencies.map((key: string) => ({ 
-                    key,
-                    ...(key === '$root' && { value: formState }),
-                    ...(key === '$parent' && options.parentType === 'array' && { value: ResolveFromString([...options.parentKey], formState) }), 
-                    ...(!['$root', '$parent'].includes(key) && { value: ResolveFromString(key, formState) })
-                })) :  [])),
+                _dependencies: computed(() => MapDependenciesAsObject(field.dependencies 
+                    ? field.dependencies
+                    .map((item: string | [string, string] | { source: string, target: string }) => typeof item === 'string' ? ({ source: item, target: item }) : Array.isArray(item) ? ({ source: item[0], target: item[1] }) : item)
+                    .map(({ source, target }: { source: string, target: string }) => {
+                        return { 
+                            key: target,
+                            ...(source === '$root' && { value: formState }),
+                            ...(source?.toString()?.includes?.('$parent') && { value: GetPropertyFromPath([...options.parentKey], formState, source) }), 
+                            ...(!['$root'].includes(source) &&  !source?.toString()?.includes?.('$parent') && { value: GetPropertyFromPath(source, formState) })
+                        }
+                    })
+                    :  [])),
                 _evalOptions: ref(false),
                 _evalEnable: ref(false),
                 size: useBreakpointStyle(field.size ?? formOptions?.fieldSize ?? defaultStyles.fieldSize, breakpointsConfig, 'col'),
@@ -66,7 +73,9 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         .map((field: any) => ({
             ...field,
             ...(field.options && typeof field.options === 'function' && {
-                _watcherOptions: watch(() => field._options.value, (options: any[]) => { if(!options.map((option: any) => option.value).includes(formState[field.key])) formState[field.key] = null })
+                _watcherOptions: watch(() => field._options.value, (fieldOptions: any[]) => { 
+                    if(!fieldOptions.map((option: any) => option.value).includes(GetPropertyFromPath([...options?.parentKey, field.key], formState))) SetPropertyFromPath(formState, [...options?.parentKey, field.key], null)
+                 })
             }),
         }))
         // RECURSIVELY DO THIS PROCESS FOR CHILDREN
@@ -90,29 +99,44 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
                         const mappedItems = items.map((item, index) => InitializeFormFields(field.fields, { parentType: field.type, parentId: field._uuid, parentKey: [...options.parentKey ?? [], field.key, index], parentRef: item }), { deep: true })
                         field.items.value = [ ...mappedItems ]
                     }),
-                })
+                }, { deep: true, immediate: true }),
             }
         })
 
+    const MapItemsInputRefs = (fields: any[], state: { [key: string]: any }, parentKey: string[] = []) => fields.forEach((field) => {
+        const value = state?.[field.key]
+        if(field.fields && field.type != 'array') {
+            MapItemsInputRefs(field.fields, value, [...parentKey, field.key])
+        } else if(field.fields && field.type === 'array') {
+            value?.forEach((item: any, index: number) => {
+                field?._setItemRef?.(index, GenerateUUID())
+                nextTick(() =>  MapItemsInputRefs(field.items?.[index] ?? [], item, [...parentKey, field.key, index]))
+            })
+        }
+    })
 
 
     const formState = reactive(MapFormInitialState(inputFields, formInputData))
     const formContent = reactive(InitializeFormFields(inputFields))
 
-    const FilterAppliedRules: (fields: any[], parentKey: string | null) => any[] = (fields: any[], parentKey: string | null = null) => {
+    MapItemsInputRefs(formContent, formInputData)
+
+
+    const FilterAppliedRules = (fields: any[], parentKey: string[] = []): any => {
         return fields
         .filter((field: any) => {
             if(field.condition && !field._enable) return field.conditionEffect === 'disable' ? true : false
-            if(isMultiStep.value && field._stepIndex !== currentStepIndex.value && !parentKey) return false
+            if(isMultiStep.value && field._stepIndex !== currentStepIndex.value && !parentKey.reverse()[0]) return false
             return true
         })
         .map((field: any) => ({
             ...field,
-            ...(field.fields && { fields: FilterAppliedRules(field.fields, field.key) }),
+            ...(field.fields && field.type != 'array' && { fields: FilterAppliedRules(field.fields, [...parentKey, field.key]) }),
+            ...(field.fields && field.type === 'array' && { fields: field._itemsRefs?.map((_, index: number) => FilterAppliedRules(field.items?.[index] ?? [], [...parentKey, field.key, index])) }),
         }))
     }
     const formRules = computed(() => {
-        const fields = FilterAppliedRules(formContent, null)
+        const fields = FilterAppliedRules(formContent)
         return MapFormRules(fields)
     })
 
@@ -123,6 +147,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         const _emitForm = () => formOptions._resolve ? formOptions._resolve({ isCompleted: true, formData: MapOutputState(formState, formContent)}) : emit('onSubmit',  MapOutputState(formState, formContent))
 
         const isValid = await $v.value.$validate()
+        await $v.value.$touch()
         if(!isValid) {
             if(!isMultiStep.value) return
             else formSteps[currentStepIndex.value]._status = "Invalid"

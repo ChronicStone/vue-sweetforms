@@ -8,9 +8,10 @@ interface InternalFormField extends FormField {
     _dependencies?: { [key: string]: any }
 }
 
-export const MapArrayToObject = (array: any[]) => {
+export const MapArrayToObject = (array: any[], mapFromIndex = false) => {
     let obj: any = {}
-    for(const { key, value } of array) obj[key] = value
+    if(!mapFromIndex) for(const { key, value } of array) obj[key] = value
+    else for(const index in array) obj[index] = array[index]
     return obj
 }
 
@@ -31,19 +32,22 @@ export const MapFormInitialState = (fields: any[], inputFormData: any = {}, pare
     return state
 }
 
-export const MapFormRules = (fields: any[]) => {
+
+export const MapFormRules = (fields: any[], parentKey: string[] = []) => {
     let rules: any = {}    
     fields.forEach((field: any) => {
         rules[field.key] = { 
             ...(typeof rules[field.key] === 'object' && { ...rules[field.key] }),
-            ...(field.type === 'object' && { ...rules[field.key], ...MapFormRules(field.fields ?? []) }),
-            ...(field.type === 'array' && { ...rules[field.key], $each: helpers.forEach({ ...MapFormRules(field.fields ?? []), $trackBy: '_id' }) }),
+            ...(field.type === 'object' && { ...rules[field.key], ...MapFormRules(field.fields ?? [], [...parentKey, field.key]) }),
+            ...(field.type === 'array' && { 
+                ...rules[field.key], 
+                ...MapArrayToObject(field.fields.map((_, index: number) => ({ ...MapFormRules(field.fields?.[index] ?? [], [...parentKey, field.key, index]) })), true)
+            }),
             ...(typeof field?.validators === 'function' && { ...field.validators(field._dependencies, field), }),
             ...(typeof field.validators === 'object' && { ...field.validators, }),
             ...(field.required && { required: helpers.withMessage(`The field ${typeof field.label != 'string' ? field.key : field.label} can't be empty`, required) })
         }
     })
-
     return rules   
 }
 
@@ -75,9 +79,23 @@ export const MapDependenciesAsObject = (arrayDependencies: any) => {
     return dependencies;
 }
 
-export const ResolveFromString = (path: string, obj: any, separator = '.') => {
-    console.log({ path })
-    var properties: string[] = Array.isArray(path) ? path : path.split(separator);
+const GetOffset = (key: any) => {
+    try {
+        if(!key) return 0
+        const offset = key.split(':').pop()
+        return offset && !isNaN(+offset )  ? +offset : 0
+    } catch(err) {
+        return 0
+    }
+}
+
+export const SetPropertyFromPath = (object: { [key: string]: any }, path: string | string[], value: any) => {
+    var properties = (Array.isArray(path) ? path : path.split('.'))
+    properties.reduce((o,p,i) => o[p] = properties.length === ++i ? value : o[p] || {}, object)
+}
+export const GetPropertyFromPath = (path: string | (string | number)[], obj: any, key?: string) => {
+    const offset = GetOffset(key)
+    var properties = (Array.isArray(path) ? path : path.split('.')).map((pathKey, index, array) => index < array.length - offset ? pathKey : null).filter(pathKey => pathKey != null);
     return properties.reduce((prev, curr) => prev && prev[curr], obj);
 }
 
@@ -90,11 +108,11 @@ export const MapOutputState = (inputState: any, fields: any = [], parentKey = ""
             const GetTransformedField = (value: any, field: any) => field.transform ? field.transform(value, field._dependencies) : value
             const GetFieldState = () => {
                 if(!['array', 'object'].includes(field.type)) return GetTransformedField(field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key], field) ?? null
-                else if(field.type === 'array') return ((field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key]) ?? []).map((item: any) => {
+                else if(field.type === 'array') return ((field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key]) ?? []).map((item: any, index: number) => {
                     const { _collapsed, _uuid, ...itemData } = item
-                    let output = MapOutputState(item, field.fields ?? [], field.key)
+                    let output = MapOutputState(item, field?.items?.[index] ?? [], field.key)
                     if(field.extraProperties) {
-                        for(const key in itemData) if(!field.fields.some(field => field.key === key)) output[key] = itemData[key]
+                        for(const key in itemData) if(!field?.items?.[index].some((field: { [key: string]: any }) => field.key === key)) output[key] = itemData[key]
                     }
                     return output
                 })
