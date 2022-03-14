@@ -16,17 +16,6 @@ declare module 'vue' {
     FormModalFullscreen: typeof import('./src/components/FormModalFullscreen.vue')['default']
     FormProvider: typeof import('./src/components/FormProvider.vue')['default']
     FormSteps: typeof import('./src/components/FormSteps.vue')['default']
-    IMdiArrowDown: typeof import('~icons/mdi/arrow-down')['default']
-    IMdiArrowUp: typeof import('~icons/mdi/arrow-up')['default']
-    IMdiCheck: typeof import('~icons/mdi/check')['default']
-    IMdiChevronDown: typeof import('~icons/mdi/chevron-down')['default']
-    IMdiChevronRight: typeof import('~icons/mdi/chevron-right')['default']
-    IMdiClose: typeof import('~icons/mdi/close')['default']
-    IMdiInformation: typeof import('~icons/mdi/information')['default']
-    IMdiMoonWaningCrescent: typeof import('~icons/mdi/moon-waning-crescent')['default']
-    IMdiPlus: typeof import('~icons/mdi/plus')['default']
-    IMdiTrash: typeof import('~icons/mdi/trash')['default']
-    IMdiWhiteBalanceSunny: typeof import('~icons/mdi/white-balance-sunny')['default']
     Test: typeof import('./src/components/Fields/Test.vue')['default']
   }
 }
