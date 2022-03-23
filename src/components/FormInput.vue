@@ -30,7 +30,7 @@
           :for="field.key"
         >
           <LabelContent />
-          <span class="text-red-500 ml-1.5">{{ field.required ? "*" : "" }}</span>
+          <span class="text-red-500 ml-1.5">{{ field._required ? "*" : "" }}</span>
         </label>
       </span>
 
@@ -198,7 +198,13 @@
 
     <NCollapseTransition v-if="field.type === 'array'" :show="!collapsed">
       <component
-        :is="(field?.format ?? 'tabs') === 'tabs' ? ArrayTabs : ArrayList"
+        :is="
+          (field?.format ?? 'tabs') === 'tabs'
+            ? ArrayTabs
+            : field?.format === 'table'
+            ? ArrayTable
+            : ArrayList
+        "
         v-model="fieldValue"
         :field="field"
         :validator="validator"
@@ -245,8 +251,6 @@ export default {
 </script>
 
 <script setup lang="tsx">
-import ArrayTabs from "./Fields/ArrayTabs.vue";
-import Test from "./Fields/Test.vue";
 import { computed, ref, inject, toRaw, onMounted, nextTick, watch } from "vue";
 import {
   NCard,
@@ -261,12 +265,7 @@ import {
   NRadio,
   NCheckbox,
   NCheckboxGroup,
-  NDynamicInput,
-  NTabs,
-  NTabPane,
-  NButton,
   useDialog,
-  TabsInst,
 } from "naive-ui";
 import DescriptionPopup from "./DescriptionPopup.vue";
 import CollapseButton from "./CollapseButton.vue";
@@ -277,7 +276,11 @@ import {
   GenerateUUID,
   render,
 } from "@/utils";
+
+import ArrayTable from "./Fields/ArrayTable.vue";
+import ArrayTable2 from "./Fields/ArrayTable2.vue";
 import ArrayList from "./Fields/ArrayList.vue";
+import ArrayTabs from "./Fields/ArrayTabs.vue";
 
 const emit = defineEmits(["update:modelValue"]);
 const props = defineProps({

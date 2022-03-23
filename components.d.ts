@@ -5,7 +5,8 @@
 declare module 'vue' {
   export interface GlobalComponents {
     ArrayList: typeof import('./src/components/Fields/ArrayList.vue')['default']
-    'ArrayList copy': typeof import('./src/components/Fields/ArrayList copy.vue')['default']
+    ArrayTable: typeof import('./src/components/Fields/ArrayTable.vue')['default']
+    ArrayTable2: typeof import('./src/components/Fields/ArrayTable2.vue')['default']
     ArrayTabs: typeof import('./src/components/Fields/ArrayTabs.vue')['default']
     CollapseButton: typeof import('./src/components/CollapseButton.vue')['default']
     DescriptionPopup: typeof import('./src/components/DescriptionPopup.vue')['default']
@@ -16,6 +17,17 @@ declare module 'vue' {
     FormModalFullscreen: typeof import('./src/components/FormModalFullscreen.vue')['default']
     FormProvider: typeof import('./src/components/FormProvider.vue')['default']
     FormSteps: typeof import('./src/components/FormSteps.vue')['default']
+    IMdiArrowDown: typeof import('~icons/mdi/arrow-down')['default']
+    IMdiArrowUp: typeof import('~icons/mdi/arrow-up')['default']
+    IMdiCheck: typeof import('~icons/mdi/check')['default']
+    IMdiChevronDown: typeof import('~icons/mdi/chevron-down')['default']
+    IMdiChevronRight: typeof import('~icons/mdi/chevron-right')['default']
+    IMdiClose: typeof import('~icons/mdi/close')['default']
+    IMdiInformation: typeof import('~icons/mdi/information')['default']
+    IMdiMoonWaningCrescent: typeof import('~icons/mdi/moon-waning-crescent')['default']
+    IMdiPlus: typeof import('~icons/mdi/plus')['default']
+    IMdiTrash: typeof import('~icons/mdi/trash')['default']
+    IMdiWhiteBalanceSunny: typeof import('~icons/mdi/white-balance-sunny')['default']
     Test: typeof import('./src/components/Fields/Test.vue')['default']
   }
 }

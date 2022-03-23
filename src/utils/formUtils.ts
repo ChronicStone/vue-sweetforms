@@ -45,7 +45,7 @@ export const MapFormRules = (fields: any[], parentKey: string[] = []) => {
             }),
             ...(typeof field?.validators === 'function' && { ...field.validators(field._dependencies, field), }),
             ...(typeof field.validators === 'object' && { ...field.validators, }),
-            ...(field.required && { required: helpers.withMessage(`The field ${typeof field.label != 'string' ? field.key : field.label} can't be empty`, required) })
+            ...(field._required && { required: helpers.withMessage(`The field ${typeof field.label != 'string' ? field.key : field.label} can't be empty`, required) })
         }
     })
     return rules   

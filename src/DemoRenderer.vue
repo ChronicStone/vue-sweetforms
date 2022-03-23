@@ -57,6 +57,7 @@ import { NCard, NButton, useThemeVars, NSwitch, NTag } from "naive-ui";
 import { useSweetform, Form } from "./index";
 import * as AllDemos from "@/demos/";
 import { contentItem } from "./slotRender";
+import { ExamConfig } from "./exam";
 const { createForm, formInstances }: any = useSweetform();
 const OpenForm = async (formContent: any, inputData: any) => {
   const data = await createForm(formContent, inputData);
@@ -74,431 +75,1023 @@ const inlineDemoForm = ref(null);
 
 const MapOptionsFromString = (value: string) => ({ label: value, value });
 
-const ScoringModule = {
-  type: "array",
-  format: "tabs",
-  fields: [
-    { key: "key", type: "text", label: "Module key", required: true },
-    {
-      key: "type",
-      type: "select",
-      label: "Module type",
-      required: true,
-      options: ["composite", "external", "module"].map(MapOptionsFromString),
-    },
-    {
-      key: "scale",
-      type: "number",
-      label: "Total score scale",
-      required: true,
-      default: 100,
-    },
-    {
-      key: "dependencies",
-      type: "array",
-      label: "Dependencies",
-      required: true,
-      format: "tabs",
-      gridSize: 9,
-      dependencies: [["$parent", "module"]],
-      condition: ({ module }) => module?.type === "composite",
-      headerTemplate: (data: any) =>
-        `<div>${data?.module ?? "???" + " " + data?.key ?? "???"}</div>`,
-      fields: [
-        {
-          key: "module",
-          type: "select",
-          label: "Module key",
-          required: true,
-          size: "9 md:3",
-          dependencies: ["mainModule", ["$parent:2", "module"]],
-          options: ({ mainModule, module }) => {
-            return mainModule
-              .filter(
-                (item: any) => item?.key != module?.key && item?.type != "composite"
-              )
-              .map(({ key }: { key: string }) => MapOptionsFromString(key));
-          },
-        },
-        {
-          key: "key",
-          type: "select",
-          label: "Field key",
-          required: true,
-          size: "9 md:3",
-          dependencies: ["mainModule", "$parent"],
-
-          options: ({ mainModule, $parent }) => {
-            if (!$parent?.module) return [];
-            const module = mainModule?.find?.(({ key }: any) => key === $parent?.module);
-            const externalScoreKeys =
-              module?.externalConfig?.subfields
-                ?.map?.(({ targetKey }: { targetKey: string }) => targetKey)
-                ?.filter((key: string) => !!key) ?? [];
-            const transformersKeys =
-              module?.transformers
-                ?.map?.(
-                  ({ targetFieldKey }: { targetFieldKey: string }) => targetFieldKey
-                )
-                ?.filter((key: string) => !!key) ?? [];
-            return [...externalScoreKeys, ...transformersKeys].map(MapOptionsFromString);
-          },
-        },
-        {
-          key: "coef",
-          type: "text",
-          label: "Coefficient",
-          required: true,
-          default: "1",
-          size: "9 md:3",
-        },
-      ],
-      size: 8,
-      collapsed: true,
-    },
-    {
-      key: "externalConfig",
-      type: "object",
-      label: "External module config",
-      required: true,
-      dependencies: ["$parent"],
-      size: "8",
-      collapsed: true,
-      condition: ({ $parent }) => $parent.type === "external",
-      fields: [
-        { key: "externalKey", type: "text", label: "External key", required: true },
-        {
-          key: "externalScale",
-          type: "number",
-          label: "Source score scale",
-          required: true,
-          default: 100,
-        },
-        {
-          key: "subfields",
-          type: "array",
-          label: "Extra fields to retrive",
-          size: "8",
-          collapsed: true,
-          fields: [
-            { key: "sourceKey", type: "text", label: "Source key", required: true },
-            { key: "targetKey", type: "text", label: "Target key", required: true },
-          ],
-        },
-      ],
-    },
-    {
-      key: "transformers",
-      type: "array",
-      format: "tabs",
-      label: "Transformers",
-      size: "8",
-      gridSize: "9",
-      collapsed: true,
-      fields: [
-        {
-          key: "targetFieldKey",
-          type: "text",
-          label: "Target field key",
-          required: true,
-          size: "9 md:3",
-        },
-        {
-          key: "inputFieldKey",
-          type: "text",
-          label: "Input field key",
-          required: true,
-          size: "9 md:3",
-        },
-        {
-          key: "transformerModule",
-          type: "select",
-          label: "Transformer module",
-          required: true,
-          options: [
-            "CefrGeneral",
-            "CefrSpeaking",
-            "CefrWriting",
-            "CefrBridge",
-            "CefrDescriptor",
-            "CefrCompositeDescriptor",
-            "CefrEquivalences",
-            "FormatWorkOn",
-            "CefrGeneralSpecificModule",
-            "CefrEquivalencesSpecificModule",
-          ].map(MapOptionsFromString),
-          size: "9 md:3",
-        },
-      ],
-    },
-  ],
-};
-
-const SimpleSchema = ref({
-  title: "My form as component",
-  fields: [
-    {
-      key: "mainModule",
-      label: "Main module",
-      required: true,
-      size: "8",
-      headerTemplate: (data) =>
-        data?.key ? `<div class="uppercase">${data?.key}</div>` : "<i>NEW MODULE</i>",
-      ...ScoringModule,
-    },
-  ],
-});
+const SimpleSchema = ref(ExamConfig);
 
 const formData = {
-  mainModule: [
-    {
-      key: "general",
-      type: "composite",
-      isTotalScore: true,
-      scale: 100,
-      dependencies: [
-        {
-          module: "listening",
-          key: "overallBridge",
-          coef: "0.5/3",
-        },
-        {
-          module: "reading",
-          key: "overallBridge",
-          coef: "0.5/3",
-        },
-        {
-          module: "grammar",
-          key: "overallBridge",
-          coef: "0.5/3",
-        },
-        {
-          module: "speaking",
-          key: "overallBridge",
-          coef: "0.25",
-        },
-        {
-          module: "writing",
-          key: "overallBridge",
-          coef: "0.25",
-        },
-      ],
-      transformers: [
-        {
-          targetFieldKey: "overallCefr",
-          inputFieldKey: "overall",
-          transformerModule: "CefrGeneral",
-        },
-        {
-          targetFieldKey: "descriptor",
-          inputFieldKey: "",
-          transformerModule: "CefrCompositeDescriptor",
-          descriptorModules: [
-            {
-              module: "listening",
-              key: "overallCefr",
-              skill: "listening",
-              label: "Oral comprehension",
-            },
-            {
-              module: "reading",
-              key: "overallCefr",
-              skill: "reading",
-              label: "Written comprehension",
-            },
-            {
-              module: "speaking",
-              key: "overallCefr",
-              skill: "speaking",
-              label: "Speaking proficiency",
-            },
-            {
-              module: "writing",
-              key: "overallCefr",
-              skill: "writing",
-              label: "Writing proficiency",
-            },
-          ],
-        },
-        {
-          targetFieldKey: "equivalences",
-          inputFieldKey: "overall",
-          transformerModule: "CefrEquivalences",
-          equivalenceModules: [
-            "alte",
-            "toefl_ibt",
-            "ielts",
-            "toefl_itp",
-            "toeic_l&r",
-            "gse",
-          ],
-          equivalenceScoreType: "number",
-        },
-      ],
+  general: {
+    manualReview: false,
+    allowCoBranding: false,
+    examLogo: "",
+    locales: {
+      options: [],
     },
-    {
-      key: "listening",
-      type: "external",
-      isTotalScore: false,
-      scale: 100,
-      externalConfig: {
-        externalKey: "Oral comprehension",
-        externalScale: "32",
-        subfields: [],
-      },
-      transformers: [
-        {
-          targetFieldKey: "overallCefr",
-          inputFieldKey: "overall",
-          transformerModule: "CefrGeneral",
-        },
-        {
-          targetFieldKey: "overallBridge",
-          inputFieldKey: "overallCefr",
-          transformerModule: "CefrBridge",
-        },
-      ],
+    accessibilityWindow: {
+      usesAccessibilityWindow: false,
     },
-    {
-      key: "reading",
-      type: "external",
-      isTotalScore: false,
-      scale: 100,
-      externalConfig: {
-        externalKey: "Written comprehension",
-        externalScale: "36",
-        subfields: [],
-      },
-      transformers: [
-        {
-          targetFieldKey: "overallCefr",
-          inputFieldKey: "overall",
-          transformerModule: "CefrGeneral",
-        },
-        {
-          targetFieldKey: "overallBridge",
-          inputFieldKey: "overallCefr",
-          transformerModule: "CefrBridge",
-        },
-      ],
-    },
-    {
-      key: "grammar",
-      type: "external",
-      isTotalScore: false,
-      scale: 100,
-      externalConfig: {
-        externalKey: "Grammar",
-        externalScale: "32",
-        subfields: [
+  },
+  scoring: {
+    mainModule: [
+      {
+        key: "general",
+        type: "composite",
+        isTotalScore: true,
+        scale: 100,
+        dependencies: [
           {
-            sourceKey: "aspectsToWorkOn",
-            targetKey: "workOn",
+            module: "listening",
+            key: "overallBridge",
+            coef: "0.5/3",
+          },
+          {
+            module: "reading",
+            key: "overallBridge",
+            coef: "0.5/3",
+          },
+          {
+            module: "grammar",
+            key: "overallBridge",
+            coef: "0.5/3",
+          },
+          {
+            module: "speaking",
+            key: "overallBridge",
+            coef: "0.25",
+          },
+          {
+            module: "writing",
+            key: "overallBridge",
+            coef: "0.25",
+          },
+        ],
+        transformers: [
+          {
+            targetFieldKey: "overallCefr",
+            inputFieldKey: "overall",
+            transformerModule: "CefrGeneral",
+          },
+          {
+            targetFieldKey: "descriptor",
+            inputFieldKey: "",
+            transformerModule: "CefrCompositeDescriptor",
+            descriptorModules: [
+              {
+                module: "listening",
+                key: "overallCefr",
+                skill: "listening",
+                label: "Oral comprehension",
+              },
+              {
+                module: "reading",
+                key: "overallCefr",
+                skill: "reading",
+                label: "Written comprehension",
+              },
+              {
+                module: "speaking",
+                key: "overallCefr",
+                skill: "speaking",
+                label: "Speaking proficiency",
+              },
+              {
+                module: "writing",
+                key: "overallCefr",
+                skill: "writing",
+                label: "Writing proficiency",
+              },
+            ],
+          },
+          {
+            targetFieldKey: "equivalences",
+            inputFieldKey: "overall",
+            transformerModule: "CefrEquivalences",
+            equivalenceModules: [
+              "alte",
+              "toefl_ibt",
+              "ielts",
+              "toefl_itp",
+              "toeic_l&r",
+              "gse",
+            ],
+            equivalenceScoreType: "number",
           },
         ],
       },
-      transformers: [
+      {
+        key: "listening",
+        type: "external",
+        isTotalScore: false,
+        scale: 100,
+        externalConfig: {
+          externalKey: "Oral comprehension",
+          externalScale: "32",
+          subfields: [],
+        },
+        transformers: [
+          {
+            targetFieldKey: "overallCefr",
+            inputFieldKey: "overall",
+            transformerModule: "CefrGeneral",
+          },
+          {
+            targetFieldKey: "overallBridge",
+            inputFieldKey: "overallCefr",
+            transformerModule: "CefrBridge",
+          },
+        ],
+      },
+      {
+        key: "reading",
+        type: "external",
+        isTotalScore: false,
+        scale: 100,
+        externalConfig: {
+          externalKey: "Written comprehension",
+          externalScale: "36",
+          subfields: [],
+        },
+        transformers: [
+          {
+            targetFieldKey: "overallCefr",
+            inputFieldKey: "overall",
+            transformerModule: "CefrGeneral",
+          },
+          {
+            targetFieldKey: "overallBridge",
+            inputFieldKey: "overallCefr",
+            transformerModule: "CefrBridge",
+          },
+        ],
+      },
+      {
+        key: "grammar",
+        type: "external",
+        isTotalScore: false,
+        scale: 100,
+        externalConfig: {
+          externalKey: "Grammar",
+          externalScale: "32",
+          subfields: [
+            {
+              sourceKey: "aspectsToWorkOn",
+              targetKey: "workOn",
+            },
+          ],
+        },
+        transformers: [
+          {
+            targetFieldKey: "overallCefr",
+            inputFieldKey: "overall",
+            transformerModule: "CefrGeneral",
+          },
+          {
+            targetFieldKey: "overallBridge",
+            inputFieldKey: "overallCefr",
+            transformerModule: "CefrBridge",
+          },
+        ],
+      },
+      {
+        key: "speaking",
+        type: "module",
+        isTotalScore: false,
+        scale: 100,
+        processor: "speaking",
+        transformers: [
+          {
+            targetFieldKey: "overallCefr",
+            inputFieldKey: "overall",
+            transformerModule: "CefrSpeaking",
+          },
+          {
+            targetFieldKey: "overallBridge",
+            inputFieldKey: "overallCefr",
+            transformerModule: "CefrBridge",
+          },
+        ],
+      },
+      {
+        key: "writing",
+        type: "module",
+        isTotalScore: false,
+        scale: 100,
+        processor: "writing",
+        transformers: [
+          {
+            targetFieldKey: "overallCefr",
+            inputFieldKey: "overall",
+            transformerModule: "CefrWriting",
+          },
+          {
+            targetFieldKey: "overallBridge",
+            inputFieldKey: "overallCefr",
+            transformerModule: "CefrBridge",
+          },
+        ],
+      },
+      {
+        key: "conversation",
+        type: "composite",
+        isTotalScore: false,
+        scale: 100,
+        dependencies: [
+          {
+            module: "listening",
+            key: "overallBridge",
+            coef: "1/2",
+          },
+          {
+            module: "speaking",
+            key: "overallBridge",
+            coef: "1/2",
+          },
+        ],
+        transformers: [
+          {
+            targetFieldKey: "overallCefr",
+            inputFieldKey: "overall",
+            transformerModule: "CefrGeneral",
+          },
+        ],
+      },
+      {
+        key: "expression",
+        type: "composite",
+        isTotalScore: false,
+        scale: 100,
+        dependencies: [
+          {
+            module: "speaking",
+            key: "overallBridge",
+            coef: "1/2",
+          },
+          {
+            module: "writing",
+            key: "overallBridge",
+            coef: "1/2",
+          },
+        ],
+        transformers: [
+          {
+            targetFieldKey: "overallCefr",
+            inputFieldKey: "overall",
+            transformerModule: "CefrGeneral",
+          },
+        ],
+      },
+    ],
+    specificModule: {
+      active: false,
+    },
+  },
+  results: {
+    enableResultsApp: true,
+    mainModule: [
+      {
+        moduleKey: "general",
+        group: "",
+        inlineContent: [
+          {
+            contentTarget: "inline",
+            contentType: "text",
+            label: "GENERAL CEFR LEVEL",
+            fieldKey: "overallCefr",
+            template: "",
+            labelSize: "xl",
+            labelWeight: "regular",
+            contentSize: "xl",
+            contentWeight: "regular",
+            display: "row",
+            align: "left",
+          },
+          {
+            contentTarget: "inline",
+            contentType: "progress",
+            fieldKey: "overallCefr",
+            progressType: "cefr",
+          },
+        ],
+        popupContent: [
+          {
+            contentTarget: "popup",
+            label: "CEFR DESCRIPTOR",
+            fieldKey: "descriptor",
+            template: "{{{ score | mapList }}}",
+          },
+          {
+            contentTarget: "popup",
+            label: "Estimated correspondance based on the CEFR levels",
+            fieldKey: "equivalences",
+            template: "",
+          },
+        ],
+      },
+      {
+        moduleKey: "listening",
+        group: "",
+        inlineContent: [
+          {
+            contentTarget: "inline",
+            contentType: "text",
+            label: "ORAL COMPREHENSION CEFR LEVEL",
+            fieldKey: "overallCefr",
+            template: "",
+            labelSize: "xl",
+            labelWeight: "regular",
+            contentSize: "xl",
+            contentWeight: "regular",
+            display: "row",
+            align: "left",
+          },
+          {
+            contentTarget: "inline",
+            contentType: "progress",
+            fieldKey: "overallCefr",
+            progressType: "cefr",
+          },
+        ],
+        popupContent: [],
+      },
+      {
+        moduleKey: "reading",
+        group: "",
+        inlineContent: [
+          {
+            contentTarget: "inline",
+            contentType: "text",
+            label: "WRITTEN COMPREHENSION CEFR LEVEL",
+            fieldKey: "overallCefr",
+            template: "",
+            labelSize: "xl",
+            labelWeight: "regular",
+            contentSize: "xl",
+            contentWeight: "regular",
+            display: "row",
+            align: "left",
+          },
+          {
+            contentTarget: "inline",
+            contentType: "progress",
+            fieldKey: "overallCefr",
+            progressType: "cefr",
+          },
+        ],
+        popupContent: [],
+      },
+      {
+        moduleKey: "grammar",
+        group: "",
+        inlineContent: [
+          {
+            contentTarget: "inline",
+            contentType: "text",
+            label: "GRAMMAR CEFR LEVEL",
+            fieldKey: "overallCefr",
+            template: "",
+            labelSize: "xl",
+            labelWeight: "regular",
+            contentSize: "xl",
+            contentWeight: "regular",
+            display: "row",
+            align: "left",
+          },
+          {
+            contentTarget: "inline",
+            contentType: "progress",
+            fieldKey: "overallCefr",
+            progressType: "cefr",
+          },
+        ],
+        popupContent: [
+          {
+            contentTarget: "popup",
+            label: "WORK ON",
+            fieldKey: "workOn",
+            template: "",
+          },
+        ],
+      },
+      {
+        moduleKey: "speaking",
+        group: "",
+        inlineContent: [
+          {
+            contentTarget: "inline",
+            contentType: "text",
+            label: "SPEAKING CEFR LEVEL",
+            fieldKey: "overallCefr",
+            template: "",
+            labelSize: "xl",
+            labelWeight: "regular",
+            contentSize: "xl",
+            contentWeight: "regular",
+            display: "row",
+            align: "left",
+          },
+          {
+            contentTarget: "inline",
+            contentType: "progress",
+            fieldKey: "overallCefr",
+            progressType: "cefr",
+          },
+        ],
+        popupContent: [],
+      },
+      {
+        moduleKey: "writing",
+        group: "",
+        inlineContent: [
+          {
+            contentTarget: "inline",
+            contentType: "text",
+            label: "WRITING CEFR LEVEL",
+            fieldKey: "overallCefr",
+            template: "",
+            labelSize: "xl",
+            labelWeight: "regular",
+            contentSize: "xl",
+            contentWeight: "regular",
+            display: "row",
+            align: "left",
+          },
+          {
+            contentTarget: "inline",
+            contentType: "progress",
+            fieldKey: "overallCefr",
+            progressType: "cefr",
+          },
+          {
+            contentTarget: "inline",
+            contentType: "grid",
+            columns: 4,
+            content: [
+              {
+                rowSize: 1,
+                label: "Task:",
+                fieldKey: "task",
+                template: "{{ score }} / 100",
+                labelSize: "lg",
+                labelWeight: "bold",
+                contentSize: "lg",
+                contentWeight: "regular",
+              },
+              {
+                rowSize: 1,
+                label: "Cohesion:",
+                fieldKey: "cohesion",
+                template: "{{ score }} / 100",
+                labelSize: "lg",
+                labelWeight: "bold",
+                contentSize: "lg",
+                contentWeight: "regular",
+              },
+              {
+                rowSize: 1,
+                label: "Grammar:",
+                fieldKey: "grammar",
+                template: "{{ score }} / 100",
+                labelSize: "lg",
+                labelWeight: "bold",
+                contentSize: "lg",
+                contentWeight: "regular",
+              },
+              {
+                rowSize: 1,
+                label: "Lexical:",
+                fieldKey: "lexical",
+                template: "{{ score }} / 100",
+                labelSize: "lg",
+                labelWeight: "bold",
+                contentSize: "lg",
+                contentWeight: "regular",
+              },
+            ],
+            align: "center",
+          },
+        ],
+        popupContent: [],
+      },
+      {
+        moduleKey: "conversation",
+        group: "inPracticeSkills",
+        inlineContent: [
+          {
+            contentTarget: "inline",
+            contentType: "text",
+            label: "CONVERSATION (LISTENING & SPEAKING) CEFR LEVEL",
+            fieldKey: "overallCefr",
+            template: "",
+            labelSize: "xl",
+            labelWeight: "regular",
+            contentSize: "xl",
+            contentWeight: "regular",
+            display: "row",
+            align: "left",
+          },
+          {
+            contentTarget: "inline",
+            contentType: "progress",
+            fieldKey: "overallCefr",
+            progressType: "cefr",
+          },
+        ],
+        popupContent: [],
+      },
+      {
+        moduleKey: "expression",
+        group: "inPracticeSkills",
+        inlineContent: [
+          {
+            contentTarget: "inline",
+            contentType: "text",
+            label: "EXPRESSION (SPEAKING & WRITING) CEFR LEVEL",
+            fieldKey: "overallCefr",
+            template: "",
+            labelSize: "xl",
+            labelWeight: "regular",
+            contentSize: "xl",
+            contentWeight: "regular",
+            display: "row",
+            align: "left",
+          },
+          {
+            contentTarget: "inline",
+            contentType: "progress",
+            fieldKey: "overallCefr",
+            progressType: "cefr",
+          },
+        ],
+        popupContent: [],
+      },
+    ],
+    specificModule: [],
+  },
+  exports: [
+    {
+      moduleRoot: "mainModule",
+      moduleKey: "general",
+      properties: [
         {
-          targetFieldKey: "overallCefr",
-          inputFieldKey: "overall",
-          transformerModule: "CefrGeneral",
+          label: "GENERAL CEFR LEVEL",
+          fieldKey: "overallCefr",
+          template: "",
         },
         {
-          targetFieldKey: "overallBridge",
-          inputFieldKey: "overallCefr",
-          transformerModule: "CefrBridge",
+          label: "GENERAL SCORE",
+          fieldKey: "overall",
+          template: "{{score}} / {{overallScale}}",
+        },
+        {
+          label: "Estimated correspondance based on the CEFR levels",
+          fieldKey: "equivalences",
+          template: "",
         },
       ],
     },
     {
-      key: "speaking",
-      type: "module",
-      isTotalScore: false,
-      scale: 100,
-      processor: "speaking",
-      transformers: [
+      moduleRoot: "mainModule",
+      moduleKey: "listening",
+      properties: [
         {
-          targetFieldKey: "overallCefr",
-          inputFieldKey: "overall",
-          transformerModule: "CefrSpeaking",
-        },
-        {
-          targetFieldKey: "overallBridge",
-          inputFieldKey: "overallCefr",
-          transformerModule: "CefrBridge",
+          label: "ORAL COMPREHENSION CEFR LEVEL",
+          fieldKey: "overallCefr",
+          template: "",
         },
       ],
     },
     {
-      key: "writing",
-      type: "module",
-      isTotalScore: false,
-      scale: 100,
-      processor: "writing",
-      transformers: [
+      moduleRoot: "mainModule",
+      moduleKey: "reading",
+      properties: [
         {
-          targetFieldKey: "overallCefr",
-          inputFieldKey: "overall",
-          transformerModule: "CefrWriting",
-        },
-        {
-          targetFieldKey: "overallBridge",
-          inputFieldKey: "overallCefr",
-          transformerModule: "CefrBridge",
+          label: "WRITTEN COMPREHENSION CEFR LEVEL",
+          fieldKey: "overallCefr",
+          template: "",
         },
       ],
     },
     {
-      key: "conversation",
-      type: "composite",
-      isTotalScore: false,
-      scale: 100,
-      dependencies: [
+      moduleRoot: "mainModule",
+      moduleKey: "grammar",
+      properties: [
         {
-          module: "listening",
-          key: "overallBridge",
-          coef: "1/2",
-        },
-        {
-          module: "speaking",
-          key: "overallBridge",
-          coef: "1/2",
-        },
-      ],
-      transformers: [
-        {
-          targetFieldKey: "overallCefr",
-          inputFieldKey: "overall",
-          transformerModule: "CefrGeneral",
+          label: "GRAMMAR CEFR LEVEL",
+          fieldKey: "overallCefr",
+          template: "",
         },
       ],
     },
     {
-      key: "expression",
-      type: "composite",
-      isTotalScore: false,
-      scale: 100,
-      dependencies: [
+      moduleRoot: "mainModule",
+      moduleKey: "speaking",
+      properties: [
         {
-          module: "speaking",
-          key: "overallBridge",
-          coef: "1/2",
-        },
-        {
-          module: "writing",
-          key: "overallBridge",
-          coef: "1/2",
+          label: "SPEAKING CEFR LEVEL",
+          fieldKey: "overallCefr",
+          template: "",
         },
       ],
-      transformers: [
+    },
+    {
+      moduleRoot: "mainModule",
+      moduleKey: "writing",
+      properties: [
         {
-          targetFieldKey: "overallCefr",
-          inputFieldKey: "overall",
-          transformerModule: "CefrGeneral",
+          label: "WRITING CEFR LEVEL",
+          fieldKey: "overallCefr",
+          template: "",
         },
       ],
     },
   ],
+  emails: {
+    examConvocation: {
+      active: true,
+    },
+    examDone: {
+      active: true,
+    },
+    examSecurityCompromised: {
+      active: true,
+    },
+  },
+  certificates: {
+    scoreReport: {
+      generate: true,
+      documentConfig: {
+        documentTitle: "OFFICIAL TEST REPORT",
+        showCandidatePhoto: true,
+        showQrCode: true,
+      },
+      pages: [
+        {
+          title: "",
+          position: 1,
+          showCandidateInformation: true,
+          modules: [
+            {
+              moduleSource: "mainModule",
+              moduleKey: "general",
+              content: [
+                {
+                  contentType: "text",
+                  label: "GENERAL CEFR LEVEL",
+                  fieldKey: "overallCefr",
+                  labelSize: "xl",
+                  labelWeight: "bold",
+                  contentSize: "xl",
+                  contentWeight: "bold",
+                  display: "row",
+                  align: "left",
+                },
+                {
+                  contentType: "progress",
+                  fieldKey: "overallCefr",
+                  progressType: "cefr",
+                },
+                {
+                  contentType: "text",
+                  label: "Estimated correspondance based on the CEFR levels",
+                  fieldKey: "equivalences",
+                  labelSize: "sm",
+                  labelWeight: "bold",
+                  contentSize: "sm",
+                  contentWeight: "regular",
+                  display: "column",
+                  align: "center",
+                },
+                {
+                  contentType: "text",
+                  label: "GENERAL CEFR DESCRIPTOR",
+                  fieldKey: "descriptor",
+                  template: "{{{ score | mapList }}}",
+                  labelSize: "sm",
+                  labelWeight: "bold",
+                  contentSize: "sm",
+                  contentWeight: "regular",
+                  display: "column",
+                  align: "center",
+                },
+              ],
+            },
+            {
+              moduleSource: "mainModule",
+              moduleKey: "listening",
+              content: [
+                {
+                  contentType: "text",
+                  label: "ORAL COMPREHENSION CEFR LEVEL",
+                  fieldKey: "overallCefr",
+                  labelSize: "xl",
+                  labelWeight: "bold",
+                  contentSize: "xl",
+                  contentWeight: "bold",
+                  display: "row",
+                  align: "left",
+                },
+                {
+                  contentType: "progress",
+                  fieldKey: "overallCefr",
+                  progressType: "cefr",
+                },
+              ],
+            },
+            {
+              moduleSource: "mainModule",
+              moduleKey: "reading",
+              content: [
+                {
+                  contentType: "text",
+                  label: "WRITTEN COMPREHENSION CEFR LEVEL",
+                  fieldKey: "overallCefr",
+                  labelSize: "xl",
+                  labelWeight: "bold",
+                  contentSize: "xl",
+                  contentWeight: "bold",
+                  display: "row",
+                  align: "left",
+                },
+                {
+                  contentType: "progress",
+                  fieldKey: "overallCefr",
+                  progressType: "cefr",
+                },
+              ],
+            },
+            {
+              moduleSource: "mainModule",
+              moduleKey: "speaking",
+              content: [
+                {
+                  contentType: "text",
+                  label: "SPEAKING PROFICIENCY CEFR LEVEL",
+                  fieldKey: "overallCefr",
+                  labelSize: "xl",
+                  labelWeight: "bold",
+                  contentSize: "xl",
+                  contentWeight: "bold",
+                  display: "row",
+                  align: "left",
+                },
+                {
+                  contentType: "progress",
+                  fieldKey: "overallCefr",
+                  progressType: "cefr",
+                },
+              ],
+            },
+            {
+              moduleSource: "mainModule",
+              moduleKey: "writing",
+              content: [
+                {
+                  contentType: "text",
+                  label: "WRITING PROFICIENCY CEFR LEVEL",
+                  fieldKey: "overallCefr",
+                  labelSize: "xl",
+                  labelWeight: "bold",
+                  contentSize: "xl",
+                  contentWeight: "bold",
+                  display: "row",
+                  align: "left",
+                },
+                {
+                  contentType: "progress",
+                  fieldKey: "overallCefr",
+                  progressType: "cefr",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          title: "SUBSCORES BY SKILLS",
+          position: 2,
+          showCandidateInformation: true,
+          modules: [
+            {
+              moduleSource: "mainModule",
+              moduleKey: "grammar",
+              content: [
+                {
+                  contentType: "text",
+                  label: "POINTS TO WORK ON",
+                  fieldKey: "workOn",
+                  template: "{{{score | formatContent : '<br>' : ' - ' }}}",
+                  labelSize: "xl",
+                  labelWeight: "bold",
+                  contentSize: "sm",
+                  contentWeight: "bold",
+                  display: "column",
+                  align: "center",
+                },
+              ],
+            },
+            {
+              moduleSource: "mainModule",
+              moduleKey: "grammar",
+              content: [
+                {
+                  contentType: "text",
+                  label: "GRAMMAR CEFR LEVEL",
+                  fieldKey: "overallCefr",
+                  labelSize: "xl",
+                  labelWeight: "bold",
+                  contentSize: "xl",
+                  contentWeight: "bold",
+                  display: "row",
+                  align: "left",
+                },
+                {
+                  contentType: "progress",
+                  fieldKey: "overallCefr",
+                  progressType: "cefr",
+                },
+              ],
+            },
+            {
+              moduleSource: "mainModule",
+              moduleKey: "conversation",
+              content: [
+                {
+                  contentType: "text",
+                  label: "IN-PRACTICE SKILLS",
+                  fieldKey: "",
+                  template: "",
+                  labelSize: "xl",
+                  labelWeight: "bold",
+                  contentSize: "xl",
+                  contentWeight: "bold",
+                  display: "column",
+                  align: "center",
+                },
+                {
+                  contentType: "text",
+                  label: "CONVERSATION (LISTENING & SPEAKING) CEFR LEVEL",
+                  fieldKey: "overallCefr",
+                  template: "",
+                  labelSize: "xl",
+                  labelWeight: "bold",
+                  contentSize: "xl",
+                  contentWeight: "bold",
+                  display: "row",
+                  align: "left",
+                },
+                {
+                  contentType: "progress",
+                  fieldKey: "overallCefr",
+                  progressType: "cefr",
+                },
+              ],
+            },
+            {
+              moduleSource: "mainModule",
+              moduleKey: "expression",
+              content: [
+                {
+                  contentType: "text",
+                  label: "EXPRESSION (SPEAKING & WRITING) CEFR LEVEL",
+                  fieldKey: "overallCefr",
+                  template: "",
+                  labelSize: "xl",
+                  labelWeight: "bold",
+                  contentSize: "xl",
+                  contentWeight: "bold",
+                  display: "row",
+                  align: "left",
+                },
+                {
+                  contentType: "progress",
+                  fieldKey: "overallCefr",
+                  progressType: "cefr",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    officialCertificate: {
+      generate: true,
+      documentContent: {
+        leftContainer: [],
+        rightContainer: [
+          {
+            moduleSource: "mainModule",
+            moduleKey: "general",
+            content: [
+              {
+                contentType: "text",
+                label: "GENERAL CEFR LEVEL",
+                fieldKey: "overallCefr",
+                labelSize: "lg",
+                labelWeight: "bold",
+                contentSize: "lg",
+                contentWeight: "bold",
+                display: "row",
+                align: "left",
+              },
+              {
+                contentType: "progress",
+                fieldKey: "overallCefr",
+                progressType: "cefr",
+              },
+            ],
+          },
+          {
+            moduleSource: "mainModule",
+            moduleKey: "listening",
+            content: [
+              {
+                contentType: "text",
+                label: "ORAL COMPREHENSION CEFR LEVEL",
+                fieldKey: "overallCefr",
+                labelSize: "lg",
+                labelWeight: "bold",
+                contentSize: "lg",
+                contentWeight: "bold",
+                display: "row",
+                align: "left",
+              },
+              {
+                contentType: "progress",
+                fieldKey: "overallCefr",
+                progressType: "cefr",
+              },
+            ],
+          },
+          {
+            moduleSource: "mainModule",
+            moduleKey: "reading",
+            content: [
+              {
+                contentType: "text",
+                label: "WRITTEN COMPREHENSION CEFR LEVEL",
+                fieldKey: "overallCefr",
+                labelSize: "lg",
+                labelWeight: "bold",
+                contentSize: "lg",
+                contentWeight: "bold",
+                display: "row",
+                align: "left",
+              },
+              {
+                contentType: "progress",
+                fieldKey: "overallCefr",
+                progressType: "cefr",
+              },
+            ],
+          },
+          {
+            moduleSource: "mainModule",
+            moduleKey: "speaking",
+            content: [
+              {
+                contentType: "text",
+                label: "SPEAKING PROFICIENCY CEFR LEVEL",
+                fieldKey: "overallCefr",
+                labelSize: "lg",
+                labelWeight: "bold",
+                contentSize: "lg",
+                contentWeight: "bold",
+                display: "row",
+                align: "left",
+              },
+              {
+                contentType: "progress",
+                fieldKey: "overallCefr",
+                progressType: "cefr",
+              },
+            ],
+          },
+          {
+            moduleSource: "mainModule",
+            moduleKey: "writing",
+            content: [
+              {
+                contentType: "text",
+                label: "WRITING PROFICIENCY CEFR LEVEL",
+                fieldKey: "overallCefr",
+                labelSize: "lg",
+                labelWeight: "bold",
+                contentSize: "lg",
+                contentWeight: "bold",
+                display: "row",
+                align: "left",
+              },
+              {
+                contentType: "progress",
+                fieldKey: "overallCefr",
+                progressType: "cefr",
+              },
+            ],
+          },
+        ],
+      },
+    },
+    evidenceReport: {
+      generate: false,
+    },
+  },
 };
 
 const LogData = (data: any) => {
