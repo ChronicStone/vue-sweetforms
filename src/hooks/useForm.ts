@@ -75,7 +75,14 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             ...field,
             ...(field.options && typeof field.options === 'function' && {
                 _watcherOptions: watch(() => field._options.value, (fieldOptions: any[]) => { 
-                    if(!fieldOptions.map((option: any) => option.value).includes(GetPropertyFromPath([...options?.parentKey, field.key], formState))) SetPropertyFromPath(formState, [...options?.parentKey, field.key], null)
+                    try {
+                        const options = fieldOptions?.map?.((option: any) => option.value) ?? []
+                        const currentValue = GetPropertyFromPath([...(options?.parentKey ?? []), field.key], formState)
+                        if(Array.isArray(currentValue)) SetPropertyFromPath(formState, [...options?.parentKey ?? [], field.key], currentValue.filter((item: any) => options.includes(item)))
+                        else if(!options.includes(currentValue)) SetPropertyFromPath(formState, [...options?.parentKey ?? [], field.key], null)
+                    } catch(err) {
+                        console.error(err)
+                    }
                  })
             }),
         }))
