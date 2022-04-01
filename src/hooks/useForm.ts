@@ -2,7 +2,7 @@ import { SetPropertyFromPath } from './../utils/formUtils';
 
 import { MapFormInitialState, MapOutputState, MapFormRules, MapStepsAsFields, MapComponentStore, MapDependenciesAsObject, GetPropertyFromPath, ComputePropSize, ComputeTwGridBreakpoint, GenerateUUID } from "@/utils"
 import { ref, reactive, computed, watch, provide, inject, nextTick } from "vue"
-import { asyncComputed, reactiveComputed, watchDebounced } from "@vueuse/core"
+import { asyncComputed, reactiveComputed } from "@vueuse/core"
 import { useBreakpointStyle, useBreakpoints } from "@/hooks"
 import { BreakpointsInjectKey } from "@/constants/injectionKeys"
 import { defaultStyles } from '@/constants'
@@ -74,9 +74,9 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         .map((field: any) => ({
             ...field,
             ...(field.options && typeof field.options === 'function' && {
-                _watcherOptions: watchDebounced(() => field._options.value, (fieldOptions: any[]) => { 
+                _watcherOptions: watch(() => field._options.value, (fieldOptions: any[]) => { 
                     if(!fieldOptions.map((option: any) => option.value).includes(GetPropertyFromPath([...options?.parentKey, field.key], formState))) SetPropertyFromPath(formState, [...options?.parentKey, field.key], null)
-                 }, { debounce: 500 })
+                 })
             }),
         }))
         // RECURSIVELY DO THIS PROCESS FOR CHILDREN
