@@ -7,7 +7,8 @@ import IconsResolver from 'unplugin-icons/resolver'
 import Components from 'unplugin-vue-components/vite'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import PurgeIcons from 'vite-plugin-purge-icons'
-
+import typescript from 'rollup-plugin-typescript2';
+import config from './tsconfig.json'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -50,6 +51,20 @@ export default defineConfig({
           vue: 'Vue',
         },
       },
+      plugins: [
+        typescript({
+          check: false,
+          tsconfig: path.resolve(__dirname, 'tsconfig.json'),
+          tsconfigOverride: {
+            compilerOptions: {
+              sourceMap: false,
+              declaration: true,
+              declarationMap: true
+            },
+            exclude: ['**/__tests__']
+          }
+        }),
+      ]
     },
   },
 })

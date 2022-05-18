@@ -20,7 +20,7 @@ export const MapFormInitialState = (fields: any[], inputFormData: any = {}, pare
     fields.forEach((field: any) => {
         if(field.type === 'info') return
         const GetFieldState = () => {
-            if(!['array', 'object'].includes(field.type)) return inputFormData?.[field.key] ? inputFormData?.[field.key] : field?.default ? field?.default : field.type === 'checkbox' ? false : field.type === 'number' ? 0 : null
+            if(!['array', 'object'].includes(field.type)) return inputFormData?.[field.key] ? (field?.preformat && typeof field?.preformat === 'function' ? field.preformat(inputFormData?.[field.key]) : inputFormData?.[field.key]) : field?.default ? field?.default : field.type === 'checkbox' ? false : field.type === 'number' ? 0 : null
             else if(field.type === 'array') return inputFormData[field.key] ?? field?.default ?? []
             else return MapFormInitialState(field.fields ?? [], inputFormData[field.key] ?? {}, field.key)
         }

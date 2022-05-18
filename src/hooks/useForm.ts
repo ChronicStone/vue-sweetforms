@@ -41,14 +41,15 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
                     .map(({ source, target }: { source: string, target: string }) => {
                         return { 
                             key: target,
-                            ...(source === '$root' && { value: formState }),
-                            ...(source?.toString()?.includes?.('$parent') && { value: GetPropertyFromPath([...options.parentKey], formState, source) }), 
-                            ...(!['$root'].includes(source) &&  !source?.toString()?.includes?.('$parent') && { value: GetPropertyFromPath(source, formState) })
+                            ...(source === '$root' && { value: formState.value }),
+                            ...(source?.toString()?.includes?.('$parent') && { value: GetPropertyFromPath([...options.parentKey], formState.value, source) }), 
+                            ...(!['$root'].includes(source) &&  !source?.toString()?.includes?.('$parent') && { value: GetPropertyFromPath(source, formState.value) })
                         }
                     })
                     :  [])),
                 _evalOptions: ref(false),
                 _evalEnable: ref(false),
+                _fieldRef: ref(null),
                 size: useBreakpointStyle(field.size ?? formOptions?.fieldSize ?? defaultStyles.fieldSize, breakpointsConfig, 'col'),
                 ...(options.parentType && { _parentType: options.parentType }),
                 ...(options.parentId && { _parentId: options.parentId }),
@@ -64,6 +65,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         // ASYNC COMPUTED SETUP
         .map((field: any) => ({
             ...field,
+            _setFieldRef: (value: any) => field._fieldRef.value = value,
             _required: computed(() => typeof field.required === 'function' ? field.required(field._dependencies.value) : !!field.required),
             _enable: field.condition ? asyncComputed(async () => await field.condition(field._dependencies.value), false, field._evalEnable) : true,
             ...(field.options && typeof field.options === 'function' && {  
@@ -77,9 +79,9 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
                 _watcherOptions: watch(() => field._options.value, (fieldOptions: any[]) => { 
                     try {
                         const options = fieldOptions?.map?.((option: any) => option.value) ?? []
-                        const currentValue = GetPropertyFromPath([...(options?.parentKey ?? []), field.key], formState)
-                        if(Array.isArray(currentValue)) SetPropertyFromPath(formState, [...options?.parentKey ?? [], field.key], currentValue.filter((item: any) => options.includes(item)))
-                        else if(!options.includes(currentValue)) SetPropertyFromPath(formState, [...options?.parentKey ?? [], field.key], null)
+                        const currentValue = GetPropertyFromPath([...(options?.parentKey ?? []), field.key], formState.value)
+                        if(Array.isArray(currentValue)) SetPropertyFromPath(formState.value, [...options?.parentKey ?? [], field.key], currentValue.filter((item: any) => options.includes(item)))
+                        else if(!options.includes(currentValue)) SetPropertyFromPath(formState.value, [...options?.parentKey ?? [], field.key], null)
                     } catch(err) {
                         console.error(err)
                     }
@@ -124,7 +126,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     })
 
 
-    const formState = reactive(MapFormInitialState(inputFields, formInputData))
+    const formState = ref(MapFormInitialState(inputFields, formInputData))
     const formContent = reactive(InitializeFormFields(inputFields))
 
     MapItemsInputRefs(formContent, formInputData)
@@ -148,11 +150,11 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         return MapFormRules(fields)
     })
 
-    const $v = useVuelidate(formRules, formState);
+    const $v = useVuelidate(formRules, formState.value);
 
-    const CloseForm = () => formOptions._resolve ? formOptions._resolve({ isCompleted: false, formData: MapOutputState(formState, formContent) }) : emit('onCancel', MapOutputState(formState, formContent))
+    const CloseForm = () => formOptions._resolve ? formOptions._resolve({ isCompleted: false, formData: MapOutputState(formState.value, formContent) }) : emit('onCancel', MapOutputState(formState.value, formContent))
     const SubmitForm = async () => {
-        const _emitForm = () => formOptions._resolve ? formOptions._resolve({ isCompleted: true, formData: MapOutputState(formState, formContent)}) : emit('onSubmit',  MapOutputState(formState, formContent))
+        const _emitForm = () => formOptions._resolve ? formOptions._resolve({ isCompleted: true, formData: MapOutputState(formState.value, formContent)}) : emit('onSubmit',  MapOutputState(formState.value, formContent))
 
         const isValid = await $v.value.$validate()
         await $v.value.$touch()
@@ -174,7 +176,10 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         }
     }
 
-    const mappedSyncState = computed(() => MapOutputState(formState, formContent))
+    const mappedSyncState = computed(() => MapOutputState(formState.value, formContent))
+
+    const ClearState = () => formState.value = MapFormInitialState(inputFields, {})
+    const ResetState = () => formState.value = MapFormInitialState(inputFields, formInputData)
 
     provide('componentStore', customComponentsStore)
 
@@ -194,6 +199,8 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             currentStepIndex, 
             formSteps 
         }),
-        mappedSyncState
+        mappedSyncState,
+        ClearState,
+        ResetState
     }
 }
