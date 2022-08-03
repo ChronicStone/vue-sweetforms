@@ -2,7 +2,7 @@ import { FieldOption } from "./fieldOption.types"
 import { Ref, ComputedRef } from "vue"
 
 export type UnknownObject = { [key: string]: any };
-export type FieldTypes = 'text' | 'textarea' | 'password' | 'number' | 'slider' | 'switch' | 'select' | 'radio' | 'checkbox' | 'checkbox-group' | 'date' | 'time' | 'datetime' | 'datetimerange' | 'daterange' | 'month' | 'year' | 'file' | 'array' | 'object'
+export type FieldTypes = 'tag' | 'text' | 'textarea' | 'password' | 'number' | 'slider' | 'switch' | 'select' | 'radio' | 'checkbox' | 'checkbox-group' | 'date' | 'time' | 'datetime' | 'datetimerange' | 'daterange' | 'month' | 'year' | 'file' | 'array' | 'object'
 
 export interface SelectOption {
     label: string
@@ -76,6 +76,9 @@ export interface SteppedForm {
     onCancel?: () => any
 }
 
-export type FormInstance = SimpleForm | SteppedForm
+export type FormInstance = {
+    formOptions: (SimpleForm | SteppedForm) & { _id: string, _resolve: (data: { isCompleted: boolean; formData: { [key: string]: any }}) => void },
+    formData: { [key: string]: any }
+}
 
 

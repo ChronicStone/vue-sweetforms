@@ -115,6 +115,12 @@
   </component>
 </template>
 
+<script lang="ts">
+export default {
+  name: "Form",
+};
+</script>
+
 <script setup lang="ts">
 import { defineExpose } from "vue";
 import FormInput from "./FormInput.vue";
@@ -160,13 +166,17 @@ const {
   PreviousStep,
   $v,
   mappedSyncState,
+  ClearState,
+  ResetState,
 } = useForm(props.formOptions, props.formData, emit);
 const HandleRootValUpdate = (field: any, value: any) => {
-  if (field._stepRoot) formState[field._stepRoot][field.key] = value;
-  else formState[field.key] = value;
+  if (field._stepRoot) formState.value[field._stepRoot][field.key] = value;
+  else formState.value[field.key] = value;
 };
 
 defineExpose({
+  $clear: ClearState,
+  $reset: ResetState,
   formData: mappedSyncState,
   $validate: $v.validate,
   formSteps,

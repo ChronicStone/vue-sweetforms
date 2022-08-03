@@ -11,15 +11,22 @@
       "
     >
       <span
-        class="m-0 capitalize flex gap-2 justify-start items-center group cursor-pointer"
+        class="m-0 flex gap-2 justify-start items-center group cursor-pointer"
         style="cursor: pointer !important"
         @click="
-          ['object', 'array'].includes(field.type) ? (collapsed = !collapsed) : null
+          ['object', 'array', 'custom-component'].includes(field.type)
+            ? (collapsed = !collapsed)
+            : null
         "
       >
         <CollapseButton
           v-model="collapsed"
-          v-if="['object', 'array'].includes(field.type)"
+          v-if="
+            ['object', 'array', 'custom-component'].includes(field.type) &&
+            (field?.collapsible ?? ['object', 'array'].includes(field.type)
+              ? true
+              : false)
+          "
         />
         <label
           class="flex items-center transition-all ease-in-out duration-150"
@@ -62,6 +69,14 @@
       :loading="field._evalOptions"
       filterable
       :disabled="disabled"
+      :status="validator?.$errors?.length ? 'error' : 'success'"
+    />
+    <NDynamicTags
+      @blur="validator.$touch"
+      v-if="field.type === 'tag'"
+      v-model:value="fieldValue"
+      v-bind="MapFieldProps(field.type, field.fieldParams)"
+      :disabled="disabled"
     />
     <NInputNumber
       @blur="validator.$touch"
@@ -70,6 +85,7 @@
       v-bind="MapFieldProps(field.type, field.fieldParams)"
       :placeholder="field.placeholder"
       :disabled="disabled"
+      :status="validator?.$errors?.length ? 'error' : 'success'"
     />
     <NDatePicker
       @blur="validator.$touch"
@@ -90,6 +106,7 @@
       v-bind="MapFieldProps(field.type, field.fieldParams)"
       update-value-on-close
       :disabled="disabled"
+      :status="validator?.$errors?.length ? 'error' : 'success'"
     />
     <NTimePicker
       @blur="validator.$touch"
@@ -98,6 +115,7 @@
       :placeholder="field.placeholder"
       v-bind="MapFieldProps(field.type, field.fieldParams)"
       :disabled="disabled"
+      :status="validator?.$errors?.length ? 'error' : 'success'"
     />
     <div
       class="flex flex-col gap-1 justify-center items-center h-full"
@@ -213,13 +231,25 @@
       />
     </NCollapseTransition>
 
-    <div v-if="field.type === 'custom-component'">
+    <NCollapseTransition v-if="field.type === 'custom-component'" :show="!collapsed">
       <component
+        ref="inputRef"
         :is="componentStore[field.component]"
         v-model="fieldValue"
-        v-bind="{ ...field.fieldParams, dependencies: field._dependencies }"
+        v-bind="{
+          ...field.fieldParams,
+          dependencies: field._dependencies,
+          options: field._options,
+          field: Omit(field, [
+            '_dependencies',
+            '_enable',
+            '_options',
+            '_options_map',
+            '_fieldRef',
+          ]),
+        }"
       />
-    </div>
+    </NCollapseTransition>
 
     <div v-if="field.type === 'info'">
       <InfoContent />
@@ -275,12 +305,13 @@ import {
   ParseErrMsg,
   GenerateUUID,
   render,
+  Omit,
 } from "@/utils";
 
 import ArrayTable from "./Fields/ArrayTable.vue";
-import ArrayTable2 from "./Fields/ArrayTable2.vue";
 import ArrayList from "./Fields/ArrayList.vue";
 import ArrayTabs from "./Fields/ArrayTabs.vue";
+import { capitalize } from "@/utils/format";
 
 const emit = defineEmits(["update:modelValue"]);
 const props = defineProps({
@@ -323,8 +354,24 @@ const fieldValue = computed({
   },
 });
 
+if (props.field.type === "custom-component") {
+  const inputRef = ref(null);
+  onMounted(() => console.log({ value: inputRef.value }));
+  // watch(
+  //   () => inputRef.value,
+  //   (value) => console.log({ value }),
+  //   { immediate: true, deep: true }
+  // );
+}
+
 const InfoContent = () => render(props.field.content ?? "", props.field._dependencies);
-const LabelContent = () => render(props.field.label ?? "Field label");
+const LabelContent = () =>
+  render(
+    typeof props?.field?.label === "string"
+      ? capitalize(props?.field?.label)
+      : props.field.label,
+    props.field._dependencies
+  );
 </script>
 
 <style lang="scss">

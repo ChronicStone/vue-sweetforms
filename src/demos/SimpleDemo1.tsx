@@ -3,6 +3,9 @@ import { sameAs, helpers, email, minLength, maxLength } from "@vuelidate/validat
 import { NTag } from "naive-ui"
 import TestComp from "../TestComp.vue"
 import component from '../env';
+
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
 export default [
   {
     label: "Test array",
@@ -512,7 +515,9 @@ export default [
           key: "testCustomComp" + i,
           component: TestComp,
           label: "Test custom" + i,
-          required: true
+          required: true,
+          // collapsible: false,
+          collapsed: i % 2 === 0,
         }))
       ]
     }
@@ -732,6 +737,31 @@ export default [
         { key: 'test', type: 'array', label: 'test', extraProperties: true, fields: [
           { key: "firstName", label: "First name", type: "text" },
         ]}
+      ]
+    }
+  },
+  {
+    label: 'Sync test',
+    inputData: {
+      test: ['test3']
+    },
+    value: {
+      fields: [
+        { key: 'test', type: 'select', label: 'test', fieldParams: { multiple: true }, options: async () => {
+          await sleep(2000)
+          return [{ label: 'test1', value: 'test1' }, { label: 'test2', value: 'test2' }]
+        }}
+      ]
+    }
+  },
+  {
+    label: 'Date test',
+    inputData: {
+      date: "2022-04-29T22:00:00.000Z"
+    },
+    value: {
+      fields: [
+        { label: "Date", key: "date", type: "date", preformat: (value) => value ? new Date(value) : null, watch: (...args) => console.log({ args }) }
       ]
     }
   }

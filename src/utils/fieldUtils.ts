@@ -93,10 +93,23 @@ export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any = {}) => {
                 ...(fieldProps.timeDisabled && { 'is-time-disabled': fieldProps.timeDisabled }),
 
             }   
+        case 'tag': 
+            return {
+
+            }
         case 'object':
         case 'array':
         default: 
-            return {}
+            return {
+                ...(fieldProps.max && { max: fieldProps.max }),
+                ...(fieldProps.closable && { 'closable': fieldProps.closable }),
+                ...(fieldProps.tagStyle && { 'tag-style': fieldProps.tagStyle }),
+                ...(fieldProps.type && { 'type': fieldProps.type }),
+                ...(fieldProps.renderTag && { 'render-tag': fieldProps.renderTag }),
+                ...(fieldProps.color && { 'color': fieldProps.color }),
+                ...(fieldProps.formatTag && { 'format-tag': fieldProps.formatTag }),
+                ...(fieldProps.round && { 'round': fieldProps.round }),
+            }
     }
 }
 
