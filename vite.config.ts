@@ -12,43 +12,9 @@ import config from './tsconfig.json'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(), 
-    WindiCSS(),
-    Components({
-      dts: true,
-      resolvers: [IconsResolver()],
-    }),
-    PurgeIcons(),
-    Icons({ autoInstall: true }),
-    vueJsx()
-  ],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
-  server: {
-    fs: {
-      // Allow serving files from one level up to the project root
-      allow: ['..']
-    }
-  },
-  build: {
-    lib: {
-      entry: path.resolve(__dirname, 'src/index.ts'),
-      name: 'VueSweetforms',
-      fileName: (format) => `vue-sweetforms.${format}.js`
-    },
-    rollupOptions: {
-      // make sure to externalize deps that shouldn't be bundled
-      // into your library
-      external: ['vue'],
-      output: {
-        // Provide global variables to use in the UMD build
-        // for externalized deps
-        globals: {
-          vue: 'Vue',
+    resolve: {
+        alias: {
+            "~/": `${path.resolve(__dirname, "src")}/`,
         },
       },
       plugins: [
@@ -66,5 +32,28 @@ export default defineConfig({
         }),
       ]
     },
-  },
-})
+    plugins: [
+        Vue(),
+        VueJsx(),
+        WindiCSS(),
+        Inspect(),
+        Components({
+            dts: true,
+            resolvers: [IconsResolver({ componentPrefix: "" })],
+        }),
+        PurgeIcons(),
+        Icons({
+            autoInstall: true,
+        }),
+    ],
+    optimizeDeps: {
+        // include: [
+        //     'vue',
+        //     'pinia',
+        //     'vue-router',
+        //     '@chronicstone/vue-sweetforms',
+        //     'crypto-js',
+        //     'jwt-decode'
+        // ]
+    },
+});
