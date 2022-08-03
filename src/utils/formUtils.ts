@@ -33,17 +33,17 @@ export const MapFormInitialState = (fields: any[], inputFormData: any = {}, pare
 }
 
 
-export const MapFormRules = (fields: any[], parentKey: string[] = []) => {
+export const MapFormRules = (fields: any[], parentKey: string[] = [], formState: { [key: string]: any }) => {
     let rules: any = {}    
     fields.forEach((field: any) => {
         rules[field.key] = { 
             ...(typeof rules[field.key] === 'object' && { ...rules[field.key] }),
-            ...(field.type === 'object' && { ...rules[field.key], ...MapFormRules(field.fields ?? [], [...parentKey, field.key]) }),
+            ...(field.type === 'object' && { ...rules[field.key], ...MapFormRules(field.fields ?? [], [...parentKey, field.key], formState) }),
             ...(field.type === 'array' && { 
                 ...rules[field.key], 
-                ...MapArrayToObject(field.fields.map((_, index: number) => ({ ...MapFormRules(field.fields?.[index] ?? [], [...parentKey, field.key, index]) })), true)
+                ...MapArrayToObject(field.fields.map((_, index: number) => ({ ...MapFormRules(field.fields?.[index] ?? [], [...parentKey, field.key, index], formState) })), true)
             }),
-            ...(typeof field?.validators === 'function' && { ...field.validators(field._dependencies, field), }),
+            ...(typeof field?.validators === 'function' && { ...field.validators(field._dependencies, GetPropertyFromPath([...(parentKey ?? []), field.key], formState), field), }),
             ...(typeof field.validators === 'object' && { ...field.validators, }),
             ...(field._required && { required: helpers.withMessage(`The field ${typeof field.label != 'string' ? field.key : field.label} can't be empty`, required) })
         }
@@ -118,7 +118,7 @@ export const MapOutputState = (inputState: any, fields: any = [], parentKey = ""
                 })
                 else return MapOutputState((field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key]) ?? {}, field.fields ?? [], field.key)
             }
-            if(!field?._enable || field.type === 'info') return
+            if((!field?._enable && field.conditionEffect != 'disable') || field.type === 'info') return
             else if(field._stepRoot) {
                 if(!state[field._stepRoot]) state[field._stepRoot] = {}
                 state[field._stepRoot][field.key] = GetFieldState()

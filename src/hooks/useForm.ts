@@ -75,6 +75,12 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         // WATCHERS SETUP
         .map((field: any) => ({
             ...field,
+            ...(field.watch && {
+                _fieldWatcher: watch(() => GetPropertyFromPath([...(options?.parentKey ?? []), field.key], formState.value), (value: any) => field.watch(value, { 
+                    setValue: (key: string, value: any) => SetPropertyFromPath(formState.value, key.split('.'), value),
+                    getValue: (key: string) => GetPropertyFromPath(key, formState.value)
+                }))
+            }),
             ...(field.options && typeof field.options === 'function' && {
                 _watcherOptions: watch(() => field._options.value, (fieldOptions: any[]) => { 
                     try {
@@ -147,7 +153,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     }
     const formRules = computed(() => {
         const fields = FilterAppliedRules(formContent)
-        return MapFormRules(fields)
+        return MapFormRules(fields, [], formState.value)
     })
 
     const $v = useVuelidate(formRules, formState.value);

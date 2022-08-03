@@ -71,6 +71,13 @@
       :disabled="disabled"
       :status="validator?.$errors?.length ? 'error' : 'success'"
     />
+    <NDynamicTags
+      @blur="validator.$touch"
+      v-if="field.type === 'tag'"
+      v-model:value="fieldValue"
+      v-bind="MapFieldProps(field.type, field.fieldParams)"
+      :disabled="disabled"
+    />
     <NInputNumber
       @blur="validator.$touch"
       v-if="field.type === 'number'"

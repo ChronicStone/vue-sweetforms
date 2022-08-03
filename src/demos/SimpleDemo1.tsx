@@ -761,7 +761,7 @@ export default [
     },
     value: {
       fields: [
-        { label: "Date", key: "date", type: "date", preformat: (value) => value ? new Date(value) : null }
+        { label: "Date", key: "date", type: "date", preformat: (value) => value ? new Date(value) : null, watch: (...args) => console.log({ args }) }
       ]
     }
   }

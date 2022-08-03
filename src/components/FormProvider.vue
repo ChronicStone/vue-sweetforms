@@ -11,7 +11,7 @@
         v-if="formInstances.length"
         class="fixed left-0 top-0 bg-black !bg-opacity-50 grid place-items-center w-full h-screen"
       >
-        <transition-group name="list" appear>
+        <transition-group name="scale" appear>
           <Form
             popup
             v-for="(formInstance, index) in formInstances"
@@ -61,7 +61,11 @@ const props = defineProps({
 });
 const formInstances = ref<FormInstance[]>([]);
 
-const CloseForm = (index: number) => formInstances.value.splice(index, 1);
+const CloseForm = (uuid: string) =>
+  formInstances.value.splice(
+    formInstances.value.findIndex((form) => form.formOptions._id === uuid),
+    1
+  );
 const SubmitForm = ({ formState, onSubmit }, key) => {
   CloseForm(key);
   onSubmit(Object.assign({}, formState));
@@ -79,7 +83,7 @@ provide(FormInjectKey, {
         isCompleted: boolean;
         formData: any;
       }) => {
-        CloseForm(formInstances.value.findIndex(({ _id }) => _id === _id));
+        CloseForm(_id);
         resolve({ isCompleted, formData });
       };
       formInstances.value.push({
