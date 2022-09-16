@@ -68,9 +68,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             _setFieldRef: (value: any) => field._fieldRef.value = value,
             _required: computed(() => typeof field.required === 'function' ? field.required(field._dependencies.value) : !!field.required),
             _enable: field.condition ? asyncComputed(async () => await field.condition(field._dependencies.value), false, field._evalEnable) : true,
-            ...(field.options && typeof field.options === 'function' && {  
-                _options: asyncComputed(async () => await field.options(field._dependencies.value), [], field._evalOptions),
-            })
+            _options: field.options && typeof field.options === 'function' ? asyncComputed(async () => await field.options(field._dependencies.value), [], field._evalEnable) : ref(field?.options ?? []),
         }))
         // WATCHERS SETUP
         .map((field: any) => ({

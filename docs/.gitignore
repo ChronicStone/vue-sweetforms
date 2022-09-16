@@ -107,3 +107,4 @@ src/.temp/
 
 # Local Netlify folder
 .netlify
+.vercel

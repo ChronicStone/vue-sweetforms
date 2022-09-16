@@ -256,17 +256,8 @@
     </div>
 
     <div
-      v-if="
-        validator?.$errors?.length &&
-        (!['array', 'object'].includes(field.type) || collapsed)
-      "
+      v-if="validator?.$errors?.length"
       class="flex items-center gap-2 transition-all ease-in-out duration-300 transform"
-      :class="
-        validator?.$errors?.length &&
-        (!['array', 'object'].includes(field.type) || collapsed)
-          ? 'scale-y-100'
-          : 'scale-y-0'
-      "
     >
       <!-- <i-mdi-information class="text-red-500"/> -->
       <span class="text-red-500">{{ ParseErrMsg(validator, field) }}</span>

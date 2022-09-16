@@ -13,9 +13,9 @@
         </div>
       </template>
       <template #header-extra>
-        <i-mdi-arrow-down class="cursor-pointer" />
-        <i-mdi-arrow-up class="cursor-pointer" />
-        <NTooltip>
+        <!-- <i-mdi-arrow-down class="cursor-pointer" />
+        <i-mdi-arrow-up class="cursor-pointer" /> -->
+        <NTooltip v-if="field?.enableActionButtons ?? true">
           <template #trigger>
             <i-mdi-trash
               class="text-black dark:text-white hover:text-red-400 cursor-pointer"

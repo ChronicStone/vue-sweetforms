@@ -21,8 +21,8 @@ export const MapFormInitialState = (fields: any[], inputFormData: any = {}, pare
         if(field.type === 'info') return
         const GetFieldState = () => {
             if(!['array', 'object'].includes(field.type)) return inputFormData?.[field.key] ? (field?.preformat && typeof field?.preformat === 'function' ? field.preformat(inputFormData?.[field.key]) : inputFormData?.[field.key]) : field?.default ? field?.default : field.type === 'checkbox' ? false : field.type === 'number' ? 0 : null
-            else if(field.type === 'array') return inputFormData[field.key] ?? field?.default ?? []
-            else return MapFormInitialState(field.fields ?? [], inputFormData[field.key] ?? {}, field.key)
+            else if(field.type === 'array') return field?.preformat && typeof field?.preformat === 'function' ? field.preformat(inputFormData[field.key] ?? field?.default ?? []) : inputFormData[field.key] ?? field?.default ?? []
+            else return field?.preformat && typeof field?.preformat === 'function' ? field.preformat(MapFormInitialState(field.fields ?? [], inputFormData[field.key] ?? {}, field.key)) : MapFormInitialState(field.fields ?? [], inputFormData[field.key] ?? {}, field.key)
         }
         if(field._stepRoot) {
             if(!state[field._stepRoot]) state[field._stepRoot] = {}
@@ -108,15 +108,15 @@ export const MapOutputState = (inputState: any, fields: any = [], parentKey = ""
             const GetTransformedField = (value: any, field: any) => field.transform ? field.transform(value, field._dependencies) : value
             const GetFieldState = () => {
                 if(!['array', 'object'].includes(field.type)) return GetTransformedField(field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key], field) ?? null
-                else if(field.type === 'array') return ((field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key]) ?? []).map((item: any, index: number) => {
+                else if(field.type === 'array') return GetTransformedField(((field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key]) ?? []).map((item: any, index: number) => {
                     const { _collapsed, _uuid, ...itemData } = item
                     let output = MapOutputState(item, field?.items?.[index] ?? [], field.key)
                     if(field.extraProperties) {
                         for(const key in itemData) if(!field?.items?.[index].some((field: { [key: string]: any }) => field.key === key)) output[key] = itemData[key]
                     }
                     return output
-                })
-                else return MapOutputState((field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key]) ?? {}, field.fields ?? [], field.key)
+                }), field) ?? []
+                else return GetTransformedField(MapOutputState((field._stepRoot ? inputState[field._stepRoot][field.key] : inputState[field.key]) ?? {}, field.fields ?? [], field.key), field)
             }
             if((!field?._enable && field.conditionEffect != 'disable') || field.type === 'info') return
             else if(field._stepRoot) {

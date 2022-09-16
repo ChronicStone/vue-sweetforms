@@ -1,6 +1,6 @@
 {
   "name": "@chronicstone/vue-sweetforms",
-  "version": "0.5.1",
+  "version": "0.5.9",
   "description": "A Vue 3 highly customizable rich-featured form popup generator",
   "files": [
     "dist"
@@ -30,6 +30,7 @@
     "pkgroll": "^1.2.2",
     "prettier": "^2.6.2",
     "remixicon": "^2.5.0",
+    "vite-plugin-dts": "^1.5.0",
     "vite-plugin-purge-icons": "^0.8.1"
   },
   "devDependencies": {

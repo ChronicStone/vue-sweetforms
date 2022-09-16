@@ -8,7 +8,8 @@ import Components from 'unplugin-vue-components/vite'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import PurgeIcons from 'vite-plugin-purge-icons'
 import typescript from 'rollup-plugin-typescript2';
-import config from './tsconfig.json'
+import dts from 'vite-plugin-dts';
+import rollupTs from 'rollup-plugin-typescript2';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,7 +22,20 @@ export default defineConfig({
     }),
     PurgeIcons(),
     Icons({ autoInstall: true }),
-    vueJsx()
+    vueJsx(),
+    dts({ insertTypesEntry: true }),
+        // only for type checking
+        // {
+        //     ...rollupTs({
+        //         check: true,
+        //         tsconfig: './tsconfig.json',
+        //         tsconfigOverride: {
+        //             noEmits: true,
+        //         },
+        //     }),
+        //     // run before build
+        //     enforce: 'pre',
+        // },
   ],
   resolve: {
     alias: {
@@ -51,20 +65,7 @@ export default defineConfig({
           vue: 'Vue',
         },
       },
-      plugins: [
-        typescript({
-          check: false,
-          tsconfig: path.resolve(__dirname, 'tsconfig.json'),
-          tsconfigOverride: {
-            compilerOptions: {
-              sourceMap: false,
-              declaration: true,
-              declarationMap: true
-            },
-            exclude: ['**/__tests__']
-          }
-        }),
-      ]
+
     },
   },
 })
