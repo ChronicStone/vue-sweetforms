@@ -10,9 +10,5 @@ export const ExamConfig = {
     fields: [
         // GeneralConfig,
         ScoringConfig,
-        ResultConfig,
-        ExportConfig,
-        EmailConfig,
-        CertificateConfig
     ]
 }

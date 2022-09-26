@@ -1,8 +1,7 @@
-import { FormField } from "./fields";
-import { VNodeChild } from "vue";
+import { FormField, SelectField } from "./fields";
 
 interface BaseFormSchema {
-    title?: string | (() => VNodeChild);
+    title?: string;
     gridSize?: number | string;
     fieldSize?: number | string;
     fullScreen?: boolean | string;
@@ -15,216 +14,76 @@ interface BaseFormSchema {
     showCloseButton?: boolean;
 }
 
-export interface FormStep {
+export interface FormStep<StepKey, FieldKey> {
     title?: string;
-    root?: string;
-    fields: FormField[];
+    root?: StepKey;
+    fields: FormField<FieldKey>[];
 }
 
-export type SimpleFormSchema = BaseFormSchema & {
-    fields: FormField[];
+export type SimpleFormSchema<FieldKey> = BaseFormSchema & {
+    fields: FormField<FieldKey>[];
 }
 
-export type SteppedFormSchema = BaseFormSchema & {
+export type SteppedFormSchema<StepKey, FieldKey> = BaseFormSchema & {
     showPreviousButton?: boolean;
     previousButtonText?: string;
     nextButtonText?: string;
-    steps: FormStep[];
+    steps: FormStep<StepKey, FieldKey>[];
     showStepper?: boolean;
 }
 
-export type FormSchema = SimpleFormSchema | SteppedFormSchema;
+
+type ResolveFormType<K extends FormField<any>> = any
 
 
-type Narrow<T> =
-    | (T extends infer U ? U : never)
-    | Extract<T, number | string | boolean | bigint | symbol | null | undefined | []>
-    | ([T] extends [[]] ? [] : { [K in keyof T]: Narrow<T[K]> });
+            // type ResolveFormType<K extends FormField<any>> =  
+            // K["type"] extends "checkbox"
+            //   ? boolean
+            //   : K["type"] extends "object"
+            //     ? K["fields"] extends infer U extends FormField<any>[]
+            //       ? FormInfoReturnType<U[number]>
+            //       : never
+            //     : K extends SelectField
+            //       ? K["fieldParams"] extends { multiple: true }
+            //         ? string[]
+            //         : string
+            //       : K["type"] extends "array"
+            //         ? K["fields"] extends infer U extends FormField<any>[]
+            //           ? FormInfoReturnType<U[number]>[]
+            //           : never
+            //         : K["type"] extends "daterange"
+            //           ? [string, string]
+            //           : string
 
-type InputTypeMap = {
-    text: string;
-    textarea: string;
-    daterange: [number, number];
-    checkbox: boolean;
-};
+export type FormInfoReturnType<T extends FormField<any>> = UnionToIntersection<{
+[K in T as K["condition"] extends (...args: any) => any ? never : K["key"]]: 
+  ResolveFormType<K>
+} | {
+[K in T as K["condition"] extends (...args: any) => any ? K["key"] : never]?: 
+  ResolveFormType<K>
+}>
 
-interface FormInit {
-    // fullScreen: string;
-    // title: string;
-    // gridSize: number;
-    // fieldSize: string;
-    fields: FormField[];
+type UnionToIntersection<U> = 
+(U extends any ? (k: U)=>void : never) extends ((k: infer I)=>void) ? I : never
+
+export type ExpandRecursively<T> = T extends object
+? T extends infer O ? { [K in keyof O]: ExpandRecursively<O[K]> } : never
+: T;
+
+
+export type Narrowable = string | number | boolean | symbol | object | undefined | void | null | {};
+
+
+export type FormSchema<StepKey = any, FieldKey = any> = SimpleFormSchema<FieldKey> | SteppedFormSchema<StepKey, FieldKey>;
+
+export type ExtractFieldsFromSteps<StepKey, FieldKey, TStep extends FormStep<StepKey, FieldKey>> = TStep["root"] extends string 
+            ? { [key in TStep["root"]]: ExpandRecursively<FormInfoReturnType<TStep["fields"][number]>> } 
+            :  ExpandRecursively<FormInfoReturnType<TStep["fields"][number]>>
+
+
+ export type FormApi = {
+  createForm<TFormSchema extends FormSchema<StepKey, FieldKey>, StepKey extends Narrowable, FieldKey extends Narrowable>(schema: TFormSchema, formData?: { [key: string]: any}): Promise<{ 
+    isCompleted: boolean, 
+    formData: TFormSchema extends SimpleFormSchema<FieldKey> ? ExpandRecursively<FormInfoReturnType<TFormSchema["fields"][number]>>  : TFormSchema extends SteppedFormSchema<StepKey, FieldKey> ? ExpandRecursively<ExtractFieldsFromSteps<StepKey, FieldKey, TFormSchema["steps"][number]>>  : never
+  }>;
 }
-
-type AddUndefinedIfDependent<T, F extends FormField> = "dependencies" extends keyof F ? T | undefined : T;
-
-type DataFrom<F extends FormField[]> = {
-    [K in F[number]["key"]]:
-        Extract<F[number], { key: K }> extends infer Field extends FormField
-            ? Field["type"] extends keyof InputTypeMap
-                ? AddUndefinedIfDependent<InputTypeMap[Field["type"]], Field>
-                : Field["type"] extends "object"
-                    ? "fields" extends keyof Field
-                        ? Field["fields"] extends FormField[]
-                            ? AddUndefinedIfDependent<DataFrom<Field["fields"]>, Field>
-                            : "never3"
-                        : "never4"
-                    : Field["type"] extends "array"
-                        ? "fields" extends keyof Field
-                            ? Field["fields"] extends FormField[]
-                                ? AddUndefinedIfDependent<DataFrom<Field["fields"]>[], Field>
-                                : "never1"
-                            : "never2"
-                        : Field["type"] extends "select"
-                            ? "options" extends keyof Field
-                                ? Field["options"] extends { value: any }[]
-                                    ? "fieldParams" extends keyof Field
-                                        ? Field["fieldParams"] extends { multiple: true }
-                                            ? AddUndefinedIfDependent<Field["options"][number]["value"][], Field>
-                                            : AddUndefinedIfDependent<Field["options"][number]["value"], Field>
-                                        : never
-                                    : never
-                                : never
-                            : "never6"
-            : "never5";
-} extends infer O ? { [K in keyof O]: O[K] } : never;
-
-declare function createForm<I extends SimpleFormSchema>(
-    init: Narrow<I>
-): Promise<{ // using discriminated union so that when isCompleted is false, formData is undefined
-    isCompleted: boolean;
-    formData: DataFrom<I["fields"]>;
-}>;
-
-
-const { isCompleted, formData } = await createForm({
-    fullScreen: 'true md:false',
-  title: 'ADVANCED FORM SCHEMA EXAMPLE',
-  gridSize: 8,
-  fieldSize: '8 md:4',
-  fields: [
-    {
-      key: 'firstName',
-      label: 'First name',
-      type: 'text',
-      required: true,
-    },
-    {
-      key: 'lastName',
-      label: 'Last name',
-      type: 'text',
-      required: true,
-    },
-    {
-      key: 'email',
-      label: 'Email',
-      type: 'text',
-    //   size: 8,
-    },
-    {
-      key: 'address',
-      label: 'Address',
-      type: 'object',
-    //   size: 8,
-      fields: [
-        {
-          key: 'street',
-          label: 'Street',
-          type: 'text',
-          required: true,
-        },
-        {
-          key: 'zipCode',
-          label: 'ZIP Code',
-          type: 'text',
-          required: true,
-        },
-        {
-          key: 'city',
-          label: 'City',
-          type: 'text',
-          required: true,
-        },
-        {
-          key: 'country',
-          label: 'Country',
-          type: 'daterange',
-          required: true,
-        },
-        // {
-        //   key: "other",
-        //   label: "Other",
-        //   type: "object",
-        //   fields: [
-        //     { key: "a", label: "A", type: "text" },
-        //     { key: "b", label: "B", type: "text" },
-        //   ],
-        // }
-      ],
-    },
-    {
-      key: 'skills',
-      label: 'Dev skills',
-      type: 'select',
-      fieldParams: {
-        multiple: true,
-        writable: true,
-      },
-      options: [
-        'Vue',
-        'Angular',
-        'React',
-        'ExpressJs',
-        'NestJs',
-        'Fastify',
-        'Typescript',
-        'C#',
-        'Swift',
-        'Go',
-        'Rust',
-      ].map((value) => ({ label: value, value })),
-    },
-    {
-      key: 'hasProExperiences',
-      label: 'Has prior professional experiences',
-      type: 'checkbox',
-    //   size: 8,
-    },
-    {
-      key: 'professionalExperiences',
-      label: 'Professional experiences',
-      type: 'array',
-    //   size: 8,
-      dependencies: ['hasProExperiences'],
-      condition: ({ hasProExperiences }) => !!hasProExperiences,
-    //   headerTemplate: (_, index) => `JOB ${index + 1}`,
-      fields: [
-        {
-          key: 'company',
-          label: 'Company',
-          type: 'text',
-          required: true,
-        },
-        {
-          key: 'job',
-          label: 'Job title',
-          type: 'text',
-          required: true,
-        },
-        {
-          key: 'period',
-          label: 'Job period',
-          type: 'daterange',
-          required: true,
-        //   size: 8,
-        },
-        {
-          key: 'description',
-          label: 'Job description',
-          type: 'textarea',
-        //   size: 8,
-        },
-      ],
-    },
-  ],
-});

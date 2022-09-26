@@ -1,3 +1,4 @@
+import { Component } from "vue";
 import { SelectGroupOption, SelectOption } from "naive-ui";
 import { SelectBaseOption } from "naive-ui/es/select/src/interface";
 import { VNode, VNodeChild } from "vue";
@@ -33,131 +34,158 @@ interface Dependencies {
     [key: string]: any;
 }
 
-export type _FieldOptions = SelectOption[] | ((dependencies?: Dependencies) => SelectOption[])
+export type _FieldOptions = SelectOption[] | ((dependencies?: Dependencies) => SelectOption[]) | ((dependencies?: Dependencies) => Promise<SelectOption[]>);
 
 
 export interface TextField {
-    type: "text";
-    minLength?: number;
-    maxLength?: number;
-    pair?: string;
+    type: "text",
     clearable?: boolean;
+    fieldParams?: { 
+        minLength?: number;
+        maxLength?: number;
+        showCharacterCount?: boolean;
+        prefix?: string;
+        suffix?: string;
+    }
 }
 
-export interface TextAreaField extends Omit<TextField, "type" | "pair"> {
+export interface TextAreaField {
     type: "textarea";
-    autosize?: boolean | { minRows?: number; maxRows?: number };
+    clearable?: boolean;
+    fieldParams?: TextField["fieldParams"] & {
+        autosize?: boolean | { minRows?: number; maxRows?: number };
+        showCount?: boolean;
+    }
 }
 
 export interface PasswordField extends Omit<TextField, "type" | "pair"> {
     type: "password";
+    clearable?: boolean;
+    fieldParams?: {}
 }
 
 export interface SelectField {
     type: "select";
-    options: SelectOption[] | ((dependencies?: Dependencies) => SelectOption[]);
-    multiple?: boolean;
     clearable?: boolean;
-    filterable?: boolean;
-    renderLabel?: (option: SelectOption | SelectGroupOption, selected: boolean) => VNodeChild;
-    renderOption?: (info: { node: VNode; option: SelectOption | SelectGroupOption; selected: boolean }) => VNodeChild;
-    renderTag?: (props: { option: SelectBaseOption; handleClose: () => void }) => VNodeChild;
-    createTags?: boolean;
-    virtualScroll?: boolean;
+    options: _FieldOptions
+    fieldParams?: {
+        multiple?: boolean;
+        filterable?: boolean;
+        renderLabel?: (option: SelectOption | SelectGroupOption, selected: boolean) => VNodeChild;
+        renderOption?: (info: { node: VNode; option: SelectOption | SelectGroupOption; selected: boolean }) => VNodeChild;
+        renderTag?: (props: { option: SelectBaseOption; handleClose: () => void }) => VNodeChild;
+        createTags?: boolean;
+        virtualScroll?: boolean;
+    }
 }
 
 export interface NumberField {
     type: "number";
     clearable?: boolean;
-    min?: number;
-    max?: number;
-    step?: number;
+    fieldParams?: {
+        min?: number;
+        max?: number;
+        step?: number;
+    }
 }
 
 export interface SliderField {
     type: "slider";
-    min?: number;
-    max?: number;
-    step?: number;
-    range?: boolean;
-    enableTooltip?: boolean;
-    alwaysShowTooltip?: boolean;
-    tooltipPlacement?:
-        | "top-start"
-        | "top"
-        | "top-end"
-        | "right-start"
-        | "right"
-        | "right-end"
-        | "bottom-start"
-        | "bottom"
-        | "bottom-end"
-        | "left-start"
-        | "left"
-        | "left-end";
-    reverse?: boolean;
-    marks?: { [markValue: number]: string };
+    fieldParams?: {
+        min?: number;
+        max?: number;
+        step?: number;
+        range?: boolean;
+        reverse?: boolean;
+        enableTooltip?: boolean;
+        formatTooltip?: (value: number) => string | number; 
+        // alwaysShowTooltip?: boolean;
+        // tooltipPlacement?:
+        //     | "top-start"
+        //     | "top"
+        //     | "top-end"
+        //     | "right-start"
+        //     | "right"
+        //     | "right-end"
+        //     | "bottom-start"
+        //     | "bottom"
+        //     | "bottom-end"
+        //     | "left-start"
+        //     | "left"
+        //     | "left-end";
+        marks?: { [markValue: number]: string };
+    }
 }
 
 export interface SwitchField {
     type: "switch";
-    checkedStyle?: string;
-    uncheckedStyle?: string;
-    checkedValue?: string | boolean | number;
-    uncheckedValue?: string | boolean | number;
-    rounded?: boolean;
+    fieldParams?: {
+        checkedStyle?: string;
+        uncheckedStyle?: string;
+        checkedValue?: string | boolean | number;
+        uncheckedValue?: string | boolean | number;
+    }
 }
 
 export interface RadioField {
     type: "radio";
-    options: { label: string; value: any }[] | ((dependencies?: Dependencies) => { label: string; value: any }[]);
+    options: _FieldOptions
 }
 
 export interface CheckboxField {
     type: "checkbox";
-    checkedValue?: string | boolean | number;
-    uncheckedValue?: string | boolean | number;
+    fieldParams?: {
+        checkedValue?: string | boolean | number;
+        uncheckedValue?: string | boolean | number;
+    }
 }
 
 export interface CheckboxGroupField {
     type: "checkbox-group";
-    options: { label: string; value: any }[] | ((dependencies?: Dependencies) => { label: string; value: any }[]);
-    minChecked?: number;
-    maxChecked?: number;
+    options: _FieldOptions
+    fieldParams?: {
+        minChecked?: number;
+        maxChecked?: number;
+    }
 }
 
 export interface TimeField {
     type: "time";
     clearable?: boolean;
-    bottomActions?: Array<"now" | "confirm"> | null;
-    displayedHours?: number | number[];
-    displayedMinutes?: number | number[];
-    displayedSeconds?: number | number[];
-    disableHour?: (hour: number) => boolean;
-    disableMinute?: (minute: number, hour: number | null) => boolean;
-    disableSecond?: (second: number, minute: number | null, hour: number | null) => boolean;
+    fieldParams?: {
+        bottomActions?: Array<"now" | "confirm"> | null;
+        displayedHours?: number | number[];
+        displayedMinutes?: number | number[];
+        displayedSeconds?: number | number[];
+        disableHour?: (hour: number) => boolean;
+        disableMinute?: (minute: number, hour: number | null) => boolean;
+        disableSecond?: (second: number, minute: number | null, hour: number | null) => boolean;
+    }
 }
 
 export interface DateField {
     type: "date" | "datetime" | "daterange" | "datetimerange" | "month" | "year";
     clearable?: boolean;
-    dateDisabled?: (current: number) => boolean;
-    timeDisabled?: (current: number) => boolean;
+    fieldParams?: {
+        dateDisabled?: (current: number) => boolean;
+        timeDisabled?: (current: number) => boolean;
+        separator?: string;
+    }
 }
 
-export interface ObjectField {
+export interface ObjectField<N> {
     type: "object";
     extraProperties?: boolean;
-    // fields: FormField[];
     gridSize?: number | string;
+    fields: FormField<N>[];
 }
 
-export interface ArrayField {
+export interface ArrayField<N> {
     type: "array";
     format?: "table" | "list" | "tabs";
     extraProperties?: boolean;
     gridSize?: number | string;
-    // fields: FormField[];
+    fields: FormField<N>[];
 }
 
 export interface InfoField {
@@ -165,17 +193,27 @@ export interface InfoField {
     content: ((dependencies: { [key: string]: any }) => VNodeChild | string);
 }
 
-export type FormField = {
-    label: string | ((value: any) => VNodeChild);
-    key: string;
+export interface CustomComponent {
+    type: "custom-component";
+    component: Component;
+}
+
+export type FormField<N = any> = {
+    label?: string | ((dependencies: { [key: string]: any }) => VNodeChild | string);
+    key: N;
     placeholder?: string;
     dependencies?: (string | [string, string])[];
     required?: boolean | ((dependencies?: { [key: string]: any }) => boolean);
-    condition?: (dependencies?: Dependencies) => boolean;
-    conditionEffect?: "disable" | "hide";
     size?: number | string;
+    gridSize?: number | string;
     default?: any;
+    fields?: FormField<N>[];
+    conditionEffect?: "disable" | "hide";
+    labelPosition?: "left" | "top";
+    condition?: (dependencies?: Dependencies) => boolean;
     preformat?: (value: any) => any;
     transform?: (value: any) => any;
-    fields?: FormField[];
-} & (TextField | TextAreaField | PasswordField | SelectField | NumberField | SliderField | SwitchField | RadioField | CheckboxField | CheckboxGroupField | TimeField | DateField | ObjectField | ArrayField | InfoField);
+    validators?: (dependencies?: { [key: string]: any }) => { [key: string]: any } | { [key: string]: any }
+  } & (TextField | TextAreaField | PasswordField | SelectField | NumberField | SliderField | SwitchField | RadioField | CheckboxField | CheckboxGroupField | TimeField | DateField | ObjectField<N> | ArrayField<N> | InfoField | CustomComponent);
+
+  

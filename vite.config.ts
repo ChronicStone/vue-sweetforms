@@ -8,8 +8,8 @@ import Components from 'unplugin-vue-components/vite'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import PurgeIcons from 'vite-plugin-purge-icons'
 import typescript from 'rollup-plugin-typescript2';
-import dts from 'vite-plugin-dts';
-import rollupTs from 'rollup-plugin-typescript2';
+import dts from "vite-plugin-dts";
+// import dts from 'vite-plugin-dts';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -23,7 +23,17 @@ export default defineConfig({
     PurgeIcons(),
     Icons({ autoInstall: true }),
     vueJsx(),
-    dts({ insertTypesEntry: true }),
+    // dts({ insertTypesEntry: true }),
+    // {
+    //   ...typescript({
+    //     check: true,
+    //     tsconfig: './tsconfig.json',
+    //     tsconfigOverride: {
+    //         noEmits: true,
+    //     },
+    //   }),
+    //   enforce: 'pre',
+    // },
         // only for type checking
         // {
         //     ...rollupTs({

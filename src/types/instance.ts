@@ -1,26 +1,29 @@
 import { ComputedRef, Ref, WatchStopHandle } from "vue";
 import { FormField } from "./fields";
-import { FormSchema, FormStep } from "./form";
+import { ExpandRecursively, ExtractFieldsFromSteps, FormInfoReturnType, FormSchema, FormStep, Narrowable, SimpleFormSchema, SteppedFormSchema } from "./form";
 import { SelectOption } from "naive-ui";
 
 export interface FormInstance {
     _id: string;
-    _resolve: (data: { isCompleted: boolean; formData: { [key: string]: any } }) => void;
-    formSchema: FormSchema
+    _resolve?: (data: { isCompleted: boolean; formData: { [key: string]: any } }) => void;
+    formSchema: FormSchema<any, any>
     formData: { [key: string]: any };
 }
 
 export interface FormApi {
     formInstances: ComputedRef<FormInstance[]>;
-    createForm(formSchema: FormSchema, formData?: { [key: string]: any }): Promise<{ isCompleted: boolean, formData: { [key:string]: any }}>;
+    createForm<TFormSchema extends FormSchema<StepKey, FieldKey>, StepKey extends Narrowable, FieldKey extends Narrowable>(schema: TFormSchema): Promise<{ 
+        isCompleted: boolean, 
+        formData: TFormSchema extends SimpleFormSchema<FieldKey> ? ExpandRecursively<FormInfoReturnType<TFormSchema["fields"][number]>>  : TFormSchema extends SteppedFormSchema<StepKey, FieldKey> ? ExpandRecursively<ExtractFieldsFromSteps<StepKey, FieldKey, TFormSchema["steps"][number]>>  : never
+    }>
 }
 
-export interface FormInstanceSteps extends Omit<FormStep, "fields"> {
-    _status: "InProgress" | "Pending" | "Completed";
+export interface FormInstanceSteps extends Omit<FormStep<any, any>, "fields"> {
+    _status: "InProgress" | "Pending" | "Completed" | "Invalid";
     _index: number;
 }
 
-export type FieldInstance = Omit<FormField, "fields"> & {
+export type FieldInstance = Omit<FormField<any>, "fields"> & {
     _uuid: string;
     _dependencies: ComputedRef<{ [key: string]: any }>;
     _evalOptions: Ref<boolean>;
@@ -38,5 +41,13 @@ export type FieldInstance = Omit<FormField, "fields"> & {
     _itemsRefs?: Ref<{ number: number; uuid: string }[]>;
     _items?: Ref<any[]>;
     _watcherItems?: WatchStopHandle;
-    fields?: FieldInstance[];
+    _fields?: FieldInstance[];
 };
+
+
+export type FormRefInstance  = {
+    $clear: () => void;
+    $reset: () => void;
+    $validate: () => Promise<{ $valid: boolean; $errors: any[]; $data: { [key: string]: any } }>;
+    formData: { [key: string]: any };
+}

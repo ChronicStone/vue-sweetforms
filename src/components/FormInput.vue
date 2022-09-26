@@ -1,5 +1,12 @@
 <template>
-  <div class="flex flex-col gap-2 fieldInput" :style="field.size">
+  <div
+    class="flex flex-col gap-2 fieldInput"
+    :class="{
+      'flex-col': (field?.labelPosition ?? 'top') === 'top',
+      'flex-row items-center': (field?.labelPosition ?? 'top') === 'left',
+    }"
+    :style="field.size"
+  >
     <div
       class="flex gap-2 items-center justify-left"
       v-if="
@@ -18,6 +25,7 @@
             ? (collapsed = !collapsed)
             : null
         "
+        v-if="field?.label"
       >
         <CollapseButton
           v-model="collapsed"
@@ -32,7 +40,6 @@
           class="flex items-center transition-all ease-in-out duration-150"
           :class="{
             'cursor-pointer': ['object', 'array'].includes(field.type),
-            'text-red-500': validator?.$errors?.length,
           }"
           :for="field.key"
         >
@@ -356,13 +363,7 @@ if (props.field.type === "custom-component") {
 }
 
 const InfoContent = () => render(props.field.content ?? "", props.field._dependencies);
-const LabelContent = () =>
-  render(
-    typeof props?.field?.label === "string"
-      ? capitalize(props?.field?.label)
-      : props.field.label,
-    props.field._dependencies
-  );
+const LabelContent = () => render(props.field?.label ?? "", props.field._dependencies);
 </script>
 
 <style lang="scss">

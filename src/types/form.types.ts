@@ -1,8 +1,11 @@
 import { FieldOption } from "./fieldOption.types"
 import { Ref, ComputedRef } from "vue"
+import { FormField } from "./fields";
 
 export type UnknownObject = { [key: string]: any };
 export type FieldTypes = 'tag' | 'text' | 'textarea' | 'password' | 'number' | 'slider' | 'switch' | 'select' | 'radio' | 'checkbox' | 'checkbox-group' | 'date' | 'time' | 'datetime' | 'datetimerange' | 'daterange' | 'month' | 'year' | 'file' | 'array' | 'object'
+
+export type FieldValidationOptions = { [key: string]: any }
 
 export interface SelectOption {
     label: string
@@ -17,26 +20,9 @@ export interface ValidatorParams {
     formValues: object,
 }
 
-export interface FormField {
-    key: string,
-    label: string,
-    type: FieldTypes
-    placeholder?: string,
-    size?: string,
-    options?: SelectOption[] | any[]
-    dependencies?: string[]
-    condition?: () => boolean,
-    conditionEffect?: 'disable' | 'hide'
-    validators?: Array<(validatorParams: ValidatorParams) => boolean>
-    transform: (value: any) => any
-    fieldParams?: FieldOption
-    gridSize?: string
-    children?: FormField[],
-    component?: any,
-    extraProperties: boolean
-}
 
-export interface InternalFormField extends FormField {
+
+export type InternalFormField = FormField & {
     _dependencies: UnknownObject
     _evalOptions: Ref<boolean>
     _evalEnable: Ref<boolean>
@@ -60,7 +46,7 @@ interface ThemeConfig {
     Select: object,
 }
 
-export interface SimpleForm extends FormStep {
+export type SimpleForm = FormStep & {
     themeConfig?: ThemeConfig
     gridSize?: number
     onSubmit: () => any
@@ -80,5 +66,6 @@ export type FormInstance = {
     formOptions: (SimpleForm | SteppedForm) & { _id: string, _resolve: (data: { isCompleted: boolean; formData: { [key: string]: any }}) => void },
     formData: { [key: string]: any }
 }
+
 
 

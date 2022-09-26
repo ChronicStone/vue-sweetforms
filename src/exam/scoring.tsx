@@ -285,17 +285,5 @@ export const ScoringConfig = {
             collapsed: true,
             ...ScoringModule
         },
-        {
-            key: 'specificModule',
-            label: () => <span class="uppercase text-md">Specific section - scoring modules</span>,
-            type: 'object',
-            size: '8',
-            collapsed: true,
-            fields: [
-                { key: 'active', type: 'checkbox', label: 'Enable specific module', default: false },
-                { key: 'name', type: 'text', label: 'Module name', required: true, size: '8', dependencies: ['$parent'], condition: ({ $parent }) => $parent.active },
-                { key: 'modules', label: 'Scoring modules', collapsed: true, ...ScoringModule, dependencies: ['$parent'], condition: ({ $parent }) => $parent.active },
-            ]
-        }
     ]
 }

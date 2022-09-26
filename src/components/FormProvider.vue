@@ -1,7 +1,13 @@
 <template>
   <NConfigProvider
     :theme="darkMode ? darkTheme : null"
-    :theme-overrides="darkMode ? DarkThemeOverrides : LightThemeOverrides"
+    :theme-overrides="
+      themeOverrides
+        ? themeOverrides
+        : darkMode
+        ? DarkThemeOverrides
+        : LightThemeOverrides
+    "
   >
     <NDialogProvider>
       <slot />
@@ -48,6 +54,15 @@ import { LightThemeOverrides, DarkThemeOverrides } from "@/config";
 import { FormInstance } from "@/types/form.types";
 import { GenerateUUID } from "@/utils/";
 import Form from "./Form.vue";
+import {
+  ExpandRecursively,
+  ExtractFieldsFromSteps,
+  FormInfoReturnType,
+  FormSchema,
+  Narrowable,
+  SimpleFormSchema,
+  SteppedFormSchema,
+} from "@/types/form";
 
 const props = defineProps({
   darkMode: {
@@ -57,6 +72,10 @@ const props = defineProps({
   breakpoints: {
     type: Object,
     default: () => breakpointsTailwind,
+  },
+  themeOverrides: {
+    type: Object,
+    default: () => null,
   },
 });
 const formInstances = ref<FormInstance[]>([]);
@@ -73,7 +92,23 @@ const SubmitForm = ({ formState, onSubmit }, key) => {
 
 // Form instance manipulation
 provide(FormInjectKey, {
-  createForm: (formInstance: FormInstance, formInputData: any) => {
+  createForm: <
+    TFormSchema extends FormSchema<StepKey, FieldKey>,
+    StepKey extends Narrowable,
+    FieldKey extends Narrowable
+  >(
+    formSchema: TFormSchema,
+    formInputData: { [key: string]: any } = {}
+  ): Promise<{
+    isCompleted: boolean;
+    formData: TFormSchema extends SimpleFormSchema<FieldKey>
+      ? ExpandRecursively<FormInfoReturnType<TFormSchema["fields"][number]>>
+      : TFormSchema extends SteppedFormSchema<StepKey, FieldKey>
+      ? ExpandRecursively<
+          ExtractFieldsFromSteps<StepKey, FieldKey, TFormSchema["steps"][number]>
+        >
+      : never;
+  }> => {
     const _id = GenerateUUID();
     return new Promise((resolve) => {
       const _resolver = ({
@@ -87,7 +122,7 @@ provide(FormInjectKey, {
         resolve({ isCompleted, formData });
       };
       formInstances.value.push({
-        formOptions: { _id, ...formInstance, _resolve: _resolver },
+        formOptions: ({ _id, ...formSchema, _resolve: _resolver } as unknown) as any,
         formData: formInputData,
       });
     });

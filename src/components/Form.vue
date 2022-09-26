@@ -122,7 +122,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { defineExpose } from "vue";
+import { defineExpose, PropType } from "vue";
 import FormInput from "./FormInput.vue";
 import FormStepper from "./FormSteps.vue";
 import FormModal from "./FormModal.vue";
@@ -130,6 +130,7 @@ import FormModalFullscreen from "./FormModalFullscreen.vue";
 import FormInlineContainer from "./FormInlineContainer.vue";
 import { NButton } from "naive-ui";
 import { useForm } from "../hooks";
+import { FormSchema } from "@/types/form";
 
 const emit = defineEmits([
   "closeForm",
@@ -140,7 +141,7 @@ const emit = defineEmits([
 ]);
 const props = defineProps({
   formOptions: {
-    type: Object,
+    type: Object as PropType<FormSchema>,
     default: () => ({}),
   },
   formData: {
@@ -178,7 +179,11 @@ defineExpose({
   $clear: ClearState,
   $reset: ResetState,
   formData: mappedSyncState,
-  $validate: $v.validate,
+  $validate: async () => {
+    const isValid = await $v.value.$validate();
+    await $v.value.$touch();
+    return { $valid: isValid, $errors: $v.$errors, $data: formState.value };
+  },
   formSteps,
   ...(isMultiStep.value && { PreviousStep, currentStepIndex, formSteps }),
 });
