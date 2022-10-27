@@ -904,4 +904,29 @@ export default [
             ],
         },
     },
+    {
+        label: "TreeSelect",
+        value: {
+            title: "Tree select test",
+            fields: [
+                {
+                    key: "test",
+                    label: "Test",
+                    type: "tree-select",
+                    options: [
+                        { label: "test1", key: "test1", children: [{ label: "test1.1", key: "test1.1" }] },
+                        { label: "test2", key: "test2", children: [{ label: "test2.1", key: "test2.1" }] },
+                    ],
+                    fieldParams: {
+                        multiple: true,
+                        cascade: true,
+                        checkStrategy: "child",
+                        showPath: false,
+                        checkable: true,
+                    }
+                }
+            ]
+        }
+
+    }
 ];

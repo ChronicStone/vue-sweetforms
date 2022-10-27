@@ -111,7 +111,6 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
                 if(fieldValue?.length) {
                     for(const [index, item] of fieldValue.entries()) field._itemsRefs.push({ index, uuid: GenerateUUID() })
                     nextTick(() => field.items.value = field._itemsRefs.map((item: any, index: number) => InitializeFormFields(field.fields, { parentType: field.type, parentId: field._uuid, parentKey: [...options.parentKey ?? [], field.key, index], parentRef: item })))
-                    
                 }
             }
             return {
@@ -125,24 +124,9 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             }
         })
 
-    const MapItemsInputRefs = (fields: any[], state: { [key: string]: any }, parentKey: string[] = []) => fields.forEach((field) => {
-        const value = state?.[field.key]
-        if(field.fields && field.type != 'array') {
-            MapItemsInputRefs(field.fields, value, [...parentKey, field.key])
-        } else if(field.fields && field.type === 'array') {
-            value?.forEach((item: any, index: number) => {
-                field?._setItemRef?.(index, GenerateUUID())
-                nextTick(() =>  MapItemsInputRefs(field.items?.[index] ?? [], item, [...parentKey, field.key, index]))
-            })
-        }
-    })
-
 
     const formState = ref(MapFormInitialState(inputFields, formInputData))
     const formContent = reactive(InitializeFormFields(inputFields))
-
-    MapItemsInputRefs(formContent, formInputData)
-
 
     const FilterAppliedRules = (fields: any[], parentKey: string[] = []): any => {
         return fields
