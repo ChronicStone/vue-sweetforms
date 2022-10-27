@@ -97,7 +97,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             let finalField = {
                 ...field,
                 ...(field.type === 'array' && {
-                    _setItemRef: (index: number, uuid: string) => field._itemsRefs.push({ index, uuid }),
+                    _setItemRef: (index: number, uuid: string) =>  field._itemsRefs.push({ index, uuid }),
                     _removeItemRef: (_uuid: number) => field._itemsRefs.splice(field._itemsRefs.findIndex((item: any) => item._uuid === _uuid), 1),
                 }),
                 ...((field.fields && field.type != 'array') &&  { fields: InitializeFormFields(field.fields, { parentType: field.type, parentId: field._uuid, parentKey: [...options.parentKey ?? [], field.key] }) }),
@@ -106,6 +106,14 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             return finalField
         })
         .map((field: any) => {
+            if(field.type === 'array') {
+                const fieldValue = GetPropertyFromPath([...(options?.parentKey ?? []), field.key], formState.value)
+                if(fieldValue?.length) {
+                    for(const [index, item] of fieldValue.entries()) field._itemsRefs.push({ index, uuid: GenerateUUID() })
+                    nextTick(() => field.items.value = field._itemsRefs.map((item: any, index: number) => InitializeFormFields(field.fields, { parentType: field.type, parentId: field._uuid, parentKey: [...options.parentKey ?? [], field.key, index], parentRef: item })))
+                    
+                }
+            }
             return {
                 ...field,
                 ...(field.type === 'array' && {
