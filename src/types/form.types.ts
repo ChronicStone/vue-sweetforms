@@ -3,7 +3,7 @@ import { Ref, ComputedRef } from "vue"
 import { FormField } from "./fields";
 
 export type UnknownObject = { [key: string]: any };
-export type FieldTypes = 'tag' | 'text' | 'textarea' | 'password' | 'number' | 'slider' | 'switch' | 'select' | 'radio' | 'checkbox' | 'checkbox-group' | 'date' | 'time' | 'datetime' | 'datetimerange' | 'daterange' | 'month' | 'year' | 'file' | 'array' | 'object'
+export type FieldTypes = 'tag' | 'text' | 'textarea' | 'password' | 'number' | 'slider' | 'switch' | 'select' | 'cascader' | 'tree-select' | 'radio' | 'checkbox' | 'checkbox-group' | 'date' | 'time' | 'datetime' | 'datetimerange' | 'daterange' | 'month' | 'year' | 'file' | 'array' | 'object'
 
 export type FieldValidationOptions = { [key: string]: any }
 

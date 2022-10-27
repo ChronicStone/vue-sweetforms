@@ -14,14 +14,16 @@
       <slot name="fields" />
     </form>
 
-    <!-- <div 
-        class="h-1/12 flex w-full justify-center items-center gap-4 pt-6" v-if="$slots.actions">
-            <slot name="actions" />
-        </div>
+    <div
+      class="h-1/12 flex w-full justify-center items-center gap-4 pt-6"
+      v-if="$slots.actions"
+    >
+      <slot name="actions" />
+    </div>
 
-        <div v-if="$slots.customActions">
-            <slot name="customActions" />
-        </div> -->
+    <div v-if="$slots.customActions">
+      <slot name="customActions" />
+    </div>
   </div>
 </template>
 

@@ -78,6 +78,30 @@
       :disabled="disabled"
       :status="validator?.$errors?.length ? 'error' : 'success'"
     />
+    <NTreeSelect
+      @blur="validator.$touch"
+      v-if="field.type === 'tree-select'"
+      v-model:value="fieldValue"
+      :placeholder="field.placeholder"
+      :options="field._options ?? field.options"
+      v-bind="MapFieldProps(field.type, field.fieldParams)"
+      :loading="field._evalOptions"
+      :disabled="disabled"
+      :status="validator?.$errors?.length ? 'error' : 'success'"
+      filterable
+    />
+    <NCascader
+      @blur="validator.$touch"
+      v-if="field.type === 'cascader'"
+      v-model:value="fieldValue"
+      :placeholder="field.placeholder"
+      :options="field._options ?? field.options"
+      v-bind="MapFieldProps(field.type, field.fieldParams)"
+      :loading="field._evalOptions"
+      :disabled="disabled"
+      :status="validator?.$errors?.length ? 'error' : 'success'"
+      filterable
+    />
     <NDynamicTags
       @blur="validator.$touch"
       v-if="field.type === 'tag'"
@@ -293,23 +317,17 @@ import {
   NRadio,
   NCheckbox,
   NCheckboxGroup,
+  NTreeSelect,
+  NCascader,
   useDialog,
 } from "naive-ui";
 import DescriptionPopup from "./DescriptionPopup.vue";
 import CollapseButton from "./CollapseButton.vue";
-import {
-  MapFormInitialState,
-  MapFieldProps,
-  ParseErrMsg,
-  GenerateUUID,
-  render,
-  Omit,
-} from "@/utils";
+import { MapFieldProps, ParseErrMsg, render, Omit } from "@/utils";
 
 import ArrayTable from "./Fields/ArrayTable.vue";
 import ArrayList from "./Fields/ArrayList.vue";
 import ArrayTabs from "./Fields/ArrayTabs.vue";
-import { capitalize } from "@/utils/format";
 
 const emit = defineEmits(["update:modelValue"]);
 const props = defineProps({

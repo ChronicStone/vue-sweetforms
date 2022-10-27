@@ -22,8 +22,10 @@ declare module 'vue' {
     IMdiChevronRight: typeof import('~icons/mdi/chevron-right')['default']
     IMdiClose: typeof import('~icons/mdi/close')['default']
     IMdiInformation: typeof import('~icons/mdi/information')['default']
+    IMdiMoonWaningCrescent: typeof import('~icons/mdi/moon-waning-crescent')['default']
     IMdiPlus: typeof import('~icons/mdi/plus')['default']
     IMdiTrash: typeof import('~icons/mdi/trash')['default']
+    IMdiWhiteBalanceSunny: typeof import('~icons/mdi/white-balance-sunny')['default']
     Test: typeof import('./src/components/Fields/Test.vue')['default']
   }
 }

@@ -188,18 +188,3 @@ defineExpose({
   ...(isMultiStep.value && { PreviousStep, currentStepIndex, formSteps }),
 });
 </script>
-
-<style scoped>
-::-webkit-scrollbar {
-  width: 9px;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-gray-200 dark:bg-gray-600 rounded-full cursor-pointer hover:bg-gray-300;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-  padding: 5px;
-}
-</style>
