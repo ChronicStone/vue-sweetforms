@@ -71,15 +71,16 @@ export const useArrayField = (props: any, emit: Function) => {
             negativeText: "No",
             onPositiveClick: () => {
                 props.field._removeItemRef(fieldValue.value[index]._uuid);
-                fieldValue.value.splice(index, 1);
                 nextTick(
-                    () =>
-                    (activeTabIndex.value =
+                    () => {
+                        fieldValue.value.splice(index, 1);
+                        activeTabIndex.value =
                         index - 1 <= 0
                             ? 0
                             : index - 1 > fieldValue.value.length - 1
                                 ? fieldValue.value.length - 1
-                                : index - 1)
+                                : index - 1
+                    }
                 );
             },
         });
