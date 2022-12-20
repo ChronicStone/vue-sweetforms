@@ -2,8 +2,9 @@ import { FormField } from "@/types/fields";
 import { required, helpers, minLength } from "@vuelidate/validators"
 import { GenerateUUID } from "./baseUtils";
 import { markRaw, toRaw } from 'vue';
+import { useConfigOverrides } from "@/hooks/useConfigOverrides";
 
-interface InternalFormField extends FormField<any> {
+type InternalFormField = FormField<any> & {
     _stepIndex?: number
     _dependencies?: { [key: string]: any }
 }
@@ -33,19 +34,24 @@ export const MapFormInitialState = (fields: any[], inputFormData: any = {}, pare
 }
 
 
-export const MapFormRules = (fields: any[], parentKey: string[] = [], formState: { [key: string]: any }) => {
+export const MapFormRules = (fields: any[], parentKey: string[] = [], formState: { [key: string]: any }, formOverrides: ReturnType<typeof useConfigOverrides>) => {
     let rules: any = {}    
     fields.forEach((field: any) => {
         rules[field.key] = { 
             ...(typeof rules[field.key] === 'object' && { ...rules[field.key] }),
-            ...(field.type === 'object' && { ...rules[field.key], ...MapFormRules(field.fields ?? [], [...parentKey, field.key], formState) }),
+            ...(field.type === 'object' && { ...rules[field.key], ...MapFormRules(field.fields ?? [], [...parentKey, field.key], formState, formOverrides) }),
             ...(field.type === 'array' && { 
                 ...rules[field.key], 
-                ...MapArrayToObject(field.fields.map((_, index: number) => ({ ...MapFormRules(field.fields?.[index] ?? [], [...parentKey, field.key, index], formState) })), true)
+                ...MapArrayToObject(field.fields.map((_: any, index: number) => ({ ...MapFormRules(field.fields?.[index] ?? [], [...parentKey, field.key, index], formState, formOverrides) })), true)
             }),
             ...(typeof field?.validators === 'function' && { ...field.validators(field._dependencies, GetPropertyFromPath([...(parentKey ?? []), field.key], formState), field), }),
             ...(typeof field.validators === 'object' && { ...field.validators, }),
-            ...(field._required && { required: helpers.withMessage(`The field ${typeof field.label != 'string' ? field.key : field.label} can't be empty`, required) })
+            ...(field._required && { 
+                required: helpers.withMessage(typeof formOverrides.getProp('textOverrides.requiredMessage') === 'function'
+                ? (formOverrides.getProp('textOverrides.requiredMessage') as Function)?.(field?.label ?? field.key)
+                : formOverrides.getProp('textOverrides.requiredMessage')
+                , required) 
+            }),
         }
     })
     return rules   
@@ -96,7 +102,7 @@ export const SetPropertyFromPath = (object: { [key: string]: any }, path: string
 export const GetPropertyFromPath = (path: string | (string | number)[], obj: any, key?: string) => {
     const offset = GetOffset(key)
     var properties = (Array.isArray(path) ? path : path.split('.')).map((pathKey, index, array) => index < array.length - offset ? pathKey : null).filter(pathKey => pathKey != null);
-    return properties.reduce((prev, curr) => prev && prev[curr], obj);
+    return properties.reduce((prev, curr) => prev && prev[curr as string], obj);
 }
 
 export const FilterFieldActiveRules = (fields: InternalFormField[], activeStep: number) => fields.filter(field => field._stepIndex === activeStep)

@@ -1,15 +1,16 @@
 import { SetPropertyFromPath } from './../utils/formUtils';
 
 import { MapFormInitialState, MapOutputState, MapFormRules, MapStepsAsFields, MapComponentStore, MapDependenciesAsObject, GetPropertyFromPath, ComputePropSize, ComputeTwGridBreakpoint, GenerateUUID } from "@/utils"
-import { ref, reactive, computed, watch, provide, inject, nextTick } from "vue"
+import { ref, reactive, computed, watch, provide, inject, nextTick, ComputedRef } from "vue"
 import { asyncComputed } from "@vueuse/core"
 import { useBreakpointStyle, useBreakpoints } from "@/hooks"
 import { BreakpointsInjectKey } from "@/constants/injectionKeys"
 import { defaultStyles } from '@/constants'
 import useVuelidate from '@vuelidate/core'
+import { useConfigOverrides } from './useConfigOverrides';
 
 
-export const useForm = (formOptions: any, formInputData: any, emit: any) => {
+export const useForm = (formOptions: any, formInputData: any, emit: any, formOverrides: ReturnType<typeof useConfigOverrides>) => {
     const [inputFields, customComponentsStore] = MapComponentStore(formOptions.fields ?? MapStepsAsFields(formOptions.steps))
 
     const breakpointsDef = inject(BreakpointsInjectKey, {})
@@ -29,7 +30,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
     const currentStepIndex = ref(0)
     const isMultiStep = computed(() => formSteps.length > 1)
 
-    const InitializeFormFields: (fields: any[], options?: any) => any[] = (fields: any[], options = {}) => fields
+    const InitializeFormFields: (fields: any[], options?: any) => any[] = (fields: any[], options: { parentKey?: string[]; parentType?: string; parentId?: string; parentRef?: any } = {}) => fields
         // BASE FIELD + ASYNC-COMPUTED EVALUATORS + DEPENDENCIES SETUP
         .map((field: any) => {
             return {
@@ -42,7 +43,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
                         return { 
                             key: target,
                             ...(source === '$root' && { value: formState.value }),
-                            ...(source?.toString()?.includes?.('$parent') && { value: GetPropertyFromPath([...options.parentKey], formState.value, source) }), 
+                            ...(source?.toString()?.includes?.('$parent') && { value: GetPropertyFromPath([...options?.parentKey ?? []], formState.value, source) }), 
                             ...(!['$root'].includes(source) &&  !source?.toString()?.includes?.('$parent') && { value: GetPropertyFromPath(source, formState.value) })
                         }
                     })
@@ -82,10 +83,10 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
             ...(field.options && typeof field.options === 'function' && {
                 _watcherOptions: watch(() => field._options.value, (fieldOptions: any[]) => { 
                     try {
-                        const options = fieldOptions?.map?.((option: any) => option.value) ?? []
+                        const optionValues = fieldOptions?.map?.((option: any) => option.value) ?? []
                         const currentValue = GetPropertyFromPath([...(options?.parentKey ?? []), field.key], formState.value)
-                        if(Array.isArray(currentValue)) SetPropertyFromPath(formState.value, [...options?.parentKey ?? [], field.key], currentValue.filter((item: any) => options.includes(item)))
-                        else if(!options.includes(currentValue)) SetPropertyFromPath(formState.value, [...options?.parentKey ?? [], field.key], null)
+                        if(Array.isArray(currentValue)) SetPropertyFromPath(formState.value, [...options?.parentKey ?? [], field.key], currentValue.filter((item: any) => optionValues.includes(item)))
+                        else if(!optionValues.includes(currentValue)) SetPropertyFromPath(formState.value, [...options?.parentKey ?? [], field.key], null)
                     } catch(err) {
                         console.error(err)
                     }
@@ -138,12 +139,12 @@ export const useForm = (formOptions: any, formInputData: any, emit: any) => {
         .map((field: any) => ({
             ...field,
             ...(field.fields && field.type != 'array' && { fields: FilterAppliedRules(field.fields, [...parentKey, field.key]) }),
-            ...(field.fields && field.type === 'array' && { fields: field._itemsRefs?.map((_, index: number) => FilterAppliedRules(field.items?.[index] ?? [], [...parentKey, field.key, index])) }),
+            ...(field.fields && field.type === 'array' && { fields: field._itemsRefs?.map((_: any, index: number) => FilterAppliedRules(field.items?.[index] ?? [], [...parentKey, field.key, index])) }),
         }))
     }
     const formRules = computed(() => {
         const fields = FilterAppliedRules(formContent)
-        return MapFormRules(fields, [], formState.value)
+        return MapFormRules(fields, [], formState.value, formOverrides)
     })
 
     const $v = useVuelidate(formRules, formState.value);

@@ -7,3 +7,5 @@ export const DescriptionPopupInjectKey: InjectionKey<any> = Symbol('SweetformsDe
 export const FormInjectKey: InjectionKey<FormApi> = Symbol('SweetformsForm');
 export const ModalOverlayInjectKey: InjectionKey<any> = Symbol('SweetformsModalOverlay');
 export const BreakpointsInjectKey: InjectionKey<any> = Symbol('SweetformsBreakpoints')
+
+export const PluginConfigInjectionKey: InjectionKey<SweetformPluginConfig> = Symbol('SweetformsPluginConfig');

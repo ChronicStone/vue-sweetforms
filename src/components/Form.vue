@@ -8,7 +8,7 @@
         : FormModal
     "
     :formStyle="formStyle"
-    :allowClickOutside="formOptions?.allowOutsideClick ?? true"
+    :allowClickOutside="getProp('uiConfig.allowOutsideClick')"
     @closeForm="CloseForm"
   >
     <template
@@ -16,12 +16,12 @@
       v-if="
         formOptions?.title ||
         $slots.title ||
-        (isMultiStep && ((formOptions as SteppedFormSchema)?.showStepper ?? true))
+        (isMultiStep && getProp('uiConfig.showStepper'))
       "
     >
       <FormStepper
         class="mt-2"
-        v-if="((formOptions as SteppedFormSchema)?.showStepper ?? true) && isMultiStep"
+        v-if="getProp('uiConfig.showStepper') && isMultiStep"
         :steps="formSteps"
         :current-step="currentStepIndex"
       />
@@ -71,8 +71,6 @@
       />
     </template>
 
-    {{ !$slots }}
-
     <template #customActions v-if="$slots.actions">
       <slot
         name="actions"
@@ -90,29 +88,30 @@
       <NButton
         secondary
         @click="CloseForm"
-        v-if="formOptions?.showCancelButton ?? true"
+        v-if="getProp('uiConfig.showCancelButton')"
         type="error"
-        >
-        {{ formOptions?.cancelButtonText ?? "CANCEL" }}
-        </NButton
       >
+        {{ getProp('textOverrides.cancelBtnMessage') }}
+      </NButton>
       <NButton
         secondary
         @click="PreviousStep"
-        v-if="((formOptions as SteppedFormSchema)?.showPreviousButton ?? true) && isMultiStep"
+        v-if="getProp('uiConfig.showPrevButton') && isMultiStep"
         :disabled="currentStepIndex === 0"
         type="primary"
-        >{{ (formOptions as SteppedFormSchema)?.previousButtonText ?? "PREVIOUS" }}</NButton
       >
+        {{ getProp('textOverrides.prevBtnMessage') }}
+      </NButton>
       <NButton secondary @click="SubmitForm" type="primary">{{
         isMultiStep
           ? `${
               currentStepIndex === formSteps.length - 1
-                ? formOptions?.submitButtonText ?? "SUBMIT"
-                : (formOptions as SteppedFormSchema)?.nextButtonText ?? "NEXT"
+                ? formOptions?.submitButtonText ?? getProp('textOverrides.submitBtnMessage')
+                : getProp('textOverrides.nextBtnMessage')
             }`
-          : formOptions?.submitButtonText ?? "SUBMIT"
-      }}</NButton>
+          : getProp('textOverrides.submitBtnMessage')
+        }}
+      </NButton>
     </template>
   </component>
 </template>
@@ -124,7 +123,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { defineExpose, PropType } from "vue";
+import { defineExpose, onMounted, PropType } from "vue";
 import FormInput from "./FormInput.vue";
 import FormStepper from "./FormSteps.vue";
 import FormModal from "./FormModal.vue";
@@ -133,6 +132,7 @@ import FormInlineContainer from "./FormInlineContainer.vue";
 import { NButton } from "naive-ui";
 import { useForm } from "../hooks";
 import type { FormSchema, SimpleFormSchema, SteppedFormSchema } from "@/types/form";
+import { useConfigOverrides } from "@/hooks/useConfigOverrides";
 
 const emit = defineEmits([
   "closeForm",
@@ -150,6 +150,8 @@ const props = withDefaults(
   }
 )
 
+const { config, getProp } = useConfigOverrides(props.formOptions);
+
 const {
   isMultiStep,
   currentStepIndex,
@@ -165,7 +167,7 @@ const {
   mappedSyncState,
   ClearState,
   ResetState,
-} = useForm(props.formOptions, props.formData, emit);
+} = useForm(props.formOptions, props.formData, emit, { config, getProp });
 const HandleRootValUpdate = (field: any, value: any) => {
   if (field._stepRoot) formState.value[field._stepRoot][field.key] = value;
   else formState.value[field.key] = value;

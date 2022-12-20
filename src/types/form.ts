@@ -12,6 +12,11 @@ interface BaseFormSchema {
     submitButtonText?: string;
     showCloseButton?: boolean;
     allowOutsideClick?: boolean;
+    showPrevButton?: boolean;
+    prevButtonText?: string;
+    nextButtonText?: string;
+    showStepper?: boolean;
+    requiredMessage?: string | ((label: string) => string);
 }
 
 export interface FormStep<StepKey, FieldKey> {
@@ -25,9 +30,6 @@ export type SimpleFormSchema<FieldKey> = {
 }
 
 export type SteppedFormSchema<StepKey = any, FieldKey = any> = {
-    showPreviousButton?: boolean;
-    previousButtonText?: string;
-    nextButtonText?: string;
     steps: FormStep<StepKey, FieldKey>[];
     showStepper?: boolean;
 }
