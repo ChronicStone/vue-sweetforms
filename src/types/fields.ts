@@ -160,6 +160,10 @@ export interface TimeField {
         disableHour?: (hour: number) => boolean;
         disableMinute?: (minute: number, hour: number | null) => boolean;
         disableSecond?: (second: number, minute: number | null, hour: number | null) => boolean;
+        format?: string;
+        hourStep?: number;
+        minuteStep?: number;
+        secondStep?: number;
     }
 }
 
@@ -178,14 +182,18 @@ export interface ObjectField<N> {
     extraProperties?: boolean;
     gridSize?: number | string;
     fields: FormField<N>[];
+    collapsible?: boolean;
+    collapsed?: boolean;
 }
 
-export interface ArrayField<N> {
+export interface ArrayField<N = any> {
     type: "array";
     format?: "table" | "list" | "tabs";
     extraProperties?: boolean;
     gridSize?: number | string;
     fields: FormField<N>[];
+    collapsible?: boolean;
+    collapsed?: boolean;
 }
 
 export interface InfoField {
@@ -196,6 +204,9 @@ export interface InfoField {
 export interface CustomComponent {
     type: "custom-component";
     component: Component;
+    fieldParams?: { [key: string]: any}
+    collapsible?: boolean;
+    collapsed?: boolean;
 }
 
 export type FormField<N = any> = {

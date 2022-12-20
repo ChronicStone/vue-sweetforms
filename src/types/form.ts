@@ -10,8 +10,8 @@ interface BaseFormSchema {
     showCancelButton?: boolean | string;
     cancelButtonText?: string;
     submitButtonText?: string;
-    closeOnClickOutside?: boolean | string;
     showCloseButton?: boolean;
+    allowOutsideClick?: boolean;
 }
 
 export interface FormStep<StepKey, FieldKey> {
@@ -20,11 +20,11 @@ export interface FormStep<StepKey, FieldKey> {
     fields: FormField<FieldKey>[];
 }
 
-export type SimpleFormSchema<FieldKey> = BaseFormSchema & {
+export type SimpleFormSchema<FieldKey> = {
     fields: FormField<FieldKey>[];
 }
 
-export type SteppedFormSchema<StepKey, FieldKey> = BaseFormSchema & {
+export type SteppedFormSchema<StepKey = any, FieldKey = any> = {
     showPreviousButton?: boolean;
     previousButtonText?: string;
     nextButtonText?: string;
@@ -33,27 +33,24 @@ export type SteppedFormSchema<StepKey, FieldKey> = BaseFormSchema & {
 }
 
 
-type ResolveFormType<K extends FormField<any>> = any
-
-
-            // type ResolveFormType<K extends FormField<any>> =  
-            // K["type"] extends "checkbox"
-            //   ? boolean
-            //   : K["type"] extends "object"
-            //     ? K["fields"] extends infer U extends FormField<any>[]
-            //       ? FormInfoReturnType<U[number]>
-            //       : never
-            //     : K extends SelectField
-            //       ? K["fieldParams"] extends { multiple: true }
-            //         ? string[]
-            //         : string
-            //       : K["type"] extends "array"
-            //         ? K["fields"] extends infer U extends FormField<any>[]
-            //           ? FormInfoReturnType<U[number]>[]
-            //           : never
-            //         : K["type"] extends "daterange"
-            //           ? [string, string]
-            //           : string
+type ResolveFormType<K extends FormField<any>> =  
+K["type"] extends "checkbox"
+  ? boolean
+  : K["type"] extends "object"
+    ? K["fields"] extends infer U extends FormField<any>[]
+      ? FormInfoReturnType<U[number]>
+      : never
+    : K extends SelectField
+      ? K["fieldParams"] extends { multiple: true }
+        ? string[]
+        : string
+      : K["type"] extends "array"
+        ? K["fields"] extends infer U extends FormField<any>[]
+          ? FormInfoReturnType<U[number]>[]
+          : never
+        : K["type"] extends "daterange"
+          ? [string, string]
+          : string
 
 export type FormInfoReturnType<T extends FormField<any>> = UnionToIntersection<{
 [K in T as K["condition"] extends (...args: any) => any ? never : K["key"]]: 
@@ -74,7 +71,7 @@ export type ExpandRecursively<T> = T extends object
 export type Narrowable = string | number | boolean | symbol | object | undefined | void | null | {};
 
 
-export type FormSchema<StepKey = any, FieldKey = any> = SimpleFormSchema<FieldKey> | SteppedFormSchema<StepKey, FieldKey>;
+export type FormSchema<StepKey = any, FieldKey = any> = BaseFormSchema & (SimpleFormSchema<FieldKey> | SteppedFormSchema<StepKey, FieldKey>);
 
 export type ExtractFieldsFromSteps<StepKey, FieldKey, TStep extends FormStep<StepKey, FieldKey>> = TStep["root"] extends string 
             ? { [key in TStep["root"]]: ExpandRecursively<FormInfoReturnType<TStep["fields"][number]>> } 
