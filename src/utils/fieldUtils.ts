@@ -132,6 +132,9 @@ export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any = {}) => {
                 ...(fieldProps.disableHour && { 'is-hour-disabled': fieldProps.disableHour }),
                 ...(fieldProps.disableMinute && { 'is-minute-disabled': fieldProps.disableMinute }),
                 ...(fieldProps.disableSecond && { 'is-second-disabled': fieldProps.disableSecond }),
+                ...(fieldProps.hourStep && { 'hours': fieldProps.hourStep }),
+                ...(fieldProps.minuteStep && { 'minutes': fieldProps.minuteStep }),
+                ...(fieldProps.secondStep && { 'seconds': fieldProps.secondStep }),
             }
         case 'date':
         case 'datetime':

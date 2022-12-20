@@ -1,9 +1,9 @@
-import { FormField } from "@/types/form.types";
+import { FormField } from "@/types/fields";
 import { required, helpers, minLength } from "@vuelidate/validators"
 import { GenerateUUID } from "./baseUtils";
 import { markRaw, toRaw } from 'vue';
 
-interface InternalFormField extends FormField {
+interface InternalFormField extends FormField<any> {
     _stepIndex?: number
     _dependencies?: { [key: string]: any }
 }
