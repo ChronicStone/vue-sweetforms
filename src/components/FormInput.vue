@@ -303,7 +303,7 @@ export default {
 </script>
 
 <script setup lang="tsx">
-import { computed, ref, inject, toRaw, onMounted, nextTick, watch } from "vue";
+import { computed, ref, inject, toRaw, onMounted, nextTick, watch, PropType } from "vue";
 import {
   NCard,
   NCollapseTransition,
@@ -328,31 +328,32 @@ import { MapFieldProps, ParseErrMsg, render, Omit } from "@/utils";
 import ArrayTable from "./Fields/ArrayTable.vue";
 import ArrayList from "./Fields/ArrayList.vue";
 import ArrayTabs from "./Fields/ArrayTabs.vue";
+import { FormField } from "@/types/fields";
 
 const emit = defineEmits(["update:modelValue"]);
 const props = defineProps({
   gridSize: {
-    type: String,
+    type: String as PropType<string>,
   },
   field: {
-    type: Object,
+    type: Object as PropType<{ [key: string]: any }>,
     required: true,
   },
   validator: {
-    type: Object,
+    type: Object as PropType<{ [key: string]: any }>,
     required: false,
     default: () => ({}),
   },
   modelValue: {
-    type: [String, Number, Date, Array, Object, Boolean],
+    type: [String, Number, Date, Array, Object, Boolean] as PropType<any>,
     required: false,
   },
   indent: {
-    type: Number,
+    type: Number as PropType<number>,
     default: 1,
   },
   disabled: {
-    type: Boolean,
+    type: Boolean as PropType<boolean>,
     default: false,
   },
 });

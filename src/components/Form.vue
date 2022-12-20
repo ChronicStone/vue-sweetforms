@@ -8,7 +8,7 @@
         : FormModal
     "
     :formStyle="formStyle"
-    :allowClickOutside="formOptions?.allowClickOutside ?? true"
+    :allowClickOutside="formOptions?.allowOutsideClick ?? true"
     @closeForm="CloseForm"
   >
     <template
@@ -16,12 +16,12 @@
       v-if="
         formOptions?.title ||
         $slots.title ||
-        (isMultiStep && (formOptions?.showSteps ?? true))
+        (isMultiStep && ((formOptions as SteppedFormSchema)?.showStepper ?? true))
       "
     >
       <FormStepper
         class="mt-2"
-        v-if="(formOptions?.showSteps ?? true) && isMultiStep"
+        v-if="((formOptions as SteppedFormSchema)?.showStepper ?? true) && isMultiStep"
         :steps="formSteps"
         :current-step="currentStepIndex"
       />
@@ -92,22 +92,24 @@
         @click="CloseForm"
         v-if="formOptions?.showCancelButton ?? true"
         type="error"
-        >CANCEL</NButton
+        >
+        {{ formOptions?.cancelButtonText ?? "CANCEL" }}
+        </NButton
       >
       <NButton
         secondary
         @click="PreviousStep"
-        v-if="(formOptions?.showPreviousButton ?? true) && isMultiStep"
+        v-if="((formOptions as SteppedFormSchema)?.showPreviousButton ?? true) && isMultiStep"
         :disabled="currentStepIndex === 0"
         type="primary"
-        >{{ formOptions?.previousButtonText ?? "PREVIOUS" }}</NButton
+        >{{ (formOptions as SteppedFormSchema)?.previousButtonText ?? "PREVIOUS" }}</NButton
       >
       <NButton secondary @click="SubmitForm" type="primary">{{
         isMultiStep
           ? `${
               currentStepIndex === formSteps.length - 1
                 ? formOptions?.submitButtonText ?? "SUBMIT"
-                : formOptions?.nextButtonText ?? "NEXT"
+                : (formOptions as SteppedFormSchema)?.nextButtonText ?? "NEXT"
             }`
           : formOptions?.submitButtonText ?? "SUBMIT"
       }}</NButton>
@@ -130,7 +132,7 @@ import FormModalFullscreen from "./FormModalFullscreen.vue";
 import FormInlineContainer from "./FormInlineContainer.vue";
 import { NButton } from "naive-ui";
 import { useForm } from "../hooks";
-import { FormSchema } from "@/types/form";
+import type { FormSchema, SimpleFormSchema, SteppedFormSchema } from "@/types/form";
 
 const emit = defineEmits([
   "closeForm",
@@ -139,20 +141,14 @@ const emit = defineEmits([
   "onSubmit",
   "onCancel",
 ]);
-const props = defineProps({
-  formOptions: {
-    type: Object as PropType<FormSchema>,
-    default: () => ({}),
-  },
-  formData: {
-    type: Object,
-    default: () => ({}),
-  },
-  popup: {
-    type: Boolean,
-    default: false,
-  },
-});
+
+const props = withDefaults(
+  defineProps<{ formOptions: FormSchema; formData?: { [key: string]: any }; popup: boolean }>(),
+  {
+    formData: () => ({}),
+    popup: false,
+  }
+)
 
 const {
   isMultiStep,

@@ -28,16 +28,13 @@
 <script setup lang="ts">
 import { useThemeVars } from "naive-ui"
 import { computed } from "vue"
-const props = defineProps({
-    steps: {
-        type: Array,
-        required: true,
-    },
-    currentStep: {
-        type: Number,
-        default: 0
+
+const props = withDefaults(
+    defineProps<{ steps: Array<{ [key: string]: any }>; currentStep: number}>(),
+    {
+        currentStep: 0
     }
-})
+)
 
 const { errorColor, primaryColor, modalColor } = useThemeVars().value
 const progressWidth = computed(() => ((props.currentStep) / (props.steps.length - 1)) * 100 )

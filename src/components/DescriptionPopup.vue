@@ -28,8 +28,8 @@ const CloseModal = () =>  showDescription.value = false
 
 const PreRenderStringContent = (content: string | VNodeChild) => typeof content === 'string' ? () => (<div v-html={content}></div>) : content
 
-const PopupLabel = () => render(props.description?.title ?? props.fieldLabel)
-const PopupContent = () => render(PreRenderStringContent(props.description?.content ?? props.description))
+const PopupLabel = () => render((props.description as any)?.title ?? props.fieldLabel)
+const PopupContent = () => render(PreRenderStringContent((props.description as any)?.content ?? props.description))
 
 const modalOverlay: { show: () => void, hide: () => void } | undefined = inject(ModalOverlayInjectKey)
 watch(() => showDescription.value, (value) => {

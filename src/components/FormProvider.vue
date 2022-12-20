@@ -21,7 +21,7 @@
           <Form
             popup
             v-for="(formInstance, index) in formInstances"
-            @closeForm="CloseForm(index)"
+            @closeForm="CloseForm(formInstance.formOptions._id)"
             @submitForm="SubmitForm($event, index)"
             v-bind="formInstance"
             :key="formInstance.formOptions._id?.toString()"
@@ -85,7 +85,7 @@ const CloseForm = (uuid: string) =>
     formInstances.value.findIndex((form) => form.formOptions._id === uuid),
     1
   );
-const SubmitForm = ({ formState, onSubmit }, key) => {
+const SubmitForm = ({ formState, onSubmit }: any, key: any) => {
   CloseForm(key);
   onSubmit(Object.assign({}, formState));
 };
@@ -127,7 +127,7 @@ provide(FormInjectKey, {
       });
     });
   },
-  formInstances: computed(() => formInstances.value),
+  // formInstances: computed(() => formInstances.value),
 });
 
 // Modal overlay
