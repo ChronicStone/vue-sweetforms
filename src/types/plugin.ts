@@ -1,4 +1,4 @@
-type SweetformPluginConfig = {
+export type SweetformPluginConfig = {
     textOverrides: {
         requiredMessage?: string | ((label: string) => string)
         nextBtnMessage?: string

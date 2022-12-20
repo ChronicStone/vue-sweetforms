@@ -2,6 +2,7 @@ import 'virtual:windi.css'
 import { App } from "vue"
 import { PluginConfigInjectionKey } from './constants/injectionKeys'
 import { FormProvider, Form } from "./components"
+import { SweetformPluginConfig } from "./types/plugin"
 
 
 export { FormProvider, Form }

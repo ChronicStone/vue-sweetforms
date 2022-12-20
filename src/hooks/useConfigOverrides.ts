@@ -3,6 +3,7 @@ import { PluginConfigInjectionKey } from "@/constants/injectionKeys";
 import { NestedPaths, TypeFromPath } from "@/types/utils";
 import { GetPropertyFromPath } from "@/utils";
 import { ComputedRef, inject, computed } from "vue";
+import { SweetformPluginConfig } from "@/types/plugin";
 
 
 const defaultConfig = {
