@@ -1,4 +1,4 @@
-import { computed, watch } from "vue"
+import { computed, ComputedRef, watch } from "vue"
 import { BreakpointsInjectKey } from "@/constants/injectionKeys"
 import { ComputeStyleModifier } from "@/utils"
 
@@ -8,7 +8,7 @@ interface BreakpointArrayItem {
 }
 
 interface BreakpointsConfig {
-    reactiveBreakpoints: BreakpointArrayItem[]
+    reactiveBreakpoints: ComputedRef<BreakpointArrayItem[]>
     breakpointsDefObject: { [key: string]: number }
     breakpointsKeys: string[]
 }
@@ -25,7 +25,6 @@ export const useBreakpointStyle = (styleString: string, { reactiveBreakpoints, b
                 currentIndex--
             }
         }
-        // const breakpointStyle = ComputeTwGridBreakpoint(styleString, transformKey, breakpointValue)
         return { ...acc, [breakpoint]: breakpointValue }
     }, {})
 

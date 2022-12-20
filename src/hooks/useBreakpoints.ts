@@ -7,7 +7,7 @@ interface Breakpoints {
 export const useBreakpoints = (rawBreakpoints: Breakpoints ) => {
     const breakpoints: any = useSourceBreakpoints(rawBreakpoints)
     const orderedSource = Object.entries(rawBreakpoints).map(([key, value]) => ({ key, value })).sort((a, b) => +b.value - +a.value).map(({ key}) => key)
-    const reactiveBreakpoints = computed(() => {
+    const reactiveBreakpoints = computed<Array<{ key: string; value: any }>>(() => {
         return Object.entries(breakpoints)
         .map(([key, value]) => ({ key, value }))
         .filter(({ key }) => Object.keys(rawBreakpoints).includes(key))
