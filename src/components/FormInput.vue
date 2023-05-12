@@ -179,6 +179,13 @@
       />
     </div>
 
+    <n-rate 
+      v-if="field.type === 'rating'" 
+      v-model:value="fieldValue" 
+      v-bind="MapFieldProps(field.type, field.fieldParams)"
+    >
+    </n-rate>
+
     <NCheckboxGroup
       v-if="field.type === 'checkbox-group'"
       v-model:value="fieldValue"
@@ -318,6 +325,7 @@ import {
   NCheckbox,
   NCheckboxGroup,
   NTreeSelect,
+  NRate,
   NCascader,
   useDialog,
 } from "naive-ui";
@@ -328,7 +336,6 @@ import { MapFieldProps, ParseErrMsg, render, Omit } from "@/utils";
 import ArrayTable from "./Fields/ArrayTable.vue";
 import ArrayList from "./Fields/ArrayList.vue";
 import ArrayTabs from "./Fields/ArrayTabs.vue";
-import { FormField } from "@/types/fields";
 
 const emit = defineEmits(["update:modelValue"]);
 const props = defineProps({

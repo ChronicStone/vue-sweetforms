@@ -22,6 +22,7 @@ export const useForm = (formOptions: any, formInputData: any, emit: any, formOve
         maxWidth: useBreakpointStyle(formOptions?.maxWidth ?? defaultStyles.maxWidth, breakpointsConfig, 'maxWidth'),
         gridSize: useBreakpointStyle(formOptions?.gridSize ?? defaultStyles.gridSize, breakpointsConfig, 'grid'),
         fieldSize: useBreakpointStyle(formOptions?.fieldSize ?? defaultStyles.fieldSize, breakpointsConfig, 'col'),
+        stepperLayout: useBreakpointStyle(formOptions?.stepperLayout ?? defaultStyles.stepperLayout, breakpointsConfig),
     })
 
     // let customComponentsStore: any = markRaw({})

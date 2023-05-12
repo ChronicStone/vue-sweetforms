@@ -84,7 +84,7 @@
 <script setup lang="tsx">
 import FormInput from "@/components/FormInput.vue";
 import { ArrayFieldEmits, ArrayFieldProps, useArrayField } from "@/hooks/useArrayField";
-import { NCard, NTabs, NTabPane, NButton, NEmpty, NIcon, NDropdown } from "naive-ui";
+import { NCard, NTabs, NTabPane, NButton, NEmpty, NIcon, NDropdown, DropdownOption } from "naive-ui";
 import { h, reactive, nextTick } from "vue";
 import TrashIcon from "~icons/mdi/trash";
 import ArrowRight from "~icons/mdi/arrow-right";
@@ -109,11 +109,16 @@ const renderIcon = (icon: any) => {
   };
 };
 
+function buildControls(index: number, itemsLength: number): DropdownOption[] {
+  return []
+}
+
 const dropdownOptions = (index: number, itemsLength: number) => [
   {
     key: "delete",
     label: "Delete item",
     icon: renderIcon(TrashIcon),
+    onClick
   },
   {
     key: "moveLeft",

@@ -23,10 +23,10 @@
         class="mt-2"
         v-if="getProp('uiConfig.showStepper') && isMultiStep"
         :steps="formSteps"
-        :current-step="currentStepIndex"
+        :current-step-index="currentStepIndex"
+        :layout="formStyle.stepperLayout"
       />
       <slot
-        v-if="$slots.title"
         name="title"
         v-bind="{
           ...(isMultiStep && {
@@ -35,17 +35,16 @@
           }),
           ...(!isMultiStep && { title: formOptions?.title }),
         }"
-      />
-      <div
-        v-else
-        class="text-center uppercase text-xl"
-        v-if="
-          (!isMultiStep && formOptions.title) ||
-          (isMultiStep && formSteps[currentStepIndex].title)
-        "
       >
-        {{ isMultiStep ? `${formSteps[currentStepIndex].title}` : formOptions.title }}
-      </div>
+        <div
+          class="text-center uppercase text-xl"
+          v-if="
+            (!isMultiStep && formOptions.title)"
+        >
+          {{ formOptions.title }}
+        </div>
+      </slot>
+      
 
       <div
         v-if="!popup ? false : formOptions?.showCloseButton ?? true"

@@ -4,5 +4,6 @@ import { FormApi } from "../types/form"
 
 export const useSweetform = (): FormApi => {
     const formApi = inject(FormInjectKey)
-    return formApi as FormApi
+    if (!formApi) throw new Error("useSweetform must be used within a Sweetform provider")
+    return formApi
 }

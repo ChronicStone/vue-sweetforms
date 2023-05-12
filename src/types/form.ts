@@ -32,27 +32,28 @@ export type SimpleFormSchema<FieldKey> = {
 export type SteppedFormSchema<StepKey = any, FieldKey = any> = {
     steps: FormStep<StepKey, FieldKey>[];
     showStepper?: boolean;
+    stepperLayout?: string;
 }
 
 
-type ResolveFormType<K extends FormField<any>> =  
-K["type"] extends "checkbox"
-  ? boolean
-  : K["type"] extends "object"
-    ? K["fields"] extends infer U extends FormField<any>[]
-      ? FormInfoReturnType<U[number]>
-      : never
-    : K extends SelectField
-      ? K["fieldParams"] extends { multiple: true }
-        ? string[]
-        : string
-      : K["type"] extends "array"
-        ? K["fields"] extends infer U extends FormField<any>[]
-          ? FormInfoReturnType<U[number]>[]
-          : never
-        : K["type"] extends "daterange"
-          ? [string, string]
-          : string
+type ResolveFormType<K extends FormField<any>> =  any
+// K["type"] extends "checkbox"
+//   ? boolean
+//   : K["type"] extends "object"
+//     ? K["fields"] extends infer U extends FormField<any>[]
+//       ? FormInfoReturnType<U[number]>
+//       : never
+//     : K extends SelectField
+//       ? K["fieldParams"] extends { multiple: true }
+//         ? string[]
+//         : string
+//       : K["type"] extends "array"
+//         ? K["fields"] extends infer U extends FormField<any>[]
+//           ? FormInfoReturnType<U[number]>[]
+//           : never
+//         : K["type"] extends "daterange"
+//           ? [string, string]
+//           : string
 
 export type FormInfoReturnType<T extends FormField<any>> = UnionToIntersection<{
 [K in T as K["condition"] extends (...args: any) => any ? never : K["key"]]: 
@@ -85,4 +86,19 @@ export type ExtractFieldsFromSteps<StepKey, FieldKey, TStep extends FormStep<Ste
     isCompleted: boolean, 
     formData: TFormSchema extends SimpleFormSchema<FieldKey> ? ExpandRecursively<FormInfoReturnType<TFormSchema["fields"][number]>>  : TFormSchema extends SteppedFormSchema<StepKey, FieldKey> ? ExpandRecursively<ExtractFieldsFromSteps<StepKey, FieldKey, TFormSchema["steps"][number]>>  : never
   }>;
+  clearAllInstances(): void;
 }
+
+const api: FormApi
+
+
+const { formData } = await api.createForm({
+  fields: [
+    {
+      key: 'firstName',
+      label: 'First name',
+      type: 'text',
+      required: true,
+    },
+  ]
+})

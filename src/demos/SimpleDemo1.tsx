@@ -927,6 +927,22 @@ export default [
                 }
             ]
         }
-
+    },
+    {
+        label: "Rating",
+        value: {
+            title: "Rating test",
+            fields: [
+                {
+                    key: "test",
+                    label: "Test",
+                    type: "rating",
+                    fieldParams: {
+                        allowHalf: true,
+                        count: 5,
+                    }
+                }
+            ]
+        }
     }
 ];

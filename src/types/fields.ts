@@ -1,5 +1,5 @@
 import { Component } from "vue";
-import { SelectGroupOption, SelectOption } from "naive-ui";
+import { CascaderOption, SelectGroupOption, SelectOption, TreeSelectOption } from "naive-ui";
 import { SelectBaseOption } from "naive-ui/es/select/src/interface";
 import { VNode, VNodeChild } from "vue";
 
@@ -25,9 +25,13 @@ export enum FieldTypes {
     OBJECT = "object",
     ARRAY = "array",
     INFO = "info",
+    TREE_SELECT = "tree-select",
+    RATING = "rating",
+    TAG = "tag",
+    CASCADER = "cascader",
 }
 
-export type TFieldTypes = "text" | "number" | "select" | "switch" | "checkbox" | "checkbox-group" | "radio" | "slider" | "textarea" | "password" | "date" | "datetime" | "daterange" | "datetimerange" | "month" | "year" | "time" | "custom-component" | "object" | "array" | "info";
+export type TFieldTypes = "text" | "number" | "select" | "switch" | "checkbox" | "checkbox-group" | "radio" | "slider" | "textarea" | "password" | "date" | "datetime" | "daterange" | "datetimerange" | "month" | "year" | "time" | "rating" | "custom-component" | "object" | "array" | "info" | "tree-select" | "tag" | "cascader";
 
 
 interface Dependencies {
@@ -48,6 +52,68 @@ export interface TextField {
         suffix?: string;
     }
 }
+
+export interface TreeSelectField {
+    type: "tree-select";
+    clearable?: boolean;
+    options: _FieldOptions
+    fieldParams?: {
+        cascade?: boolean;
+        multiple?: boolean;
+        checkStrategy?: 'all' | 'parent' | 'child';
+        childrenField?: string;
+        valueField?: string;
+        labelField?: string;
+        disabledField?: string;
+        maxSelectedCount?: number | 'responsive';
+        clearFilterAfterSelect?: boolean;
+        allowCheckingNotLoaded?: boolean;
+        filterable?: boolean;
+        placement?: 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end';
+        remote?: boolean;
+        separator?: string;
+        showPath?: boolean;
+        virtualScroll?: boolean;
+        renderLabel?: (option: { option: TreeSelectOption, checked: boolean, selected: boolean }) => VNodeChild;
+        filter?: (pattern: string, option: TreeSelectOption, path: TreeSelectOption[]) => boolean;
+        filterMenuProps?: Record<string, any>;
+    }
+}
+
+export interface CascaderField {
+    type: "cascader";
+    clearable?: boolean;
+    options: _FieldOptions
+    fieldParams?: {
+        cascade?: boolean;
+        multiple?: boolean;
+        checkable?: boolean;
+        checkStrategy?: 'all' | 'parent' | 'child';
+        childrenField?: string;
+        valueField?: string;
+        labelField?: string;
+        disabledField?: string;
+        maxSelectedCount?: number | 'responsive';
+        clearFilterAfterSelect?: boolean;
+        allowCheckingNotLoaded?: boolean;
+        filterable?: boolean;
+        placement?: 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end';
+        remote?: boolean;
+        separator?: string;
+        showPath?: boolean;
+        virtualScroll?: boolean;
+        renderLabel?: (option: CascaderOption, checked: boolean) => VNodeChild;
+        renderPrefix?: (option: CascaderOption, checked: boolean) => VNodeChild;
+        renderSuffix?: (option: CascaderOption, checked: boolean) => VNodeChild;
+        renderSwitcherIcon?: (option: CascaderOption, checked: boolean) => VNodeChild;
+        renderTag?: (option: CascaderOption, checked: boolean) => VNodeChild;
+        filter?: (pattern: string, option: CascaderOption, path: CascaderOption[]) => boolean;
+        filterMenuProps?: Record<string, any>;
+    }
+        
+}
+
+
 
 export interface TextAreaField {
     type: "textarea";
@@ -86,6 +152,17 @@ export interface NumberField {
         min?: number;
         max?: number;
         step?: number;
+    }
+}
+
+export interface RatingField {
+    type: "rating";
+    fieldParams?: {
+        renderIcon?: () => VNodeChild;
+        color?: string;
+        iconCount?: number;
+        size: 'small' | 'medium' | 'large' | number;
+        allowHalf?: boolean;
     }
 }
 
@@ -225,6 +302,6 @@ export type FormField<N = any> = {
     preformat?: (value: any) => any;
     transform?: (value: any) => any;
     validators?: (dependencies?: { [key: string]: any }) => { [key: string]: any } | { [key: string]: any }
-  } & (TextField | TextAreaField | PasswordField | SelectField | NumberField | SliderField | SwitchField | RadioField | CheckboxField | CheckboxGroupField | TimeField | DateField | ObjectField<N> | ArrayField<N> | InfoField | CustomComponent);
+  } & (TextField | TextAreaField | PasswordField | SelectField | NumberField | SliderField | SwitchField | RadioField | CheckboxField | CheckboxGroupField | TimeField | DateField | ObjectField<N> | ArrayField<N> | InfoField | CustomComponent | TreeSelectField | CascaderField | RatingField);
 
   

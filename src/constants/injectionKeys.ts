@@ -1,3 +1,4 @@
+import { SweetformPluginConfig } from '@/types/plugin';
 import { ExpandRecursively, ExtractFieldsFromSteps, FormApi, FormInfoReturnType, FormSchema, Narrowable, SimpleFormSchema, SteppedFormSchema } from '../types/form';
 import { InjectionKey } from 'vue';
 

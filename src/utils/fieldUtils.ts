@@ -1,4 +1,4 @@
-import { FieldOption, FieldTypes } from "../types"
+import { FieldTypes } from "@/types/fields"
 
 export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any = {}) => {
     switch(fieldType) {
@@ -88,6 +88,13 @@ export const MapFieldProps = (fieldType: FieldTypes, fieldProps: any = {}) => {
                 ...(fieldProps.step && { step: fieldProps.step }),
                 ...(fieldProps.prefix && { prefix: fieldProps.prefix }),
                 ...(fieldProps.suffix && { suffix: fieldProps.suffix }),
+            }
+        case 'rating':
+            return {
+                'allow-half': fieldProps.allowHalf ?? false,
+                'count': fieldProps.iconCount ?? 5,
+                'size': fieldProps.iconSize ?? 'medium',
+                'color': fieldProps.iconColor ?? '#f7ba2a',
             }
         case 'slider':
             return {

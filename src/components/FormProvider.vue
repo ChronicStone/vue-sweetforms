@@ -92,6 +92,7 @@ const SubmitForm = ({ formState, onSubmit }: any, key: any) => {
 
 // Form instance manipulation
 provide(FormInjectKey, {
+  clearAllInstances: () => (formInstances.value = []),
   createForm: <
     TFormSchema extends FormSchema<StepKey, FieldKey>,
     StepKey extends Narrowable,

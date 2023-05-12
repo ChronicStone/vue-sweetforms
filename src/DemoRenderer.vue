@@ -52,17 +52,21 @@
 
 <script setup lang="tsx">
 import TestComp from "./TestComp.vue";
-import { reactive, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { NCard, NButton, useThemeVars, NSwitch, NTag } from "naive-ui";
 import { useSweetform, Form } from "./index";
 import * as AllDemos from "@/demos/";
 import { contentItem } from "./slotRender";
 import { ExamConfig } from "./exam";
-const { createForm, formInstances }: any = useSweetform();
+const formApi = useSweetform();
 const OpenForm = async (formContent: any, inputData: any) => {
-  const data = await createForm(formContent, inputData);
+  const data = await formApi.createForm(formContent, inputData);
   console.log(JSON.stringify(data, null, 4));
 };
+
+onMounted(() => {
+  console.log(formApi)
+});
 
 const demonstrations = reactive(
   Object.values(AllDemos).map((DemoGroup: any) =>
