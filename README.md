@@ -1,3 +1,6 @@
+<h1 style="color: red">DEPRECATED PROJECT, NOW REFER TO https://github.com/ChronicStone/vue-sweettools/</h1>
+
+
 <h1 align="center">
   <a><img src="https://github.com/ChronicStone/sweetforms/blob/main/logo_sweetforms.svg" alt="Vue SweetForms" width="200"></a>
 </h1>
